@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Theme Configuration */
+:root {
+    /* Default Theme (Green/Emerald - Annuqayah Style) */
+    --color-primary-50: #ecfdf5;
+    --color-primary-100: #d1fae5;
+    --color-primary-200: #a7f3d0;
+    --color-primary-300: #6ee7b7;
+    --color-primary-400: #34d399;
+    --color-primary-500: #10b981;
+    --color-primary-600: #059669;
+    --color-primary-700: #047857;
+    --color-primary-800: #065f46;
+    --color-primary-900: #064e3b;
+
+    --gradient-from: #16a34a;
+    /* green-600 */
+    --gradient-to: #059669;
+    /* emerald-600 */
+
+    --bg-base: #f6f9fc;
+    --bg-card: #ffffff;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+}
+
+[data-theme="blue"] {
+    /* Blue Theme */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+
+    --gradient-from: #2563eb;
+    /* blue-600 */
+    --gradient-to: #0ea5e9;
+    /* sky-500 */
+
+    --bg-base: #f0f9ff;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+}
+
+[data-theme="purple"] {
+    /* Purple (Royal) Theme */
+    --color-primary-50: #faf5ff;
+    --color-primary-100: #f3e8ff;
+    --color-primary-200: #e9d5ff;
+    --color-primary-300: #d8b4fe;
+    --color-primary-400: #c084fc;
+    --color-primary-500: #a855f7;
+    --color-primary-600: #9333ea;
+    --color-primary-700: #7e22ce;
+    --color-primary-800: #6b21a8;
+    --color-primary-900: #581c87;
+
+    --gradient-from: #7e22ce;
+    /* purple-700 */
+    --gradient-to: #c026d3;
+    /* fuchsia-600 */
+
+    --bg-base: #fdf4ff;
+    --bg-card: #ffffff;
+    --text-main: #1f2937;
+    /* gray-800 */
+    --text-muted: #6b7280;
+}
+
+@layer base {
+    body {
+        color: var(--text-main);
+        background-color: var(--bg-base);
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 500ms;
+    }
+}
