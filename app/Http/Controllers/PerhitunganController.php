@@ -23,7 +23,7 @@ class PerhitunganController extends Controller
         $request->validate([
             'santri_id' => 'required|exists:santri,id',
             'nilai' => 'required|array',
-            'nilai.*' => 'required|numeric|min:1'
+            'nilai.*' => 'required|string|exists:subkriteria,id'
         ]);
 
         $santri = Santri::findOrFail($request->santri_id);
