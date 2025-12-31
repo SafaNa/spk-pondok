@@ -148,6 +148,7 @@ class PerhitunganController extends Controller
     public function rekomendasi()
     {
         $santri = Santri::where('status', 'aktif')
+            ->whereNotNull('nilai_akhir')
             ->orderBy('nilai_akhir', 'desc')
             ->get();
 
