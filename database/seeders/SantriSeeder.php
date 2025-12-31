@@ -148,6 +148,8 @@ class SantriSeeder extends Seeder
             ],
         ];
 
-        Santri::insert($santri);
+        foreach ($santri as $data) {
+            Santri::create($data);
+        }
     }
 }
