@@ -67,9 +67,18 @@ class PerhitunganController extends Controller
         ])->get();
 
         $totalBobot = $kriteria->sum('bobot');
-        $perhitungan = $this->hitungNilaiAkhir($id, true);
 
-        return view('perhitungan.hasil', compact('santri', 'kriteria', 'totalBobot', 'perhitungan'));
+        // Cek kelengkapan data
+        $jumlahKriteria = Kriteria::count();
+        $jumlahPenilaian = Penilaian::where('santri_id', $id)->count();
+        $isComplete = $jumlahKriteria > 0 && $jumlahKriteria == $jumlahPenilaian;
+
+        $perhitungan = null;
+        if ($isComplete) {
+            $perhitungan = $this->hitungNilaiAkhir($id, true);
+        }
+
+        return view('perhitungan.hasil', compact('santri', 'kriteria', 'totalBobot', 'perhitungan', 'isComplete'));
     }
 
     private function hitungNilaiAkhir($santriId, $detail = false)
@@ -119,7 +128,10 @@ class PerhitunganController extends Controller
                     'nilai' => $nilai,
                     'utility' => $utility,
                     'total' => $utility * $bobotTernormalisasi,
-                    'jenis' => $k->jenis
+                    'jenis' => $k->jenis,
+                    'min' => $min,
+                    'max' => $max,
+                    'range' => $range
                 ];
             }
         }
