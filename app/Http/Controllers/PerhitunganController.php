@@ -154,4 +154,14 @@ class PerhitunganController extends Controller
 
         return view('perhitungan.rekomendasi', compact('santri'));
     }
+
+    public function cetak()
+    {
+        $santri = Santri::where('status', 'aktif')
+            ->whereNotNull('nilai_akhir')
+            ->orderBy('nilai_akhir', 'desc')
+            ->get();
+
+        return view('perhitungan.rekomendasi_print', compact('santri'));
+    }
 }

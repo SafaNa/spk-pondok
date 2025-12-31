@@ -79,4 +79,37 @@ class SantriController extends Controller
         return redirect()->route('santri.index')
             ->with('success', 'Data santri berhasil dihapus');
     }
+
+    public function export()
+    {
+        $santri = Santri::latest()->get();
+        $filename = "data_santri_" . date('Y-m-d_H-i-s') . ".csv";
+
+        $handle = fopen('php://output', 'w');
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        return response()->stream(function () use ($handle, $santri) {
+            fputcsv($handle, ['No', 'NIS', 'Nama', 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Alamat', 'Nama Ortu', 'No HP Ortu', 'Status']);
+
+            foreach ($santri as $index => $item) {
+                fputcsv($handle, [
+                    $index + 1,
+                    $item->nis,
+                    $item->nama,
+                    $item->jenis_kelamin,
+                    $item->tempat_lahir,
+                    $item->tanggal_lahir->format('Y-m-d'),
+                    $item->alamat,
+                    $item->nama_ortu,
+                    $item->no_hp_ortu,
+                    $item->status,
+                ]);
+            }
+            fclose($handle);
+        }, 200, $headers);
+    }
 }

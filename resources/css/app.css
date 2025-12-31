@@ -92,4 +92,23 @@
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 500ms;
     }
+
+    button,
+    [type='button'],
+    [type='reset'],
+    [type='submit'] {
+        cursor: pointer;
+        outline: none;
+    }
+
+    button:focus,
+    [type='button']:focus,
+    [type='reset']:focus,
+    [type='submit']:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        --tw-ring-color: transparent !important;
+        --tw-ring-width: 0px !important;
+        --tw-ring-offset-width: 0px !important;
+    }
 }

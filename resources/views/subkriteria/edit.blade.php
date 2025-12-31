@@ -82,16 +82,16 @@
                 <div class="pt-4 border-t border-gray-100">
                     <div class="flex justify-between items-center">
                         <a href="{{ route('kriteria.subkriteria.index', $kriteria->id) }}"
-                            class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-500)] transition-colors duration-200">
+                            class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition-colors duration-200">
                             <i class="fas fa-times mr-2"></i> Batal
                         </a>
                         <div class="space-x-3">
                             <button type="button" onclick="window.history.back()"
-                                class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-500)] transition-colors duration-200">
+                                class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition-colors duration-200">
                                 <i class="fas fa-arrow-left mr-2"></i> Kembali
                             </button>
                             <button type="submit"
-                                class="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-500)] shadow-sm transition-all duration-200">
+                                class="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] focus:outline-none shadow-sm transition-all duration-200">
                                 <i class="fas fa-save mr-2"></i> Perbarui Subkriteria
                             </button>
                         </div>

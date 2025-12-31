@@ -68,7 +68,7 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-gray-500">Hasil Perhitungan</p>
+                            <p class="text-sm font-medium text-gray-500">Hasil Rekomendasi</p>
                             <h3 class="text-3xl font-bold text-gray-800 mt-1">Lihat</h3>
                         </div>
                         <div class="p-3 rounded-xl bg-amber-100 text-amber-600">
@@ -76,13 +76,32 @@
                         </div>
                     </div>
                     <div class="mt-6">
-                        <a href="{{ route('perhitungan.index') }}"
+                        <a href="{{ route('perhitungan.rekomendasi') }}"
                             class="text-sm font-medium text-amber-600 hover:text-amber-500 flex items-center">
                             Lihat detail <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </a>
                     </div>
                 </div>
                 <div class="bg-gradient-to-r from-amber-50 to-white h-1.5 w-full"></div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Chart Status Santri -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Statistik Status Santri</h3>
+                <div class="relative h-64">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart Top 5 Santri -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Top 5 Santri (SMART Score)</h3>
+                <div class="relative h-64">
+                    <canvas id="topSantriChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -131,4 +150,72 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart Status Santri (Doughnut)
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const santriStatus = @json($santriStatus);
+
+            const statusLabels = Object.keys(santriStatus).map(s => s.charAt(0).toUpperCase() + s.slice(1));
+            const statusData = Object.values(santriStatus);
+
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: [
+                            '#10b981', // emerald-500 (aktif)
+                            '#ef4444', // red-500 (non-aktif)
+                            '#3b82f6', // blue-500 (lulus)
+                            '#f59e0b'  // amber-500 (drop-out)
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Chart Top Santri (Bar)
+            const topCtx = document.getElementById('topSantriChart').getContext('2d');
+            const topSantri = @json($topSantri);
+
+            new Chart(topCtx, {
+                type: 'bar',
+                data: {
+                    labels: topSantri.map(s => s.nama),
+                    datasets: [{
+                        label: 'Nilai Akhir',
+                        data: topSantri.map(s => s.nilai_akhir),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

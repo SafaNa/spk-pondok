@@ -80,25 +80,25 @@
                             class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-[var(--color-primary-100)]">SPK
                             P2AL II</span>
                     </div>
-                    <div class="hidden lg:ml-10 lg:flex lg:space-x-8">
+                    <div class="hidden lg:ml-6 lg:flex lg:space-x-4">
                         <a href="{{ route('dashboard') }}"
-                            class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white">
+                            class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-home mr-2"></i> Dashboard
                         </a>
                         <a href="{{ route('santri.index') }}"
-                            class="nav-link {{ request()->routeIs('santri.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white">
+                            class="nav-link {{ request()->routeIs('santri.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-users mr-2"></i> Data Santri
                         </a>
                         <a href="{{ route('kriteria.index') }}"
-                            class="nav-link {{ request()->routeIs('kriteria.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white">
+                            class="nav-link {{ request()->routeIs('kriteria.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-list-check mr-2"></i> Kriteria
                         </a>
                         <a href="{{ route('perhitungan.index') }}"
-                            class="nav-link {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white">
+                            class="nav-link {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-calculator mr-2"></i> Perhitungan SMART
                         </a>
                         <a href="{{ route('perhitungan.rekomendasi') }}"
-                            class="nav-link {{ request()->routeIs('perhitungan.rekomendasi') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white">
+                            class="nav-link {{ request()->routeIs('perhitungan.rekomendasi') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-award mr-2"></i> Rekomendasi
                         </a>
                     </div>
@@ -113,7 +113,7 @@
                                 <i class="fas fa-palette text-xl"></i>
                             </button>
                             <div x-show="open"
-                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white focus:outline-none"
+                                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white focus:outline-none ring-1 ring-gray-200 ring-opacity-5"
                                 style="display: none;">
                                 <a href="{{ route('theme.set', 'default') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -130,15 +130,52 @@
                             </div>
                         </div>
 
-                        <!-- <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span class="text-sm font-medium text-white mr-2">Admin</span>
-                                <div
-                                    class="h-8 w-8 rounded-full bg-[var(--color-primary-400)] flex items-center justify-center">
-                                    <i class="fas fa-user text-white"></i>
-                                </div>
+                        <div class="ml-3 relative" x-data="{ open: false }">
+                            <div>
+                                <button @click="open = !open" @click.away="open = false" type="button"
+                                    class="max-w-xs rounded-full flex items-center text-sm focus:outline-none"
+                                    id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                    <span class="sr-only">Open user menu</span>
+                                    <div
+                                        class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <span
+                                        class="ml-3 text-white font-medium mr-2">{{ Auth::user()->name ?? 'Admin' }}</span>
+                                    <i class="fas fa-chevron-down text-white text-xs mr-2 transition-transform duration-200"
+                                        :class="{ 'rotate-180': open }"></i>
+                                </button>
                             </div>
-                        </div> -->
+                            <div x-show="open"
+                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 bg-white focus:outline-none ring-1 ring-gray-200 ring-opacity-5"
+                                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1"
+                                style="display: none;" x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95">
+
+                                <div class="px-4 py-3 border-b border-gray-100">
+                                    <p class="text-sm text-gray-900 font-semibold">{{ Auth::user()->name }}</p>
+                                    <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
+                                </div>
+
+                                <a href="{{ route('password.change') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center">
+                                    <i class="fas fa-key w-5 text-gray-400 mr-2"></i> Ganti Password
+                                </a>
+
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 items-center"
+                                        role="menuitem" tabindex="-1" id="user-menu-item-2">
+                                        <i class="fas fa-sign-out-alt w-5 text-red-500 mr-2"></i> Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Mobile menu button -->
@@ -151,7 +188,7 @@
             </div>
         </div>
         <!-- Mobile menu -->
-        <div class="lg:hidden hidden" id="mobile-menu">
+        <div class="lg:hidden hidden max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="{{ route('dashboard') }}"
                     class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('dashboard') ? 'bg-white/20' : '' }}">
@@ -173,26 +210,67 @@
                     class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.rekomendasi') ? 'bg-white/20' : '' }}">
                     <i class="fas fa-award mr-2"></i> Rekomendasi
                 </a>
-            </div>
-            <div class="pt-4 pb-4 border-t border-white/20">
-                <div class="px-2 space-y-1">
-                    <p class="px-3 text-xs font-semibold text-white uppercase tracking-wider mb-2 opacity-80">
-                        Ganti Tema
-                    </p>
-                    <a href="{{ route('theme.set', 'default') }}"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ session('theme', 'default') == 'default' ? 'bg-white/20' : '' }}">
-                        <i class="fas fa-circle text-emerald-300 mr-2"></i> Default (Hijau)
-                    </a>
-                    <a href="{{ route('theme.set', 'blue') }}"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ session('theme') == 'blue' ? 'bg-white/20' : '' }}">
-                        <i class="fas fa-circle text-blue-300 mr-2"></i> Biru (Langit)
-                    </a>
-                    <a href="{{ route('theme.set', 'purple') }}"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ session('theme') == 'purple' ? 'bg-white/20' : '' }}">
-                        <i class="fas fa-circle text-purple-300 mr-2"></i> Ungu (Royal)
-                    </a>
+
+                <!-- Theme Switcher Submenu -->
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" type="button"
+                        class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 focus:outline-none">
+                        <span class="flex items-center">
+                            <i class="fas fa-palette mr-2"></i> Ganti Tema
+                        </span>
+                        <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" class="pl-4 space-y-1 mt-1" style="display: none;"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 -translate-y-2"
+                        x-transition:enter-end="transform opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 translate-y-0"
+                        x-transition:leave-end="transform opacity-0 -translate-y-2">
+                        <a href="{{ route('theme.set', 'default') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ session('theme', 'default') == 'default' ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-circle text-emerald-300 mr-2"></i> Default (Hijau)
+                        </a>
+                        <a href="{{ route('theme.set', 'blue') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ session('theme') == 'blue' ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-circle text-blue-300 mr-2"></i> Biru (Langit)
+                        </a>
+                        <a href="{{ route('theme.set', 'purple') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ session('theme') == 'purple' ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-circle text-purple-300 mr-2"></i> Ungu (Royal)
+                        </a>
+                    </div>
                 </div>
             </div>
+            <div class="pt-4 pb-4 border-t border-white/20">
+                <div class="flex items-center px-4 mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                            <i class="fas fa-user text-lg"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium text-white">{{ Auth::user()->name }}</div>
+                        <div class="text-sm font-medium text-white/70 truncate max-w-[150px]">{{ Auth::user()->email }}
+                        </div>
+                    </div>
+                </div>
+                <div class="px-2 space-y-1">
+                    <a href="{{ route('password.change') }}"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('password.change') ? 'bg-white/20' : '' }}">
+                        <i class="fas fa-key mr-2"></i> Ganti Password
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 text-red-200 hover:text-red-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Keluar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </nav>
 

@@ -16,11 +16,11 @@
                 </div>
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <a href="{{ route('perhitungan.rekomendasi') }}"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-500)]">
+                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] focus:outline-none">
                         Lihat Rekomendasi
                     </a>
                     <a href="{{ route('perhitungan.index') }}"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                         Kembali
                     </a>
                 </div>
@@ -245,12 +245,12 @@
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Rumus:</span>
                                                 <code
                                                     class="text-[var(--color-primary-700)] bg-white px-1 py-0.5 rounded border border-gray-200 self-start">
-                                                                        @if($detail['jenis'] == 'benefit')
-                                                                            (Nilai - Min) / (Max - Min)
-                                                                        @else
-                                                                            (Max - Nilai) / (Max - Min)
-                                                                        @endif
-                                                                    </code>
+                                                                                    @if($detail['jenis'] == 'benefit')
+                                                                                        (Nilai - Min) / (Max - Min)
+                                                                                    @else
+                                                                                        (Max - Nilai) / (Max - Min)
+                                                                                    @endif
+                                                                                </code>
                                             </div>
                                             <div class="flex flex-col sm:flex-row sm:items-baseline gap-1">
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Substitusi:</span>
@@ -325,7 +325,7 @@
                             <div class="mt-4">
                                 <div class="-mx-2 -my-1.5 flex">
                                     <a href="{{ route('perhitungan.index') }}"
-                                        class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                        class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none">
                                         Input Nilai Sekarang
                                     </a>
                                 </div>

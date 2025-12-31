@@ -17,7 +17,7 @@
                 <p class="mt-1 text-gray-600">Kelola subkriteria untuk kriteria {{ $kriteria->nama_kriteria }}</p>
             </div>
             <a href="{{ route('kriteria.subkriteria.create', $kriteria->id) }}"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary-500)] shadow-sm transition-all duration-200 mt-4 md:mt-0">
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] hover:from-[var(--color-primary-600)] hover:to-[var(--color-primary-700)] focus:outline-none shadow-sm transition-all duration-200 mt-4 md:mt-0">
                 <i class="fas fa-plus mr-2"></i> Tambah Subkriteria
             </a>
         </div>
@@ -122,7 +122,7 @@
                         <p class="text-gray-500">Belum ada data subkriteria untuk kriteria ini.</p>
                         <div class="mt-6">
                             <a href="{{ route('kriteria.subkriteria.create', $kriteria->id) }}"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm transition-all duration-200">
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 focus:outline-none shadow-sm transition-all duration-200">
                                 <i class="fas fa-plus mr-2"></i> Tambah Subkriteria
                             </a>
                         </div>
