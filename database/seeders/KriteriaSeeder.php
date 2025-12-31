@@ -5,11 +5,17 @@ namespace Database\Seeders;
 use App\Models\Kriteria;
 use App\Models\Subkriteria;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class KriteriaSeeder extends Seeder
 {
     public function run()
     {
+        Schema::disableForeignKeyConstraints();
+        Subkriteria::truncate();
+        Kriteria::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $kriteria = [
             [
                 'kode_kriteria' => 'C1',

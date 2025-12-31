@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Santri;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class SantriSeeder extends Seeder
 {
@@ -15,6 +16,10 @@ class SantriSeeder extends Seeder
      */
     public function run()
     {
+        Schema::disableForeignKeyConstraints();
+        Santri::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $santri = [
             [
                 'nis' => 'S001',
