@@ -144,7 +144,7 @@
                 <!-- Mobile menu button -->
                 <div class="-mr-2 flex lg:hidden">
                     <button type="button" id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/30 focus:outline-none">
+                        class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/30 focus:outline-none transition-colors duration-300 text-xl">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
