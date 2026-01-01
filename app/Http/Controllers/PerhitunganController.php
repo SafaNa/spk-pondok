@@ -64,13 +64,19 @@ class PerhitunganController extends Controller
             ->with('success', 'Perhitungan berhasil disimpan untuk periode ' . $periode->nama);
     }
 
-    public function hasil($id)
+    public function hasil(Request $request, $id)
     {
         $santri = Santri::findOrFail($id);
-        $periode = Periode::where('is_active', true)->first();
+
+        // Determine Periode: Use requested period OR default to Active Period
+        if ($request->has('periode_id')) {
+            $periode = Periode::find($request->periode_id);
+        } else {
+            $periode = Periode::where('is_active', true)->first();
+        }
 
         if (!$periode) {
-            return redirect()->route('perhitungan.index')->with('error', 'Tidak ada periode aktif.');
+            return redirect()->route('perhitungan.index')->with('error', 'Periode tidak ditemukan atau tidak ada periode aktif.');
         }
 
         $kriteria = Kriteria::with([
@@ -165,22 +171,35 @@ class PerhitunganController extends Controller
 
     public function rekomendasi()
     {
-        $santri = Santri::where('status', 'aktif')
-            ->whereNotNull('nilai_akhir')
-            ->orderBy('nilai_akhir', 'desc')
-            ->get();
+        $periode = Periode::where('is_active', true)->first();
 
-        return view('perhitungan.rekomendasi', compact('santri'));
+        if (!$periode) {
+            $santri = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20); // Empty paginator
+            return view('perhitungan.rekomendasi', compact('santri', 'periode'));
+        }
+
+        $santri = RiwayatHitung::with('santri')
+            ->where('periode_id', $periode->id)
+            ->orderBy('nilai_akhir', 'desc')
+            ->paginate(20);
+
+        return view('perhitungan.rekomendasi', compact('santri', 'periode'));
     }
 
     public function cetak()
     {
-        $santri = Santri::where('status', 'aktif')
-            ->whereNotNull('nilai_akhir')
+        $periode = Periode::where('is_active', true)->first();
+
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Tidak ada periode aktif.');
+        }
+
+        $santri = RiwayatHitung::with('santri')
+            ->where('periode_id', $periode->id)
             ->orderBy('nilai_akhir', 'desc')
             ->get();
 
-        return view('perhitungan.rekomendasi_print', compact('santri'));
+        return view('perhitungan.rekomendasi_print', compact('santri', 'periode'));
     }
 
     public function history(Request $request)
@@ -188,25 +207,49 @@ class PerhitunganController extends Controller
         $query = RiwayatHitung::with(['santri', 'periode']);
 
         // Filter by Period
-        if ($request->has('periode_filter') && $request->periode_filter != '') {
-            $query->where('periode_id', $request->periode_filter);
+        // 1. Base Query for Periods
+        $periodeQuery = Periode::orderBy('created_at', 'desc');
+        $search = $request->search; // Initialize scope variable
+
+        // UX: Default to Active Period if no filter provided
+        if (!$request->has('periode_filter') && !$request->has('search')) {
+            $activePeriode = Periode::where('is_active', true)->first();
+            if ($activePeriode) {
+                $request->merge(['periode_filter' => $activePeriode->id]);
+            }
         }
 
-        // Search by Santri Name or NIS
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->whereHas('santri', function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('nis', 'like', "%{$search}%");
+        // Filter by specific period
+        if ($request->filled('periode_filter')) {
+            $periodeQuery->where('id', $request->periode_filter);
+        }
+
+        // Filter by search (only show periods that have matching records)
+        if ($request->filled('search')) {
+            $periodeQuery->whereHas('riwayatHitung', function ($q) use ($search) {
+                $q->whereHas('santri', function ($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                });
             });
         }
 
-        $riwayat = $query->latest()
-            ->get()
-            ->groupBy('periode_id');
+        $periodesPaginated = $periodeQuery->paginate(10); // Paginate periods
 
-        $periodes = Periode::orderBy('created_at', 'desc')->get();
+        // Load riwayatHitung for each period
+        $periodesPaginated->getCollection()->each(function ($periode) use ($search) {
+            $riwayatQuery = $periode->riwayatHitung()->with('santri');
+            if ($search) {
+                $riwayatQuery->whereHas('santri', function ($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                });
+            }
+            $periode->setRelation('riwayatHitung', $riwayatQuery->orderBy('nilai_akhir', 'desc')->get());
+        });
 
-        return view('perhitungan.history', compact('riwayat', 'periodes'));
+        $allPeriodes = Periode::orderBy('created_at', 'desc')->get(); // For the filter dropdown
+
+        return view('perhitungan.history', compact('periodesPaginated', 'allPeriodes'));
     }
 }

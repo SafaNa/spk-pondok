@@ -89,6 +89,7 @@
     </div>
 
     <div class="meta">
+        <p><strong>Periode:</strong> {{ $periode->nama ?? 'Semua Periode' }}</p>
         <p><strong>Tanggal Cetak:</strong> {{ date('d F Y') }}</p>
         <p><strong>Total Data:</strong> {{ $santri->count() }} Santri</p>
     </div>
@@ -107,8 +108,8 @@
             @foreach($santri as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->nis }}</td>
-                    <td>{{ $item->nama }}</td>
+                    <td>{{ $item->santri->nis }}</td>
+                    <td>{{ $item->santri->nama }}</td>
                     <td>{{ number_format($item->nilai_akhir, 2, ',', '.') }}</td>
                     <td>
                         @if($item->nilai_akhir >= 0.7)

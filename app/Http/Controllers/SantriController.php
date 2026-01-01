@@ -30,7 +30,7 @@ class SantriController extends Controller
 
     public function index()
     {
-        $santri = Santri::latest()->get();
+        $santri = Santri::latest()->paginate(10);
         return view('santri.index', compact('santri'));
     }
 

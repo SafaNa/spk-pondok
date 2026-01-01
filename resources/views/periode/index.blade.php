@@ -4,18 +4,18 @@
 
 @section('content')
     <div x-data="{ 
-                    createModalOpen: false, 
-                    editModalOpen: false,
-                    editId: '',
-                    editNama: '',
-                    editKeterangan: '',
-                    openEditModal(id, nama, keterangan) {
-                        this.editId = id;
-                        this.editNama = nama;
-                        this.editKeterangan = keterangan;
-                        this.editModalOpen = true;
-                    }
-                }">
+                        createModalOpen: false, 
+                        editModalOpen: false,
+                        editId: '',
+                        editNama: '',
+                        editKeterangan: '',
+                        openEditModal(id, nama, keterangan) {
+                            this.editId = id;
+                            this.editNama = nama;
+                            this.editKeterangan = keterangan;
+                            this.editModalOpen = true;
+                        }
+                    }">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Data Periode Penilaian</h1>
@@ -136,6 +136,12 @@
                 @endforeach
             </ul>
         </div>
+
+        @if($periodes->hasPages())
+            <div class="mt-4">
+                {{ $periodes->links() }}
+            </div>
+        @endif
 
         <!-- Create Modal -->
         <div x-show="createModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"

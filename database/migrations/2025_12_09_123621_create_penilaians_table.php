@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->decimal('nilai', 5, 2);
             $table->timestamps();
 
-            $table->unique(['santri_id', 'kriteria_id']);
+            // $table->unique(['santri_id', 'kriteria_id']); // Moved to later migration with periode_id
         });
     }
 

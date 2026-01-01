@@ -22,18 +22,25 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        // 2. Top 5 Santri by Score
-        $topSantri = Santri::whereNotNull('nilai_akhir')
-            ->orderBy('nilai_akhir', 'desc')
-            ->take(5)
-            ->get();
+        // 2. Top 5 Santri by Score (Active Period)
+        $periode = \App\Models\Periode::where('is_active', true)->first();
+        $topSantri = collect([]); // Default empty collection
+
+        if ($periode) {
+            $topSantri = \App\Models\RiwayatHitung::with('santri')
+                ->where('periode_id', $periode->id)
+                ->orderBy('nilai_akhir', 'desc')
+                ->take(5)
+                ->get();
+        }
 
         return view('dashboard', compact(
             'totalSantri',
             'totalKriteria',
             'totalPenilaian',
             'santriStatus',
-            'topSantri'
+            'topSantri',
+            'periode'
         ));
     }
 }

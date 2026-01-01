@@ -176,6 +176,12 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Pagination -->
+                        @if($santri->hasPages())
+                            <div class="mt-4 px-4 sm:px-0">
+                                {{ $santri->links() }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -206,12 +212,12 @@
                                             sesuai: nis, nama, tanggal_lahir, jenis_kelamin, alamat, nama_orang_tua.
                                         </p>
                                         <input type="file" name="file" required class="block w-full text-sm text-gray-500
-                                                        file:mr-4 file:py-2 file:px-4
-                                                        file:rounded-full file:border-0
-                                                        file:text-sm file:font-semibold
-                                                        file:bg-green-50 file:text-green-700
-                                                        hover:file:bg-green-100
-                                                    " />
+                                                            file:mr-4 file:py-2 file:px-4
+                                                            file:rounded-full file:border-0
+                                                            file:text-sm file:font-semibold
+                                                            file:bg-green-50 file:text-green-700
+                                                            hover:file:bg-green-100
+                                                        " />
                                     </div>
                                 </div>
                             </div>

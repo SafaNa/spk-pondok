@@ -14,4 +14,14 @@ class Periode extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function riwayatHitung()
+    {
+        return $this->hasMany(RiwayatHitung::class);
+    }
+
+    public function penilaian()
+    {
+        return $this->hasMany(Penilaian::class);
+    }
 }

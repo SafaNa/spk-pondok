@@ -31,22 +31,11 @@ return new class extends Migration {
             // We can't put try-catch inside the closure effectively so we do it via raw SQL or separate Schema call wrapped.
         });
 
-        try {
-            Schema::table('penilaian', function (Blueprint $table) {
-                $table->dropUnique('penilaian_santri_id_kriteria_id_unique');
-            });
-        } catch (\Exception $e) {
-            // Ignore if index doesn't exist
-        }
+        // No need to drop old unique as it was removed from create_penilaians_table migration
 
         Schema::table('penilaian', function (Blueprint $table) {
             $table->foreign('periode_id')->references('id')->on('periodes')->onDelete('cascade');
-
-            try {
-                $table->unique(['santri_id', 'kriteria_id', 'periode_id']);
-            } catch (\Exception $e) {
-                // Ignore if exists
-            }
+            $table->unique(['santri_id', 'kriteria_id', 'periode_id']);
         });
     }
 

@@ -141,10 +141,11 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @foreach($santri as $index => $item)
-                                                                <tr class="{{ $index < 3 ? 'bg-[var(--color-primary-50)]' : '' }}">
+                                                                @php $rank = ($santri->currentPage() - 1) * $santri->perPage() + $loop->iteration; @endphp
+                                                                <tr class="{{ $rank <= 3 ? 'bg-[var(--color-primary-50)]' : '' }}">
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                                        #{{ $index + 1 }}
-                                                                        @if($index < 3)
+                                                                        #{{ $rank }}
+                                                                        @if($rank <= 3)
                                                                             <span class="text-yellow-500">
                                                                                 <svg class="inline-block h-5 w-5" xmlns="http://www.w3.org/2000/svg"
                                                                                     viewBox="0 0 20 20" fill="currentColor">
@@ -155,15 +156,15 @@
                                                                         @endif
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                                        {{ $item->nama }}
+                                                                        {{ $item->santri->nama }}
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                                        {{ $item->nis }}
+                                                                        {{ $item->santri->nis }}
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                                         <span
                                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
+                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
                                             ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                                             {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                                         </span>
@@ -187,7 +188,7 @@
                                                                         @endif
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                        <a href="{{ route('perhitungan.hasil', $item->id) }}"
+                                                                        <a href="{{ route('perhitungan.hasil', $item->santri_id) }}"
                                                                             class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)]">Detail</a>
                                                                     </td>
                                                                 </tr>
@@ -198,6 +199,12 @@
                         </div>
                     </div>
                 </div>
+
+                @if($santri->hasPages())
+                    <div class="mt-4">
+                        {{ $santri->links() }}
+                    </div>
+                @endif
 
                 <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
                     <div class="flex">

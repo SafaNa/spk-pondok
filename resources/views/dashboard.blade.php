@@ -98,7 +98,14 @@
 
             <!-- Chart Top 5 Santri -->
             <div class="glass-card rounded-2xl p-6 shadow-xl">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Top 5 Santri (SMART Score)</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    Top 5 Santri (SMART Score)
+                    @if(isset($periode))
+                        <span class="text-sm font-normal text-[var(--color-primary-600)] ml-2 bg-[var(--color-primary-50)] px-2 py-1 rounded-full">
+                            {{ $periode->nama }}
+                        </span>
+                    @endif
+                </h3>
                 <div class="relative h-64">
                     <canvas id="topSantriChart"></canvas>
                 </div>
@@ -195,7 +202,7 @@
             new Chart(topCtx, {
                 type: 'bar',
                 data: {
-                    labels: topSantri.map(s => s.nama),
+                    labels: topSantri.map(s => s.santri ? s.santri.nama : 'Unknown'),
                     datasets: [{
                         label: 'Nilai Akhir',
                         data: topSantri.map(s => s.nilai_akhir),
