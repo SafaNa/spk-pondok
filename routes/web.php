@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Santri Routes
     Route::get('santri/export', [SantriController::class, 'export'])->name('santri.export');
+    // Santri Routes
+    Route::post('/santri/import', [SantriController::class, 'import'])->name('santri.import');
     Route::resource('santri', SantriController::class);
 
     // Kriteria Routes
@@ -54,8 +56,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/hitung', [PerhitunganController::class, 'hitung'])->name('perhitungan.hitung');
         Route::get('/hasil/{santri}', [PerhitunganController::class, 'hasil'])->name('perhitungan.hasil');
         Route::get('/rekomendasi', [PerhitunganController::class, 'rekomendasi'])->name('perhitungan.rekomendasi');
+        Route::get('/history', [PerhitunganController::class, 'history'])->name('perhitungan.history');
         Route::get('/cetak', [PerhitunganController::class, 'cetak'])->name('perhitungan.cetak');
     });
+
+    // Period Management Routes
+    Route::post('/periode/{periode}/activate', [App\Http\Controllers\PeriodeController::class, 'activate'])->name('periode.activate');
+    Route::resource('periode', App\Http\Controllers\PeriodeController::class);
 
     // Theme Switcher Route
     Route::get('/set-theme/{theme}', function ($theme) {

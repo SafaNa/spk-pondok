@@ -3,11 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Santri;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SantriImport;
+
 class SantriController extends Controller
 {
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new SantriImport, $request->file('file'));
+            return redirect()->route('santri.index')->with('success', 'Data Santri berhasil diimport!');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Import Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            return redirect()->route('santri.index')->with('error', 'Gagal mengimport data: ' . $e->getMessage());
+        }
+    }
+
     public function index()
     {
         $santri = Santri::latest()->get();
@@ -102,7 +122,7 @@ class SantriController extends Controller
                     $item->nama,
                     $item->jenis_kelamin,
                     $item->tempat_lahir,
-                    $item->tanggal_lahir->format('Y-m-d'),
+                    Carbon::parse($item->tanggal_lahir)->format('Y-m-d'),
                     $item->alamat,
                     $item->nama_ortu,
                     $item->no_hp_ortu,

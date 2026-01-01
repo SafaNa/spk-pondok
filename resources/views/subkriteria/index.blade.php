@@ -57,63 +57,98 @@
         <div class="glass-card rounded-2xl p-6 shadow-xl">
             <div class="overflow-x-auto">
                 @if($subkriteria->count() > 0)
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Subkriteria
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nilai
-                                </th>
-                                <th scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Keterangan
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Aksi</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($subkriteria as $item)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $item->nama_subkriteria }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span
-                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ $item->nilai }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500">
-                                        {{ $item->keterangan ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex items-center justify-end space-x-2">
-                                            <a href="{{ route('kriteria.subkriteria.edit', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
-                                                class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)] p-1.5 rounded-full hover:bg-[var(--color-primary-50)]">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form
-                                                action="{{ route('kriteria.subkriteria.destroy', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
-                                                method="POST" class="delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 p-1.5 rounded-full hover:bg-red-50">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
+                    <!-- Mobile Card View -->
+                    <div class="block sm:hidden space-y-4">
+                        @foreach($subkriteria as $item)
+                            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm relative">
+                                <div class="absolute top-4 right-4 flex space-x-2">
+                                    <a href="{{ route('kriteria.subkriteria.edit', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
+                                        class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)] p-1.5 rounded-full hover:bg-[var(--color-primary-50)]">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form
+                                        action="{{ route('kriteria.subkriteria.destroy', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
+                                        method="POST" class="delete-form inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="text-red-600 hover:text-red-900 p-1.5 rounded-full hover:bg-red-50">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="pr-16">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-1">{{ $item->nama_subkriteria }}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">{{ $item->keterangan ?? 'Tidak ada keterangan' }}</p>
+                                    <div
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Nilai: {{ $item->nilai }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Desktop Table View -->
+                    <div class="hidden sm:block">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nama Subkriteria
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nilai
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Keterangan
+                                    </th>
+                                    <th scope="col" class="relative px-6 py-3">
+                                        <span class="sr-only">Aksi</span>
+                                    </th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($subkriteria as $item)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ $item->nama_subkriteria }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                {{ $item->nilai }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">
+                                            {{ $item->keterangan ?? '-' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-2">
+                                                <a href="{{ route('kriteria.subkriteria.edit', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
+                                                    class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)] p-1.5 rounded-full hover:bg-[var(--color-primary-50)]">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form
+                                                    action="{{ route('kriteria.subkriteria.destroy', ['kriteria' => $kriteria->id, 'subkriteria' => $item->id]) }}"
+                                                    method="POST" class="delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="text-red-600 hover:text-red-900 p-1.5 rounded-full hover:bg-red-50">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @else
                     <div class="text-center py-12">
                         <div class="text-gray-400 mb-4">

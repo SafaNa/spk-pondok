@@ -12,6 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body {
@@ -66,7 +67,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col">
-    <nav
+    <nav x-data="{ mobileMenuOpen: false }" @click.outside="mobileMenuOpen = false"
         class="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] shadow-lg sticky top-0 z-50 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
@@ -89,18 +90,45 @@
                             class="nav-link {{ request()->routeIs('santri.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-users mr-2"></i> Data Santri
                         </a>
+
                         <a href="{{ route('kriteria.index') }}"
                             class="nav-link {{ request()->routeIs('kriteria.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
                             <i class="fas fa-list-check mr-2"></i> Kriteria
                         </a>
-                        <a href="{{ route('perhitungan.index') }}"
-                            class="nav-link {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
-                            <i class="fas fa-calculator mr-2"></i> Perhitungan SMART
+                        <a href="{{ route('periode.index') }}"
+                            class="nav-link {{ request()->routeIs('periode.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
+                            <i class="fas fa-calendar-alt mr-2"></i> Periode
                         </a>
-                        <a href="{{ route('perhitungan.rekomendasi') }}"
-                            class="nav-link {{ request()->routeIs('perhitungan.rekomendasi') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap">
-                            <i class="fas fa-award mr-2"></i> Rekomendasi
-                        </a>
+
+                        <!-- SPK SMART Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" @click.away="open = false"
+                                class="nav-link {{ request()->routeIs('perhitungan.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap focus:outline-none">
+                                <i class="fas fa-calculator mr-2"></i> SPK SMART <i
+                                    class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div x-show="open"
+                                class="origin-top-left absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                                style="display: none;" x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95">
+                                <a href="{{ route('perhitungan.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'bg-gray-50 text-[var(--color-primary-600)] font-semibold' : '' }}">
+                                    <i class="fas fa-calculator w-5 mr-1 text-gray-400"></i> Hitung
+                                </a>
+                                <a href="{{ route('perhitungan.rekomendasi') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ request()->routeIs('perhitungan.rekomendasi') ? 'bg-gray-50 text-[var(--color-primary-600)] font-semibold' : '' }}">
+                                    <i class="fas fa-award w-5 mr-1 text-gray-400"></i> Rekomendasi
+                                </a>
+                                <a href="{{ route('perhitungan.history') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ request()->routeIs('perhitungan.history') ? 'bg-gray-50 text-[var(--color-primary-600)] font-semibold' : '' }}">
+                                    <i class="fas fa-history w-5 mr-1 text-gray-400"></i> Riwayat
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="hidden lg:flex items-center">
@@ -140,10 +168,6 @@
                                         class="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white">
                                         <i class="fas fa-user"></i>
                                     </div>
-                                    <span
-                                        class="ml-3 text-white font-medium mr-2">{{ Auth::user()->name ?? 'Admin' }}</span>
-                                    <i class="fas fa-chevron-down text-white text-xs mr-2 transition-transform duration-200"
-                                        :class="{ 'rotate-180': open }"></i>
                                 </button>
                             </div>
                             <div x-show="open"
@@ -180,15 +204,23 @@
                 </div>
                 <!-- Mobile menu button -->
                 <div class="-mr-2 flex lg:hidden">
-                    <button type="button" id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/30 focus:outline-none transition-colors duration-300 text-xl">
-                        <i class="fas fa-bars"></i>
+                    <button type="button" @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/30 focus:outline-none transition-colors duration-300 text-xl"
+                        aria-controls="mobile-menu" :aria-expanded="mobileMenuOpen">
+                        <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
                     </button>
                 </div>
             </div>
         </div>
         <!-- Mobile menu -->
-        <div class="lg:hidden hidden max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar" id="mobile-menu">
+        <div class="lg:hidden" id="mobile-menu" x-show="mobileMenuOpen" style="display: none;" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="{{ route('dashboard') }}"
                     class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('dashboard') ? 'bg-white/20' : '' }}">
@@ -202,14 +234,36 @@
                     class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('kriteria.*') ? 'bg-white/20' : '' }}">
                     <i class="fas fa-list-check mr-2"></i> Kriteria
                 </a>
-                <a href="{{ route('perhitungan.index') }}"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'bg-white/20' : '' }}">
-                    <i class="fas fa-calculator mr-2"></i> Perhitungan SMART
+                <a href="{{ route('periode.index') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('periode.*') ? 'bg-white/20' : '' }}">
+                    <i class="fas fa-calendar-alt mr-2"></i> Periode
                 </a>
-                <a href="{{ route('perhitungan.rekomendasi') }}"
-                    class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.rekomendasi') ? 'bg-white/20' : '' }}">
-                    <i class="fas fa-award mr-2"></i> Rekomendasi
-                </a>
+
+                <!-- SPK SMART Mobile -->
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" type="button"
+                        class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 focus:outline-none {{ request()->routeIs('perhitungan.*') ? 'bg-white/10' : '' }}">
+                        <span class="flex items-center">
+                            <i class="fas fa-calculator mr-2"></i> SPK SMART
+                        </span>
+                        <i class="fas fa-chevron-down text-xs transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    <div x-show="open" class="pl-4 space-y-1 mt-1" style="display: none;" x-collapse>
+                        <a href="{{ route('perhitungan.index') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.index', 'perhitungan.hitung', 'perhitungan.hasil') ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-calculator mr-2"></i> Hitung
+                        </a>
+                        <a href="{{ route('perhitungan.rekomendasi') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.rekomendasi') ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-award mr-2"></i> Rekomendasi
+                        </a>
+                        <a href="{{ route('perhitungan.history') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.history') ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-history mr-2"></i> Riwayat
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Theme Switcher Submenu -->
                 <div x-data="{ open: false }">
@@ -221,13 +275,7 @@
                         <i class="fas fa-chevron-down text-xs transition-transform duration-200"
                             :class="{ 'rotate-180': open }"></i>
                     </button>
-                    <div x-show="open" class="pl-4 space-y-1 mt-1" style="display: none;"
-                        x-transition:enter="transition ease-out duration-100"
-                        x-transition:enter-start="transform opacity-0 -translate-y-2"
-                        x-transition:enter-end="transform opacity-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="transform opacity-100 translate-y-0"
-                        x-transition:leave-end="transform opacity-0 -translate-y-2">
+                    <div x-show="open" class="pl-4 space-y-1 mt-1" style="display: none;" x-collapse>
                         <a href="{{ route('theme.set', 'default') }}"
                             class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ session('theme', 'default') == 'default' ? 'bg-white/20' : '' }}">
                             <i class="fas fa-circle text-emerald-300 mr-2"></i> Default (Hijau)
@@ -301,12 +349,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function () {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('block');
-        });
+        // Mobile menu toggle logic is now handled by Alpine.js in the nav element
 
         // Add active class to current nav item
         document.addEventListener('DOMContentLoaded', function () {

@@ -86,6 +86,7 @@
                             </svg>
                         </div>
                         <input type="email" name="email" id="email" required autofocus placeholder="masukan email anda"
+                            value="admin@pondok.com"
                             class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition duration-200">
                     </div>
                     @error('email')
@@ -104,6 +105,7 @@
                             </svg>
                         </div>
                         <input type="password" name="password" id="password" required placeholder="••••••••"
+                            value="password"
                             class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition duration-200">
                     </div>
                 </div>

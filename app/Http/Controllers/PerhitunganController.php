@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Santri;
 use App\Models\Kriteria;
 use App\Models\Penilaian;
+use App\Models\Periode;
+use App\Models\RiwayatHitung;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +20,8 @@ class PerhitunganController extends Controller
         return view('perhitungan.index', compact('kriteria', 'santri'));
     }
 
+    // ...
+
     public function hitung(Request $request)
     {
         $request->validate([
@@ -26,9 +30,12 @@ class PerhitunganController extends Controller
             'nilai.*' => 'required|string|exists:subkriteria,id'
         ]);
 
+        $periode = Periode::where('is_active', true)->first();
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Tidak ada periode penilaian yang aktif. Silakan hubungi admin untuk mengaktifkan periode.');
+        }
+
         $santri = Santri::findOrFail($request->santri_id);
-        $kriteria = Kriteria::with('subkriteria')->get();
-        $totalBobot = $kriteria->sum('bobot');
 
         // Simpan penilaian
         foreach ($request->nilai as $kriteriaId => $subkriteriaId) {
@@ -39,7 +46,8 @@ class PerhitunganController extends Controller
                 Penilaian::updateOrCreate(
                     [
                         'santri_id' => $santri->id,
-                        'kriteria_id' => $kriteria->id
+                        'kriteria_id' => $kriteria->id,
+                        'periode_id' => $periode->id
                     ],
                     [
                         'subkriteria_id' => $subkriteria->id,
@@ -49,44 +57,54 @@ class PerhitunganController extends Controller
             }
         }
 
-        // Hitung nilai akhir
-        $nilaiAkhir = $this->hitungNilaiAkhir($santri->id);
+        // Hitung nilai akhir for this period
+        $nilaiAkhir = $this->hitungNilaiAkhir($santri->id, $periode->id);
 
         return redirect()->route('perhitungan.hasil', $santri->id)
-            ->with('success', 'Perhitungan berhasil disimpan');
+            ->with('success', 'Perhitungan berhasil disimpan untuk periode ' . $periode->nama);
     }
 
     public function hasil($id)
     {
         $santri = Santri::findOrFail($id);
+        $periode = Periode::where('is_active', true)->first();
+
+        if (!$periode) {
+            return redirect()->route('perhitungan.index')->with('error', 'Tidak ada periode aktif.');
+        }
+
         $kriteria = Kriteria::with([
             'subkriteria',
-            'penilaian' => function ($q) use ($id) {
-                $q->where('santri_id', $id);
+            'penilaian' => function ($q) use ($id, $periode) {
+                $q->where('santri_id', $id)
+                    ->where('periode_id', $periode->id);
             }
         ])->get();
 
         $totalBobot = $kriteria->sum('bobot');
 
-        // Cek kelengkapan data
+        // Cek kelengkapan data for this period
         $jumlahKriteria = Kriteria::count();
-        $jumlahPenilaian = Penilaian::where('santri_id', $id)->count();
+        $jumlahPenilaian = Penilaian::where('santri_id', $id)
+            ->where('periode_id', $periode->id)
+            ->count();
         $isComplete = $jumlahKriteria > 0 && $jumlahKriteria == $jumlahPenilaian;
 
         $perhitungan = null;
         if ($isComplete) {
-            $perhitungan = $this->hitungNilaiAkhir($id, true);
+            $perhitungan = $this->hitungNilaiAkhir($id, $periode->id, true);
         }
 
-        return view('perhitungan.hasil', compact('santri', 'kriteria', 'totalBobot', 'perhitungan', 'isComplete'));
+        return view('perhitungan.hasil', compact('santri', 'kriteria', 'totalBobot', 'perhitungan', 'isComplete', 'periode'));
     }
 
-    private function hitungNilaiAkhir($santriId, $detail = false)
+    private function hitungNilaiAkhir($santriId, $periodeId, $detail = false)
     {
         $kriteria = Kriteria::with([
             'subkriteria',
-            'penilaian' => function ($q) use ($santriId) {
-                $q->where('santri_id', $santriId);
+            'penilaian' => function ($q) use ($santriId, $periodeId) {
+                $q->where('santri_id', $santriId)
+                    ->where('periode_id', $periodeId);
             }
         ])->get();
 
@@ -103,17 +121,12 @@ class PerhitunganController extends Controller
             $max = $k->subkriteria->max('nilai');
             $range = $max - $min;
 
-            // Guard against division by zero if max == min
             if ($range == 0) {
-                // If max == min, all values are same, so utility is 1 (or 0, generally 1 if matches)
-                // Let's assume 1 if logic holds, meaning it doesn't differentiate.
                 $utility = 1;
             } else {
                 if ($k->jenis == 'benefit') {
-                    // Benefit: (Nilai - Min) / (Max - Min)
                     $utility = ($nilai - $min) / $range;
                 } else {
-                    // Cost: (Max - Nilai) / (Max - Min)
                     $utility = ($max - $nilai) / $range;
                 }
             }
@@ -123,21 +136,26 @@ class PerhitunganController extends Controller
             if ($detail) {
                 $detailPerhitungan[] = [
                     'kriteria' => $k->nama_kriteria,
+                    'jenis' => $k->jenis,
                     'bobot' => $k->bobot,
                     'bobot_ternormalisasi' => $bobotTernormalisasi,
                     'nilai' => $nilai,
-                    'utility' => $utility,
-                    'total' => $utility * $bobotTernormalisasi,
-                    'jenis' => $k->jenis,
                     'min' => $min,
                     'max' => $max,
-                    'range' => $range
+                    'utility' => $utility,
+                    'total' => $utility * $bobotTernormalisasi,
                 ];
             }
         }
 
-        // Update nilai akhir santri
+        // Update nilai akhir santri (Latest)
         Santri::where('id', $santriId)->update(['nilai_akhir' => $nilaiAkhir]);
+
+        // Save to History
+        RiwayatHitung::updateOrCreate(
+            ['santri_id' => $santriId, 'periode_id' => $periodeId],
+            ['nilai_akhir' => $nilaiAkhir]
+        );
 
         return $detail ? [
             'nilai_akhir' => $nilaiAkhir,
@@ -163,5 +181,32 @@ class PerhitunganController extends Controller
             ->get();
 
         return view('perhitungan.rekomendasi_print', compact('santri'));
+    }
+
+    public function history(Request $request)
+    {
+        $query = RiwayatHitung::with(['santri', 'periode']);
+
+        // Filter by Period
+        if ($request->has('periode_filter') && $request->periode_filter != '') {
+            $query->where('periode_id', $request->periode_filter);
+        }
+
+        // Search by Santri Name or NIS
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->whereHas('santri', function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                    ->orWhere('nis', 'like', "%{$search}%");
+            });
+        }
+
+        $riwayat = $query->latest()
+            ->get()
+            ->groupBy('periode_id');
+
+        $periodes = Periode::orderBy('created_at', 'desc')->get();
+
+        return view('perhitungan.history', compact('riwayat', 'periodes'));
     }
 }

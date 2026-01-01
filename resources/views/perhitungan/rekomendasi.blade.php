@@ -57,7 +57,60 @@
                 <div class="flex flex-col">
                     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                            <!-- Mobile Card View -->
+                            <div class="block sm:hidden space-y-4">
+                                @foreach($santri as $index => $item)
+                                    <div
+                                        class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm {{ $index < 3 ? 'ring-2 ring-yellow-400 bg-yellow-50/50' : '' }}">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <div class="flex items-center">
+                                                <span
+                                                    class="inline-flex items-center justify-center p-2 rounded-full {{ $index < 3 ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-500' }} font-bold text-sm h-8 w-8 mr-3">
+                                                    #{{ $index + 1 }}
+                                                </span>
+                                                <div>
+                                                    <h4 class="text-base font-bold text-gray-900">{{ $item->nama }}</h4>
+                                                    <p class="text-xs text-gray-500">{{ $item->nis }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="block text-xl font-bold text-[var(--color-primary-600)]">
+                                                    {{ number_format($item->nilai_akhir, 2, ',', '.') }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            @if($item->nilai_akhir >= 0.7)
+                                                <div
+                                                    class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded inline-block font-medium">
+                                                    <i class="fas fa-check-circle mr-1"></i> Direkomendasikan
+                                                </div>
+                                            @elseif($item->nilai_akhir >= 0.4)
+                                                <div
+                                                    class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded inline-block font-medium">
+                                                    <i class="fas fa-exclamation-circle mr-1"></i> Pertimbangkan
+                                                </div>
+                                            @else
+                                                <div class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded inline-block font-medium">
+                                                    <i class="fas fa-times-circle mr-1"></i> Tidak Direkomendasikan
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        <div class="border-t border-gray-100 pt-3 flex justify-end">
+                                            <a href="{{ route('perhitungan.hasil', $item->id) }}"
+                                                class="w-full text-center inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                                Lihat Detail
+                                                <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Desktop Table View -->
+                            <div class="hidden sm:block shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead class="bg-gray-50">
                                         <tr>
@@ -110,7 +163,7 @@
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                                         <span
                                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                                                                                                                                                {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
+                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
                                             ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                                             {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                                         </span>

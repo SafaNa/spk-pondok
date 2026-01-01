@@ -5,12 +5,12 @@
 @section('content')
     <div class="bg-white shadow-sm rounded-lg">
         <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Data Kriteria
                 </h3>
                 <a href="{{ route('kriteria.create') }}"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] focus:outline-none">
+                    class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] focus:outline-none w-full sm:w-auto">
                     <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                         fill="currentColor">
                         <path fill-rule="evenodd"
