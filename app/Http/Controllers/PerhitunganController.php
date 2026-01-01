@@ -16,8 +16,9 @@ class PerhitunganController extends Controller
     {
         $kriteria = Kriteria::with('subkriteria')->get();
         $santri = Santri::where('status', 'aktif')->get();
+        $activePeriode = Periode::where('is_active', true)->first();
 
-        return view('perhitungan.index', compact('kriteria', 'santri'));
+        return view('perhitungan.index', compact('kriteria', 'santri', 'activePeriode'));
     }
 
     // ...
