@@ -190,7 +190,7 @@
         <div id="modal-import" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog"
             aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                <div class="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" aria-hidden="true"
                     onclick="document.getElementById('modal-import').classList.add('hidden')"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
@@ -209,15 +209,19 @@
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500 mb-4">
                                             Upload file Excel (.xlsx, .xls) berisi data santri. Pastikan format kolom
-                                            sesuai: nis, nama, tanggal_lahir, jenis_kelamin, alamat, nama_orang_tua.
+                                            sesuai: nis, nama, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat,
+                                            nama_ortu, no_hp_ortu.
+                                            <br><a href="{{ route('santri.template') }}"
+                                                class="text-indigo-600 hover:text-indigo-500 font-medium mt-1 inline-block">Download
+                                                Template Excel</a>
                                         </p>
                                         <input type="file" name="file" required class="block w-full text-sm text-gray-500
-                                                            file:mr-4 file:py-2 file:px-4
-                                                            file:rounded-full file:border-0
-                                                            file:text-sm file:font-semibold
-                                                            file:bg-green-50 file:text-green-700
-                                                            hover:file:bg-green-100
-                                                        " />
+                                                                        file:mr-4 file:py-2 file:px-4
+                                                                        file:rounded-full file:border-0
+                                                                        file:text-sm file:font-semibold
+                                                                        file:bg-green-50 file:text-green-700
+                                                                        hover:file:bg-green-100
+                                                                    " />
                                     </div>
                                 </div>
                             </div>

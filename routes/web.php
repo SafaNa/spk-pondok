@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Santri Routes
+    Route::get('santri/template', [SantriController::class, 'downloadTemplate'])->name('santri.template');
     Route::get('santri/export', [SantriController::class, 'export'])->name('santri.export');
     // Santri Routes
     Route::post('/santri/import', [SantriController::class, 'import'])->name('santri.import');

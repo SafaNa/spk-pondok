@@ -9,9 +9,15 @@ use Illuminate\Validation\Rule;
 
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\SantriImport;
+use App\Exports\SantriTemplateExport;
 
 class SantriController extends Controller
 {
+    public function downloadTemplate()
+    {
+        return Excel::download(new SantriTemplateExport, 'template_santri.xlsx');
+    }
+
     public function import(Request $request)
     {
         $request->validate([

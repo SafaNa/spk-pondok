@@ -24,7 +24,9 @@ class SantriImport implements ToModel, WithHeadingRow, WithValidation
                 'tanggal_lahir' => $this->transformDate($row['tanggal_lahir']),
                 'alamat' => $row['alamat'],
                 'jenis_kelamin' => $row['jenis_kelamin'],
-                'nama_orang_tua' => $row['nama_orang_tua'],
+                'tempat_lahir' => $row['tempat_lahir'],
+                'nama_ortu' => $row['nama_ortu'],
+                'no_hp_ortu' => $row['no_hp_ortu'],
                 'status' => 'aktif', // Default active
             ]
         );

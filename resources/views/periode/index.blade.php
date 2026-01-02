@@ -4,18 +4,26 @@
 
 @section('content')
     <div x-data="{ 
-                        createModalOpen: false, 
-                        editModalOpen: false,
-                        editId: '',
-                        editNama: '',
-                        editKeterangan: '',
-                        openEditModal(id, nama, keterangan) {
-                            this.editId = id;
-                            this.editNama = nama;
-                            this.editKeterangan = keterangan;
-                            this.editModalOpen = true;
-                        }
-                    }">
+                                    createModalOpen: false, 
+                                    editModalOpen: false,
+                                    activateModalOpen: false,
+                                    editId: '',
+                                    editNama: '',
+                                    editKeterangan: '',
+                                    activateId: '',
+                                    activateNama: '',
+                                    openEditModal(id, nama, keterangan) {
+                                        this.editId = id;
+                                        this.editNama = nama;
+                                        this.editKeterangan = keterangan;
+                                        this.editModalOpen = true;
+                                    },
+                                    openActivateModal(id, nama) {
+                                        this.activateId = id;
+                                        this.activateNama = nama;
+                                        this.activateModalOpen = true;
+                                    }
+                                }">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Data Periode Penilaian</h1>
@@ -68,35 +76,43 @@
                             <div class="flex items-center space-x-4 w-full sm:w-auto">
                                 <div class="flex-shrink-0">
                                     <span
-                                        class="inline-flex items-center justify-center h-12 w-12 rounded-full {{ $periode->is_active ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500' }}">
+                                        class="inline-flex items-center justify-center h-12 w-12 rounded-full {{ $periode->is_active ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-600)]' : 'bg-gray-100 text-gray-500' }}">
                                         <i class="fas fa-calendar-alt text-lg"></i>
                                     </span>
                                 </div>
                                 <div class="min-w-0 flex-1">
+                                    @if ($periode->is_active)
                                     <h3
-                                        class="text-base font-semibold text-gray-900 group-hover:text-[var(--color-primary-600)] transition-colors truncate">
+                                        class="text-base font-semibold text-[var(--color-primary-600)] group-hover:text-[var(--color-primary-600)] transition-colors truncate">
+                                        {{ $periode->nama }}
+                                    </h3>
+                                    <p class="text-sm text-[var(--color-primary-500)] line-clamp-1">
+                                        {{ $periode->keterangan ?? 'Tidak ada keterangan' }}
+                                    </p>
+                                    @else
+                                    <h3
+                                        class="text-base font-semibold text-gray-600 group-hover:text-[var(--color-primary-600)] transition-colors truncate">
                                         {{ $periode->nama }}
                                     </h3>
                                     <p class="text-sm text-gray-500 line-clamp-1">
                                         {{ $periode->keterangan ?? 'Tidak ada keterangan' }}
                                     </p>
+                                    @endif
                                 </div>
                             </div>
                             <div
                                 class="flex items-center justify-between sm:justify-end space-x-4 w-full sm:w-auto mt-2 sm:mt-0">
                                 @if ($periode->is_active)
                                     <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <span class="w-1.5 h-1.5 mr-1.5 bg-green-500 rounded-full"></span> Aktif
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary-100)] text-[var(--color-primary-600)]">
+                                        <span class="w-1.5 h-1.5 mr-1.5 bg-[var(--color-primary-500)] rounded-full"></span> Aktif
                                     </span>
                                 @else
-                                    <form action="{{ route('periode.activate', $periode->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit"
-                                            class="text-gray-400 hover:text-green-600 text-sm font-medium transition-colors">
-                                            Set Aktif
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        @click="openActivateModal('{{ $periode->id }}', '{{ addslashes($periode->nama) }}')"
+                                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-yellow-700 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+                                        <i class="fas fa-check-circle mr-1.5"></i> Set Aktif
+                                    </button>
                                 @endif
 
                                 <div class="relative" x-data="{ open: false }">
@@ -147,7 +163,7 @@
         <div x-show="createModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
             aria-modal="true" style="display: none;">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                <div class="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" aria-hidden="true"
                     @click="createModalOpen = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
@@ -196,7 +212,7 @@
         <div x-show="editModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
             aria-modal="true" style="display: none;">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                <div class="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" aria-hidden="true"
                     @click="editModalOpen = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
@@ -233,6 +249,52 @@
                                 Simpan Perubahan
                             </button>
                             <button type="button" @click="editModalOpen = false"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activate Modal -->
+        <div x-show="activateModalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
+            role="dialog" aria-modal="true" style="display: none;">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity" aria-hidden="true"
+                    @click="activateModalOpen = false"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-10">
+                    <form :action="'/periode/' + activateId + '/activate'" method="POST">
+                        @csrf
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div
+                                    class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                        Aktifkan Periode
+                                    </h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500">
+                                            Apakah Anda yakin ingin mengaktifkan periode <span
+                                                class="font-bold text-gray-800" x-text="activateNama"></span>?
+                                            Periode lain yang sedang aktif akan dinonaktifkan secara otomatis.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="submit"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                Ya, Aktifkan
+                            </button>
+                            <button type="button" @click="activateModalOpen = false"
                                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                                 Batal
                             </button>
