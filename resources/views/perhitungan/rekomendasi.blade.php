@@ -69,8 +69,8 @@
                                                     #{{ $index + 1 }}
                                                 </span>
                                                 <div>
-                                                    <h4 class="text-base font-bold text-gray-900">{{ $item->nama }}</h4>
-                                                    <p class="text-xs text-gray-500">{{ $item->nis }}</p>
+                                                    <h4 class="text-base font-bold text-gray-900">{{ $item->santri->nama }}</h4>
+                                                    <p class="text-xs text-gray-500">{{ $item->santri->nis }}</p>
                                                 </div>
                                             </div>
                                             <div class="text-right">
@@ -99,7 +99,7 @@
                                         </div>
 
                                         <div class="border-t border-gray-100 pt-3 flex justify-end">
-                                            <a href="{{ route('perhitungan.hasil', $item->id) }}"
+                                            <a href="{{ route('perhitungan.hasil', $item->santri_id) }}"
                                                 class="w-full text-center inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                                 Lihat Detail
                                                 <i class="fas fa-arrow-right ml-2 text-xs"></i>
@@ -164,7 +164,7 @@
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                                         <span
                                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
+                                                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
                                             ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                                             {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                                         </span>
