@@ -108,7 +108,7 @@
                                     class="fas fa-chevron-down ml-1 text-xs"></i>
                             </button>
                             <div x-show="open"
-                                class="origin-top-left absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                                class="origin-top-left absolute left-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-gray-200 ring-opacity-5 focus:outline-none z-50"
                                 style="display: none;" x-transition:enter="transition ease-out duration-100"
                                 x-transition:enter-start="transform opacity-0 scale-95"
                                 x-transition:enter-end="transform opacity-100 scale-100"
@@ -126,6 +126,10 @@
                                 <a href="{{ route('perhitungan.history') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ request()->routeIs('perhitungan.history') ? 'bg-gray-50 text-[var(--color-primary-600)] font-semibold' : '' }}">
                                     <i class="fas fa-history w-5 mr-1 text-gray-400"></i> Riwayat
+                                </a>
+                                <a href="{{ route('sensitivity.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ request()->routeIs('sensitivity.*') ? 'bg-gray-50 text-[var(--color-primary-600)] font-semibold' : '' }}">
+                                    <i class="fas fa-chart-line w-5 mr-1 text-gray-400"></i> Analisis Sensitivitas
                                 </a>
                             </div>
                         </div>
@@ -213,14 +217,11 @@
             </div>
         </div>
         <!-- Mobile menu -->
-        <div class="lg:hidden" id="mobile-menu" x-show="mobileMenuOpen" style="display: none;" 
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-2"
-             class="max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
+        <div class="lg:hidden" id="mobile-menu" x-show="mobileMenuOpen" style="display: none;"
+            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+            class="max-h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="{{ route('dashboard') }}"
                     class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 {{ request()->routeIs('dashboard') ? 'bg-white/20' : '' }}">
@@ -261,6 +262,10 @@
                         <a href="{{ route('perhitungan.history') }}"
                             class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ request()->routeIs('perhitungan.history') ? 'bg-white/20' : '' }}">
                             <i class="fas fa-history mr-2"></i> Riwayat
+                        </a>
+                        <a href="{{ route('sensitivity.index') }}"
+                            class="block px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 {{ request()->routeIs('sensitivity.*') ? 'bg-white/20' : '' }}">
+                            <i class="fas fa-chart-line mr-2"></i> Analisis Sensitivitas
                         </a>
                     </div>
                 </div>

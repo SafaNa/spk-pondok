@@ -65,6 +65,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/periode/{periode}/activate', [App\Http\Controllers\PeriodeController::class, 'activate'])->name('periode.activate');
     Route::resource('periode', App\Http\Controllers\PeriodeController::class);
 
+    // Sensitivity Analysis
+    Route::get('/sensitivity', [App\Http\Controllers\SensitivityController::class, 'index'])->name('sensitivity.index');
+    Route::post('/sensitivity/analyze', [App\Http\Controllers\SensitivityController::class, 'analyze'])->name('sensitivity.analyze');
+
     // Theme Switcher Route
     Route::get('/set-theme/{theme}', function ($theme) {
         if (in_array($theme, ['default', 'blue', 'purple'])) {
