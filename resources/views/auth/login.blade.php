@@ -171,23 +171,49 @@
                         x-transition:leave-start="opacity-100 transform translate-x-0"
                         x-transition:leave-end="opacity-0 transform -translate-x-4"
                         class="absolute inset-0 flex flex-col justify-center text-left">
-                        <h3 class="text-sm font-bold text-center mb-2 text-emerald-800 uppercase tracking-wide">Elemen
-                            Kunci Metode SAW</h3>
-                        <div
-                            class="space-y-2 text-[10px] text-gray-700 leading-relaxed overflow-y-auto no-scrollbar max-h-[260px] pr-1">
-                            <p><strong class="text-emerald-700">1. Alternatif (Alternatives):</strong> Pilihan yang
-                                tersedia untuk dievaluasi (santri).</p>
-                            <p><strong class="text-emerald-700">2. Kriteria (Criteria):</strong> Faktor untuk menilai
-                                setiap alternatif (akhlak, prestasi, dll).</p>
-                            <p><strong class="text-emerald-700">3. Bobot (Weights):</strong> Tingkat kepentingan relatif
-                                dari setiap kriteria.</p>
-                            <p><strong class="text-emerald-700">4. Nilai/Rating (Normalisasi):</strong> Nilai numerik
-                                yang
-                                merepresentasikan tingkat preferensi setiap alternatif pada setiap kriteria.</p>
-                            <p><strong class="text-emerald-700">5. Normalisasi:</strong> Mengubah nilai mentah menjadi
-                                skala 0-1 untuk perbandingan.</p>
-                            <p><strong class="text-emerald-700">6. Nilai Akhir:</strong> Total bobot x nilai utilitas
-                                untuk penentuan peringkat.</p>
+                        <h3
+                            class="text-xs font-bold text-center mb-3 text-emerald-800 uppercase tracking-wider border-b border-emerald-100 pb-2">
+                            Elemen Kunci Metode SAW</h3>
+                        <div class="space-y-2 text-[11px] text-gray-600 leading-snug pr-1">
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">1.</span>
+                                <div><strong class="text-emerald-800">Alternatif:</strong> Objek yang dievaluasi
+                                    (santri).</div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">2.</span>
+                                <div><strong class="text-emerald-800">Kriteria:</strong> Faktor penilaian (akhlak,
+                                    prestasi, dll).</div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">3.</span>
+                                <div><strong class="text-emerald-800">Bobot:</strong> Tingkat kepentingan relatif (Total
+                                    = 1).</div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">4.</span>
+                                <div><strong class="text-emerald-800">Rating (<span
+                                            class="italic">x<sub>ij</sub></span>):</strong> Nilai mentah dari setiap
+                                    kriteria.</div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">5.</span>
+                                <div>
+                                    <strong class="text-emerald-800">Normalisasi (<span
+                                            class="italic">r<sub>ij</sub></span>):</strong> Skala 0-1.
+                                    <div
+                                        class="ml-1 mt-0.5 grid grid-cols-2 gap-x-2 text-[10px] text-emerald-700 bg-emerald-50 p-1 rounded">
+                                        <span>&bull; <strong>Benefit:</strong> Lebih besar = Lebih Baik</span>
+                                        <span>&bull; <strong>Cost:</strong> Lebih kecil = Lebih Baik</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="font-bold text-emerald-700 text-xs w-4">6.</span>
+                                <div><strong class="text-emerald-800">Nilai Akhir (<span
+                                            class="italic">V<sub>i</sub></span>):</strong> Bobot &times; Normalisasi =
+                                    Ranking.</div>
+                            </div>
                         </div>
                     </div>
 
