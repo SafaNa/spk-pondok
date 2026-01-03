@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -100,11 +103,11 @@
                             <i class="fas fa-calendar-alt mr-2"></i> Periode
                         </a>
 
-                        <!-- SPK SMART Dropdown -->
+                        <!-- SPK SAW Dropdown -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false"
                                 class="nav-link {{ request()->routeIs('perhitungan.*') ? 'active' : '' }} px-3 py-2 text-sm font-medium flex items-center text-white whitespace-nowrap focus:outline-none">
-                                <i class="fas fa-calculator mr-2"></i> SPK SMART <i
+                                <i class="fas fa-calculator mr-2"></i> SPK SAW <i
                                     class="fas fa-chevron-down ml-1 text-xs"></i>
                             </button>
                             <div x-show="open"
@@ -240,12 +243,12 @@
                     <i class="fas fa-calendar-alt mr-2"></i> Periode
                 </a>
 
-                <!-- SPK SMART Mobile -->
+                <!-- SPK SAW Mobile -->
                 <div x-data="{ open: false }">
                     <button @click="open = !open" type="button"
                         class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 focus:outline-none {{ request()->routeIs('perhitungan.*') ? 'bg-white/10' : '' }}">
                         <span class="flex items-center">
-                            <i class="fas fa-calculator mr-2"></i> SPK SMART
+                            <i class="fas fa-calculator mr-2"></i> SPK SAW
                         </span>
                         <i class="fas fa-chevron-down text-xs transition-transform duration-200"
                             :class="{ 'rotate-180': open }"></i>
@@ -346,7 +349,7 @@
                 </div>
                 <p class="text-sm text-center lg:text-right text-gray-500">
                     &copy; {{ date('Y') }} Sistem Pendukung Keputusan Kepulangan Santri P2AL II Menggunakan Metode
-                    <b>SMART</b>
+                    <b>SAW</b>
                 </p>
             </div>
         </div>

@@ -17,16 +17,16 @@ class DummyDataSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        // 1. Create 15 Periods (Triggers Pagination > 10)
+        // 1. Create 3 Periods
         $periodes = [];
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $periodes[] = Periode::create([
-                'nama' => 'Periode Dummy ' . $faker->monthName . ' ' . (2020 + $i),
+                'nama' => 'Periode Dummy ' . $faker->monthName . ' ' . (2023 + $i),
                 'keterangan' => 'Periode generate dummy ' . $i,
-                'is_active' => false
+                'is_active' => ($i === 2) // Set the last one as active
             ]);
         }
-        $this->command->info('Created 15 Dummy Periods');
+        $this->command->info('Created 3 Dummy Periods');
 
         // 2. Create 50 Santri (Triggers Pagination > 10, Rekomendasi > 20)
         $santris = [];
@@ -47,25 +47,30 @@ class DummyDataSeeder extends Seeder
         }
         $this->command->info('Created 50 Dummy Santri with random scores');
 
-        // 3. Create ~100 History Records with Penilaian (Triggers History Pagination > 20)
+        // 3. Create History Records with Penilaian
         $kriterias = \App\Models\Kriteria::with('subkriteria')->get();
+
+        // Pre-calculate Min/Max for SAW
+        $criteriaMinMax = [];
+        foreach ($kriterias as $k) {
+            $criteriaMinMax[$k->id] = [
+                'min' => $k->subkriteria->min('nilai'),
+                'max' => $k->subkriteria->max('nilai'),
+                'jenis' => $k->jenis,
+                'bobot' => $k->bobot
+            ];
+        }
+
+        $totalBobot = $kriterias->sum('bobot');
 
         foreach ($periodes as $periode) {
             // Select random 5-10 santri for each period
             $selectedSantri = $faker->randomElements($santris, rand(5, 10));
 
             foreach ($selectedSantri as $s) {
-                // Generate random score
-                $nilai_akhir = $faker->randomFloat(2, 0.1, 1.0);
+                // 1. Generate Penilaian First
+                $santriNilai = []; // Store nilai per kriteria for calculation
 
-                // Create History
-                RiwayatHitung::create([
-                    'santri_id' => $s->id,
-                    'periode_id' => $periode->id,
-                    'nilai_akhir' => $nilai_akhir
-                ]);
-
-                // Create Penilaian (Assessment) for this period
                 foreach ($kriterias as $k) {
                     $randomSub = $k->subkriteria->random();
                     if ($randomSub) {
@@ -76,10 +81,44 @@ class DummyDataSeeder extends Seeder
                             'subkriteria_id' => $randomSub->id,
                             'nilai' => $randomSub->nilai
                         ]);
+                        $santriNilai[$k->id] = $randomSub->nilai;
                     }
                 }
+
+                // 2. Calculate Final Score (SAW Logic)
+                $nilai_akhir = 0;
+                foreach ($kriterias as $k) {
+                    if (isset($santriNilai[$k->id])) {
+                        $nilai = $santriNilai[$k->id];
+                        $min = $criteriaMinMax[$k->id]['min'];
+                        $max = $criteriaMinMax[$k->id]['max'];
+                        $jenis = $criteriaMinMax[$k->id]['jenis'];
+                        $bobot = $criteriaMinMax[$k->id]['bobot'];
+
+                        $bobotTernormalisasi = $bobot / $totalBobot;
+                        $normalisasi = 0;
+
+                        if ($jenis == 'benefit') {
+                            $normalisasi = $max > 0 ? $nilai / $max : 0;
+                        } else {
+                            $normalisasi = $nilai > 0 ? $min / $nilai : 0;
+                        }
+
+                        $nilai_akhir += $normalisasi * $bobotTernormalisasi;
+                    }
+                }
+
+                // 3. Create History with Calculated Score
+                RiwayatHitung::create([
+                    'santri_id' => $s->id,
+                    'periode_id' => $periode->id,
+                    'nilai_akhir' => $nilai_akhir
+                ]);
+
+                // 4. Update Santri with latest score (from this loop)
+                $s->update(['nilai_akhir' => $nilai_akhir]);
             }
         }
-        $this->command->info('Created ~100 History Records with linked Penilaian data');
+        $this->command->info('Created History Records with valid SAW calculations');
     }
 }

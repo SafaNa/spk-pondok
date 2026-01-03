@@ -10,7 +10,7 @@
             Analisis Sensitivitas
         </h1>
         <p class="mt-2 text-gray-600">
-            Simulasi perubahan bobot kriteria untuk menguji stabilitas hasil keputusan (SMART).
+            Simulasi perubahan bobot kriteria untuk menguji stabilitas hasil keputusan (SAW).
             Periode Aktif: <span class="font-semibold text-[var(--color-primary-600)]">{{ $periode->nama ?? 'Tidak ada' }}</span>
         </p>
     </div>

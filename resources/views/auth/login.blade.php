@@ -159,11 +159,11 @@
                             pesantren."
                         </blockquote>
                         <div class="mt-4 font-bold uppercase tracking-wider text-sm text-emerald-700">
-                            Prinsip Metode SMART
+                            Prinsip Metode SAW
                         </div>
                     </div>
 
-                    <!-- Slide 2: SMART Explanation -->
+                    <!-- Slide 2: SAW Explanation -->
                     <div x-show="activeSlide === 1" x-transition:enter="transition ease-out duration-300"
                         x-transition:enter-start="opacity-0 transform translate-x-4"
                         x-transition:enter-end="opacity-100 transform translate-x-0"
@@ -172,7 +172,7 @@
                         x-transition:leave-end="opacity-0 transform -translate-x-4"
                         class="absolute inset-0 flex flex-col justify-center text-left">
                         <h3 class="text-sm font-bold text-center mb-2 text-emerald-800 uppercase tracking-wide">Elemen
-                            Kunci Metode SMART</h3>
+                            Kunci Metode SAW</h3>
                         <div
                             class="space-y-2 text-[10px] text-gray-700 leading-relaxed overflow-y-auto no-scrollbar max-h-[260px] pr-1">
                             <p><strong class="text-emerald-700">1. Alternatif (Alternatives):</strong> Pilihan yang
@@ -181,7 +181,8 @@
                                 setiap alternatif (akhlak, prestasi, dll).</p>
                             <p><strong class="text-emerald-700">3. Bobot (Weights):</strong> Tingkat kepentingan relatif
                                 dari setiap kriteria.</p>
-                            <p><strong class="text-emerald-700">4. Nilai/Rating (Utility):</strong> Nilai numerik yang
+                            <p><strong class="text-emerald-700">4. Nilai/Rating (Normalisasi):</strong> Nilai numerik
+                                yang
                                 merepresentasikan tingkat preferensi setiap alternatif pada setiap kriteria.</p>
                             <p><strong class="text-emerald-700">5. Normalisasi:</strong> Mengubah nilai mentah menjadi
                                 skala 0-1 untuk perbandingan.</p>

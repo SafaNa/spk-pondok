@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('perhitungan')->group(function () {
         Route::get('/', [PerhitunganController::class, 'index'])->name('perhitungan.index');
         Route::post('/hitung', [PerhitunganController::class, 'hitung'])->name('perhitungan.hitung');
+        Route::delete('/delete/{santri}', [PerhitunganController::class, 'destroy'])->name('perhitungan.destroy');
         Route::get('/hasil/{santri}', [PerhitunganController::class, 'hasil'])->name('perhitungan.hasil');
         Route::get('/rekomendasi', [PerhitunganController::class, 'rekomendasi'])->name('perhitungan.rekomendasi');
         Route::get('/history', [PerhitunganController::class, 'history'])->name('perhitungan.history');

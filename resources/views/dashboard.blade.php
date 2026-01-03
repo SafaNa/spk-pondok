@@ -99,9 +99,10 @@
             <!-- Chart Top 5 Santri -->
             <div class="glass-card rounded-2xl p-6 shadow-xl">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    Top 5 Santri (SMART Score)
+                    Top 5 Santri (SAW Score)
                     @if(isset($periode))
-                        <span class="text-sm font-normal text-[var(--color-primary-600)] ml-2 bg-[var(--color-primary-50)] px-2 py-1 rounded-full">
+                        <span
+                            class="text-sm font-normal text-[var(--color-primary-600)] ml-2 bg-[var(--color-primary-50)] px-2 py-1 rounded-full">
                             {{ $periode->nama }}
                         </span>
                     @endif
@@ -126,9 +127,9 @@
                     <p class="text-gray-600 leading-relaxed">
                         Sistem Pendukung Keputusan (SPK) ini dibangun untuk membantu dalam menentukan keputusan kepulangan
                         santri
-                        di Pondok Pesantren Annuqayah Latee II (P2AL II) dengan menggunakan metode Simple Multi Attribute
-                        Rating
-                        Technique (SMART). Sistem ini mempertimbangkan berbagai kriteria yang telah ditetapkan untuk
+                        di Pondok Pesantren Annuqayah Latee II (P2AL II) dengan menggunakan metode Simple Additive
+                        Weighting
+                        (SAW). Sistem ini mempertimbangkan berbagai kriteria yang telah ditetapkan untuk
                         memberikan
                         rekomendasi keputusan yang objektif dan terukur.
                     </p>
@@ -150,7 +151,7 @@
                     <ul class="list-disc list-inside text-gray-600 mt-2 space-y-1">
                         <li>Manajemen Data Santri</li>
                         <li>Pengaturan Kriteria Penilaian</li>
-                        <li>Perhitungan Metode SMART</li>
+                        <li>Perhitungan Metode SAW</li>
                         <li>Laporan Hasil Keputusan</li>
                     </ul>
                 </div>

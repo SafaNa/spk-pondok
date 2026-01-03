@@ -1,11 +1,11 @@
-# SPK Kepulangan Santri - Metode SMART
+# SPK Kepulangan Santri - Metode SAW
 **Sistem Pendukung Keputusan Kepulangan Santri Pondok Pesantren Annuqayah Latee II**
 
-![SPK Badge](https://img.shields.io/badge/Method-SMART-green)
+![SPK Badge](https://img.shields.io/badge/Method-SAW-green)
 ![Laravel](https://img.shields.io/badge/Framework-Laravel-red)
 ![Tailwind](https://img.shields.io/badge/UI-TailwindCSS-blue)
 
-Aplikasi ini adalah Sistem Pendukung Keputusan (SPK) yang dirancang untuk membantu pengurus pondok pesantren dalam menentukan rekomendasi kepulangan santri berdasarkan kriteria-kriteria objektif menggunakan metode **SMART (Simple Multi Attribute Rating Technique)**.
+Aplikasi ini adalah Sistem Pendukung Keputusan (SPK) yang dirancang untuk membantu pengurus pondok pesantren dalam menentukan rekomendasi kepulangan santri berdasarkan kriteria-kriteria objektif menggunakan metode **SAW (Simple Additive Weighting)**.
 
 ## 🚀 Fitur Utama
 
@@ -19,11 +19,11 @@ Aplikasi ini adalah Sistem Pendukung Keputusan (SPK) yang dirancang untuk memban
 - **Data Kriteria**: Pengaturan bobot kriteria dinamis dengan validasi total bobot.
 - **Data Periode**: Manajemen periode penilaian (misal: "Periode Maret 2024") untuk pengarsipan riwayat yang rapi.
 
-### 3. Sistem Penilaian & Perhitungan SMART
+### 3. Sistem Penilaian & Perhitungan SAW
 - **Input Penilaian**: Form penilaian santri berdasarkan kriteria yang aktif.
 - **Kalkulasi Otomatis**:
     - Normalisasi Bobot ($w_j / \Sigma w$).
-    - Nilai Utility ($u_i(a_i)$).
+    - Nilai Normalisasi ($r_{ij}$).
     - Nilai Akhir ($u_i(a_i) \times w_{normal}$).
 - **Transparansi Perhitungan**: Fitur "Detail Perhitungan" yang menampilkan rumus dan langkah-langkah kalkulasi step-by-step untuk setiap santri.
 
@@ -40,7 +40,10 @@ Aplikasi ini adalah Sistem Pendukung Keputusan (SPK) yang dirancang untuk memban
 ## 🛠️ Teknologi yang Digunakan
 - **Backend**: Laravel (PHP Framework)
 - **Frontend**: Blade Templates, Tailwind CSS
-- **Interactivity**: Alpine.js (untuk Modal, Dropdown, dan UI reaktif tanpa reload)
+- **Interactivity**: 
+    - Alpine.js (Modal, UI Reaktif)
+    - Tom Select (Searchable Dropdown)
+    - SweetAlert2 (Modern Confirm Dialog)
 - **Database**: MySQL
 - **Library Pendukung**:
     - `maatwebsite/excel` (Import/Export Data)
@@ -94,7 +97,7 @@ Ikuti langkah berikut untuk menjalankan proyek ini di komputer lokal (Localhost)
 2.  Masuk ke menu **Periode**, buat periode baru dan set sebagai "Aktif".
 3.  Pastikan **Data Kriteria** dan bobotnya sudah sesuai.
 4.  Input **Data Santri** (bisa manual atau import Excel).
-5.  Lakukan **Penilaian** pada menu SPK SMART -> Hitung.
+5.  Lakukan **Penilaian** pada menu SPK SAW -> Hitung.
 6.  Lihat hasil pada menu **Rekomendasi**.
 7.  (Opsional) Gunakan **Analisis Sensitivitas** untuk simulasi perubahan bobot.
 8.  Cetak laporan hasil keputusan.

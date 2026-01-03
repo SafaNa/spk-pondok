@@ -85,7 +85,7 @@
         <img src="{{ asset('favicon.png') }}" alt="Logo">
         <h1>Pondok Pesantren Annuqayah Latee II</h1>
         <p>Laporan Rekomendasi Kepulangan Santri</p>
-        <p><i>Metode SMART (Simple Multi Attribute Rating Technique)</i></p>
+        <p><i>Metode SAW (Simple Additive Weighting)</i></p>
     </div>
 
     <div class="meta">

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Perhitungan SMART')
+@section('title', 'Perhitungan SAW')
 
 @section('content')
     <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Perhitungan Metode SMART
+            Perhitungan Metode SAW
         </h3>
         <p class="mt-1 text-sm text-gray-500">
             Masukkan penilaian untuk menghitung keputusan kepulangan santri
@@ -48,19 +48,14 @@
             <div class="space-y-6">
                 <div class="form-group">
                     <label for="santri_id" class="block text-sm font-medium text-gray-700 mb-1.5">Pilih Santri</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-user-graduate text-[var(--color-primary-500)]"></i>
-                        </div>
-                        <select id="santri_id" name="santri_id" required {{ !$activePeriode ? 'disabled' : '' }}
-                            class="pl-10 py-3 text-base block w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary-500)] focus:ring focus:ring-[var(--color-primary-200)] focus:ring-opacity-50 transition duration-200 disabled:bg-gray-100 disabled:text-gray-500"
-                            style="height: 46px; padding-top: 0.5rem; padding-bottom: 0.5rem;">
-                            <option value="">-- Pilih Santri --</option>
-                            @foreach($santri as $s)
-                                <option value="{{ $s->id }}">{{ $s->nama }} ({{ $s->nis }})</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <select id="santri_id" name="santri_id" required {{ !$activePeriode ? 'disabled' : '' }}
+                        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary-500)] focus:ring focus:ring-[var(--color-primary-200)] focus:ring-opacity-50 transition duration-200"
+                        placeholder="Cari atau pilih santri...">
+                        <option value="">-- Pilih Santri --</option>
+                        @foreach($santri as $s)
+                            <option value="{{ $s->id }}">{{ $s->nama }} ({{ $s->nis }})</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 @foreach($kriteria as $kriteriaItem)
@@ -103,4 +98,31 @@
         </form>
     </div>
     </div>
+    </div>
+
+    <style>
+        /* Fix Tom Select Clear Button Position */
+        .ts-control {
+            padding-right: 2.5rem !important;
+        }
+        .ts-wrapper.plugin-clear_button .clear-button {
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            right: 8px !important;
+            margin-right: 0 !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var settings = {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                plugins: ['clear_button']
+            };
+            new TomSelect('#santri_id', settings);
+        });
+    </script>
 @endsection

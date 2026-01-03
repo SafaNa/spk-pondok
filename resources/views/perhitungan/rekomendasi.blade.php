@@ -11,7 +11,7 @@
                         Rekomendasi Kepulangan Santri
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">
-                        Daftar rekomendasi kepulangan santri berdasarkan perhitungan SMART
+                        Daftar rekomendasi kepulangan santri berdasarkan perhitungan SAW
                     </p>
                 </div>
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -98,9 +98,15 @@
                                             @endif
                                         </div>
 
-                                        <div class="border-t border-gray-100 pt-3 flex justify-end">
+                                        <div class="border-t border-gray-100 pt-3 flex justify-between items-center">
+                                            <form action="{{ route('perhitungan.destroy', $item->santri_id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" onclick="confirmDelete(this)"
+                                                    class="text-red-600 text-sm hover:text-red-800 font-medium">Hapus</button>
+                                            </form>
                                             <a href="{{ route('perhitungan.hasil', $item->santri_id) }}"
-                                                class="w-full text-center inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                                class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                                 Lihat Detail
                                                 <i class="fas fa-arrow-right ml-2 text-xs"></i>
                                             </a>
@@ -164,7 +170,7 @@
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                                         <span
                                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
+                                                                                                                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
                                             ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                                             {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                                         </span>
@@ -188,8 +194,17 @@
                                                                         @endif
                                                                     </td>
                                                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                        <a href="{{ route('perhitungan.hasil', $item->santri_id) }}"
-                                                                            class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)]">Detail</a>
+                                                                        <div class="flex items-center justify-end space-x-3">
+                                                                            <a href="{{ route('perhitungan.hasil', $item->santri_id) }}"
+                                                                                class="text-[var(--color-primary-600)] hover:text-[var(--color-primary-900)]">Detail</a>
+                                                                            <form action="{{ route('perhitungan.destroy', $item->santri_id) }}"
+                                                                                method="POST">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="button" onclick="confirmDelete(this)"
+                                                                                    class="text-red-600 hover:text-red-900">Hapus</button>
+                                                                            </form>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                         @endforeach
@@ -229,4 +244,25 @@
             @endif
         </div>
     </div>
+    </div>
+
+    <script>
+        function confirmDelete(button) {
+            Swal.fire({
+                title: 'Hapus Hasil Perhitungan?',
+                text: "Data penilaian dan hasil normalisasi untuk santri ini akan dihapus permanen.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            })
+        }
+    </script>
 @endsection

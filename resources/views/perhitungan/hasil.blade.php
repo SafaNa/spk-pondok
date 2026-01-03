@@ -8,7 +8,7 @@
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
                 <div>
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
-                        Hasil Perhitungan SMART
+                        Hasil Perhitungan SAW
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">
                         Detail perhitungan untuk {{ $santri->nama }} ({{ $santri->nis }})
@@ -80,9 +80,9 @@
                                                     <span class="font-medium">{{ $detail['nilai'] }}</span>
                                                 </div>
                                                 <div>
-                                                    <span class="block text-xs text-gray-500">Utility</span>
+                                                    <span class="block text-xs text-gray-500">Normalisasi</span>
                                                     <span
-                                                        class="font-medium">{{ number_format($detail['utility'], 2, ',', '.') }}</span>
+                                                        class="font-medium">{{ number_format($detail['normalisasi'], 2, ',', '.') }}</span>
                                                 </div>
                                             </div>
                                             <div
@@ -124,7 +124,7 @@
                                                 </th>
                                                 <th scope="col"
                                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Utility
+                                                    Normalisasi
                                                 </th>
                                                 <th scope="col"
                                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -149,7 +149,7 @@
                                                         {{ $detail['nilai'] }}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {{ number_format($detail['utility'], 2, ',', '.') }}
+                                                        {{ number_format($detail['normalisasi'], 2, ',', '.') }}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                         {{ number_format($detail['total'], 2, ',', '.') }}
@@ -239,35 +239,34 @@
                                     <!-- Utility Calculation -->
                                     <div>
                                         <h6 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Perhitungan
-                                            Utility</h6>
+                                            Normalisasi</h6>
                                         <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm space-y-2">
                                             <div class="flex flex-col sm:flex-row sm:items-baseline gap-1">
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Rumus:</span>
                                                 <code
                                                     class="text-[var(--color-primary-700)] bg-white px-1 py-0.5 rounded border border-gray-200 self-start">
-                                                                                    @if($detail['jenis'] == 'benefit')
-                                                                                        (Nilai - Min) / (Max - Min)
-                                                                                    @else
-                                                                                        (Max - Nilai) / (Max - Min)
-                                                                                    @endif
-                                                                                </code>
+                                                                                                @if($detail['jenis'] == 'benefit')
+                                                                                                    Nilai / Max
+                                                                                                @else
+                                                                                                    Min / Nilai
+                                                                                                @endif
+                                                                                            </code>
                                             </div>
                                             <div class="flex flex-col sm:flex-row sm:items-baseline gap-1">
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Substitusi:</span>
                                                 <span class="font-mono text-gray-700">
                                                     @if($detail['jenis'] == 'benefit')
-                                                        ({{ $detail['nilai'] }} - {{ $detail['min'] }}) / ({{ $detail['max'] }} -
-                                                        {{ $detail['min'] }})
+                                                        {{ $detail['nilai'] }} / {{ $detail['max'] }}
                                                     @else
-                                                        ({{ $detail['max'] }} - {{ $detail['nilai'] }}) / ({{ $detail['max'] }} -
-                                                        {{ $detail['min'] }})
+                                                        {{ $detail['min'] }} / {{ $detail['nilai'] }}
                                                     @endif
                                                 </span>
                                             </div>
                                             <div
                                                 class="flex flex-col sm:flex-row sm:items-baseline gap-1 pt-1 border-t border-gray-200">
                                                 <span class="text-gray-500 w-20 flex-shrink-0 font-medium">Hasil:</span>
-                                                <strong class="text-gray-900">{{ number_format($detail['utility'], 2) }}</strong>
+                                                <strong
+                                                    class="text-gray-900">{{ number_format($detail['normalisasi'], 2) }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -279,7 +278,7 @@
                                         <div
                                             class="bg-[var(--color-primary-50)] rounded-lg p-3 border border-[var(--color-primary-200)] flex justify-between items-center">
                                             <div class="text-sm">
-                                                <span class="text-[var(--color-primary-800)] inline-block mr-1">Utility</span>
+                                                <span class="text-[var(--color-primary-800)] inline-block mr-1">Normalisasi</span>
                                                 <span class="text-gray-400 mx-1">×</span>
                                                 <span class="text-[var(--color-primary-800)] inline-block">Bobot Norm.</span>
                                             </div>
@@ -288,7 +287,7 @@
                                             </div>
                                         </div>
                                         <div class="text-right text-xs text-gray-500 mt-1">
-                                            {{ number_format($detail['utility'], 2) }} ×
+                                            {{ number_format($detail['normalisasi'], 2) }} ×
                                             {{ number_format($detail['bobot_ternormalisasi'], 2) }}
                                         </div>
                                     </div>

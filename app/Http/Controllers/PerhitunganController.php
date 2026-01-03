@@ -124,23 +124,23 @@ class PerhitunganController extends Controller
             $nilai = $penilaian ? $penilaian->nilai : 0;
             $bobotTernormalisasi = $k->bobot / $totalBobot;
 
-            $min = $k->subkriteria->min('nilai');
-            $max = $k->subkriteria->max('nilai');
-            $range = $max - $min;
-
-            if ($range == 0) {
-                $utility = 1;
+            if ($k->jenis == 'benefit') {
+                $max = $k->subkriteria->max('nilai');
+                $normalisasi = $max > 0 ? $nilai / $max : 0;
             } else {
-                if ($k->jenis == 'benefit') {
-                    $utility = ($nilai - $min) / $range;
-                } else {
-                    $utility = ($max - $nilai) / $range;
-                }
+                $min = $k->subkriteria->min('nilai');
+                $normalisasi = $nilai > 0 ? $min / $nilai : 0;
             }
 
-            $nilaiAkhir += $utility * $bobotTernormalisasi;
+            $nilaiAkhir += $normalisasi * $bobotTernormalisasi;
 
             if ($detail) {
+                // For detailed view, we still fetch min/max to show in the UI if needed,
+                // but for SAW we primarily need Max for Benefit and Min for Cost.
+                // We'll keep sending both to be safe for the view.
+                $min = $k->subkriteria->min('nilai');
+                $max = $k->subkriteria->max('nilai');
+
                 $detailPerhitungan[] = [
                     'kriteria' => $k->nama_kriteria,
                     'jenis' => $k->jenis,
@@ -149,8 +149,8 @@ class PerhitunganController extends Controller
                     'nilai' => $nilai,
                     'min' => $min,
                     'max' => $max,
-                    'utility' => $utility,
-                    'total' => $utility * $bobotTernormalisasi,
+                    'normalisasi' => $normalisasi, // Renamed from utility
+                    'total' => $normalisasi * $bobotTernormalisasi,
                 ];
             }
         }
@@ -168,6 +168,39 @@ class PerhitunganController extends Controller
             'nilai_akhir' => $nilaiAkhir,
             'detail' => $detailPerhitungan
         ] : $nilaiAkhir;
+    }
+
+    public function destroy($santriId)
+    {
+        $activePeriode = Periode::where('is_active', true)->first();
+
+        if (!$activePeriode) {
+            return redirect()->back()->with('error', 'Tidak ada periode aktif.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Hapus Riwayat Hitung
+            RiwayatHitung::where('santri_id', $santriId)
+                ->where('periode_id', $activePeriode->id)
+                ->delete();
+
+            // 2. Hapus Penilaian
+            Penilaian::where('santri_id', $santriId)
+                ->where('periode_id', $activePeriode->id)
+                ->delete();
+
+            // 3. Reset Nilai Santri (Optional, atau set ke 0)
+            Santri::where('id', $santriId)->update(['nilai_akhir' => 0]);
+
+            DB::commit();
+
+            return redirect()->route('perhitungan.rekomendasi')->with('success', 'Data hasil perhitungan berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
 
     public function rekomendasi()
