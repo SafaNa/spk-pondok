@@ -56,7 +56,7 @@ Ikuti langkah berikut untuk menjalankan proyek ini di komputer lokal (Localhost)
 
 1.  **Clone Repository**
     ```bash
-    git clone https://github.com/username/spk-pondok.git
+    git clone https://github.com/SafaNa/spk-pondok.git
     cd spk-pondok
     ```
 
