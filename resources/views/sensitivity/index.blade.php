@@ -168,7 +168,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-[var(--color-primary-600)]">
-                                        {{ number_format($res['new_score'], 4) }}
+                                        {{ number_format($res['new_score'], 2, ',', '.') }}
                                     </td>
                                 </tr>
                             @endforeach

@@ -139,7 +139,7 @@
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <span
                                                             class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold {{ $item->nilai_akhir >= 0.7 ? 'bg-green-100 text-green-700' : ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
-                                                            {{ number_format($item->nilai_akhir, 3) }}
+                                                            {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                         </span>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

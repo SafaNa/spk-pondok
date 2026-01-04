@@ -231,7 +231,7 @@
                                             <div class="bg-gray-50 p-2 rounded border border-gray-100">
                                                 <span class="block text-xs text-gray-500">Bobot Norm.</span>
                                                 <span
-                                                    class="font-medium text-gray-900">{{ number_format($detail['bobot_ternormalisasi'], 2) }}</span>
+                                                    class="font-medium text-gray-900">{{ number_format($detail['bobot_ternormalisasi'], 2, ',', '.') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -245,12 +245,12 @@
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Rumus:</span>
                                                 <code
                                                     class="text-[var(--color-primary-700)] bg-white px-1 py-0.5 rounded border border-gray-200 self-start">
-                                                                                                @if($detail['jenis'] == 'benefit')
-                                                                                                    Nilai / Max
-                                                                                                @else
-                                                                                                    Min / Nilai
-                                                                                                @endif
-                                                                                            </code>
+                                                                                                            @if($detail['jenis'] == 'benefit')
+                                                                                                                Nilai / Max
+                                                                                                            @else
+                                                                                                                Min / Nilai
+                                                                                                            @endif
+                                                                                                        </code>
                                             </div>
                                             <div class="flex flex-col sm:flex-row sm:items-baseline gap-1">
                                                 <span class="text-gray-500 w-20 flex-shrink-0">Substitusi:</span>
@@ -266,7 +266,7 @@
                                                 class="flex flex-col sm:flex-row sm:items-baseline gap-1 pt-1 border-t border-gray-200">
                                                 <span class="text-gray-500 w-20 flex-shrink-0 font-medium">Hasil:</span>
                                                 <strong
-                                                    class="text-gray-900">{{ number_format($detail['normalisasi'], 2) }}</strong>
+                                                    class="text-gray-900">{{ number_format($detail['normalisasi'], 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -283,12 +283,12 @@
                                                 <span class="text-[var(--color-primary-800)] inline-block">Bobot Norm.</span>
                                             </div>
                                             <div class="text-lg font-bold text-[var(--color-primary-700)]">
-                                                {{ number_format($detail['total'], 2) }}
+                                                {{ number_format($detail['total'], 2, ',', '.') }}
                                             </div>
                                         </div>
                                         <div class="text-right text-xs text-gray-500 mt-1">
-                                            {{ number_format($detail['normalisasi'], 2) }} ×
-                                            {{ number_format($detail['bobot_ternormalisasi'], 2) }}
+                                            {{ number_format($detail['normalisasi'], 2, ',', '.') }} ×
+                                            {{ number_format($detail['bobot_ternormalisasi'], 2, ',', '.') }}
                                         </div>
                                     </div>
                                 </div>

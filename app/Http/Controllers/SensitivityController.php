@@ -68,20 +68,13 @@ class SensitivityController extends Controller
 
                 $nilai = $penilaian ? $penilaian->nilai : 0;
 
-                // Normalization
-                $min = $k->subkriteria->min('nilai');
-                $max = $k->subkriteria->max('nilai');
-                $range = $max - $min;
-
-                $utility = 0;
-                if ($range > 0) {
-                    if ($k->jenis == 'benefit') {
-                        $utility = ($nilai - $min) / $range;
-                    } else {
-                        $utility = ($max - $nilai) / $range;
-                    }
+                // Normalization (Standard SAW)
+                if ($k->jenis == 'benefit') {
+                    $max = $k->subkriteria->max('nilai');
+                    $utility = $max > 0 ? $nilai / $max : 0;
                 } else {
-                    $utility = 1;
+                    $min = $k->subkriteria->min('nilai');
+                    $utility = $nilai > 0 ? $min / $nilai : 0;
                 }
 
                 // New Weight Calculation
