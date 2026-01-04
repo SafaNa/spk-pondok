@@ -15,19 +15,7 @@
                     </p>
                 </div>
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-                    <form action="{{ route('perhitungan.recalculateBatch') }}" method="POST" class="inline-block"
-                        onsubmit="return confirm('Apakah Anda yakin ingin menghitung ulang semua data?');">
-                        @csrf
-                        <button type="submit"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none text-center w-full sm:w-auto justify-center transition-colors duration-200">
-                            <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Hitung Ulang
-                        </button>
-                    </form>
+
                     <a href="{{ route('perhitungan.cetak') }}" target="_blank"
                         class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none text-center w-full sm:w-auto justify-center transition-colors duration-200">
                         <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
