@@ -98,10 +98,11 @@
         <thead>
             <tr>
                 <th style="width: 5%">No</th>
-                <th style="width: 20%">NIS</th>
-                <th style="width: 35%">Nama Santri</th>
+                <th style="width: 15%">NIS</th>
+                <th style="width: 25%">Nama Santri</th>
                 <th style="width: 15%">Nilai Akhir</th>
-                <th style="width: 25%">Rekomendasi</th>
+                <th style="width: 20%">Alasan</th>
+                <th style="width: 20%">Rekomendasi</th>
             </tr>
         </thead>
         <tbody>
@@ -111,6 +112,7 @@
                     <td>{{ $item->santri->nis }}</td>
                     <td>{{ $item->santri->nama }}</td>
                     <td>{{ number_format($item->nilai_akhir, 2, ',', '.') }}</td>
+                    <td>{{ $item->alasan ?? '-' }}</td>
                     <td>
                         @if($item->nilai_akhir >= 0.7)
                             Direkomendasikan

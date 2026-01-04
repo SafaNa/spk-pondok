@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/rekomendasi', [PerhitunganController::class, 'rekomendasi'])->name('perhitungan.rekomendasi');
         Route::get('/history', [PerhitunganController::class, 'history'])->name('perhitungan.history');
         Route::get('/cetak', [PerhitunganController::class, 'cetak'])->name('perhitungan.cetak');
+        Route::post('/recalculate-batch', [PerhitunganController::class, 'recalculateBatch'])->name('perhitungan.recalculateBatch');
     });
 
     // Period Management Routes

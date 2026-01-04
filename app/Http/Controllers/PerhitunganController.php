@@ -105,7 +105,7 @@ class PerhitunganController extends Controller
         return view('perhitungan.hasil', compact('santri', 'kriteria', 'totalBobot', 'perhitungan', 'isComplete', 'periode'));
     }
 
-    private function hitungNilaiAkhir($santriId, $periodeId, $detail = false)
+    public function hitungNilaiAkhir($santriId, $periodeId, $detail = false)
     {
         $kriteria = Kriteria::with([
             'subkriteria',
@@ -118,6 +118,7 @@ class PerhitunganController extends Controller
         $totalBobot = $kriteria->sum('bobot');
         $nilaiAkhir = 0;
         $detailPerhitungan = [];
+        $alasanComponents = [];
 
         foreach ($kriteria as $k) {
             $penilaian = $k->penilaian->first();
@@ -132,15 +133,20 @@ class PerhitunganController extends Controller
                 $normalisasi = $nilai > 0 ? $min / $nilai : 0;
             }
 
-            $nilaiAkhir += $normalisasi * $bobotTernormalisasi;
+            $nilaiKriteria = $normalisasi * $bobotTernormalisasi;
+            $nilaiAkhir += $nilaiKriteria;
+
+            // Collect complete data for narrative
+            $alasanComponents[] = [
+                'nama' => $k->nama_kriteria,
+                'type' => strtolower($k->jenis),
+                'normalisasi' => $normalisasi,
+                'weight' => $bobotTernormalisasi
+            ];
 
             if ($detail) {
-                // For detailed view, we still fetch min/max to show in the UI if needed,
-                // but for SAW we primarily need Max for Benefit and Min for Cost.
-                // We'll keep sending both to be safe for the view.
                 $min = $k->subkriteria->min('nilai');
                 $max = $k->subkriteria->max('nilai');
-
                 $detailPerhitungan[] = [
                     'kriteria' => $k->nama_kriteria,
                     'jenis' => $k->jenis,
@@ -149,24 +155,154 @@ class PerhitunganController extends Controller
                     'nilai' => $nilai,
                     'min' => $min,
                     'max' => $max,
-                    'normalisasi' => $normalisasi, // Renamed from utility
-                    'total' => $normalisasi * $bobotTernormalisasi,
+                    'normalisasi' => $normalisasi,
+                    'total' => $nilaiKriteria,
                 ];
             }
         }
 
-        // Update nilai akhir santri (Latest)
-        Santri::where('id', $santriId)->update(['nilai_akhir' => $nilaiAkhir]);
+        // --- Narrative Generation Logic ---
 
-        // Save to History
+        // Categorize Traits
+        $goodTraits = [];
+        $mediumTraits = [];
+        $badTraits = [];
+
+        foreach ($alasanComponents as $comp) {
+            $val = $comp['normalisasi'];
+            if ($val >= 0.75) {
+                $goodTraits[] = $comp;
+            } elseif ($val >= 0.45) {
+                $mediumTraits[] = $comp;
+            } else {
+                $badTraits[] = $comp;
+            }
+        }
+
+        // Sort by weight (importance)
+        $sortByWeight = function ($a, $b) {
+            return $b['weight'] <=> $a['weight'];
+        };
+        usort($goodTraits, $sortByWeight);
+        usort($mediumTraits, $sortByWeight);
+        usort($badTraits, $sortByWeight);
+
+        $alasan = "";
+        $scoreStr = number_format($nilaiAkhir, 2, ',', '.');
+
+        // Helper to join names naturally
+        $joinNames = function ($traits) {
+            $names = array_column($traits, 'nama');
+            if (empty($names))
+                return "";
+            if (count($names) == 1)
+                return $names[0];
+            $last = array_pop($names);
+            return implode(", ", $names) . " dan " . $last;
+        };
+
+        if ($nilaiAkhir >= 0.7) {
+            // RECOMMENDED
+            // Pattern: "Santri direkomendasikan karena memiliki [Good Traits w/ adjectives], serta [Cost Good] sehingga menghasilkan nilai akhir yang tinggi (0,90)."
+
+            $phrases = [];
+
+            // Handle Benefit vs Cost in Good Traits
+            $benefitGood = array_filter($goodTraits, fn($i) => $i['type'] != 'cost');
+            $costGood = array_filter($goodTraits, fn($i) => $i['type'] == 'cost'); // Low cost value = Good
+
+            if (!empty($benefitGood)) {
+                $names = $joinNames($benefitGood);
+                $phrases[] = "memiliki {$names} yang sangat baik";
+            }
+
+            if (!empty($costGood)) {
+                $names = $joinNames($costGood);
+                $phrases[] = "tingkat {$names} yang rendah";
+            }
+
+            // Fallback if empty (shouldn't happen for high score)
+            if (empty($phrases))
+                $phrases[] = "memiliki performa keseluruhan yang sangat baik";
+
+            $traitStr = implode(", ", $phrases);
+            $alasan = "Santri direkomendasikan karena {$traitStr} sehingga menghasilkan nilai akhir yang tinggi ({$scoreStr}).";
+
+        } elseif ($nilaiAkhir >= 0.4) {
+            // CONSIDER
+            // Pattern: "Santri masih dipertimbangkan karena nilai [Medium Traits] berada pada tingkat sedang, serta [Bad Traits] sehingga menurunkan nilai akhir meskipun [Good Traits] tergolong baik."
+
+            $phrases = [];
+
+            // Focus on Medium
+            if (!empty($mediumTraits)) {
+                $names = $joinNames($mediumTraits);
+                $phrases[] = "nilai {$names} berada pada tingkat sedang";
+            }
+
+            // Mention Bad (Negatives)
+            $badBenefit = array_filter($badTraits, fn($i) => $i['type'] != 'cost');
+            $badCost = array_filter($badTraits, fn($i) => $i['type'] == 'cost');
+
+            if (!empty($badCost)) {
+                $names = $joinNames($badCost);
+                $phrases[] = "tingkat {$names} yang masih cukup tinggi";
+            }
+            if (!empty($badBenefit)) {
+                $names = $joinNames($badBenefit);
+                $phrases[] = "nilai {$names} yang kurang memadai";
+            }
+
+            // Mention Good (Positives) for balance
+            $goodStr = "";
+            if (!empty($goodTraits)) {
+                $names = $joinNames($goodTraits);
+                $goodStr = " meskipun {$names} tergolong baik";
+            }
+
+            $traitStr = implode(", serta ", $phrases);
+            $alasan = "Santri masih dipertimbangkan karena {$traitStr}{$goodStr}.";
+
+        } else {
+            // NOT RECOMMENDED
+            // Pattern: "Santri tidak direkomendasikan karena memiliki nilai [Bad Traits Benefit] yang sangat rendah, [Bad Traits Cost] yang tinggi..."
+
+            $phrases = [];
+
+            $badBenefit = array_filter($badTraits, fn($i) => $i['type'] != 'cost');
+            $badCost = array_filter($badTraits, fn($i) => $i['type'] == 'cost');
+
+            if (!empty($badBenefit)) {
+                $names = $joinNames($badBenefit);
+                $phrases[] = "memiliki nilai {$names} yang sangat rendah";
+            }
+
+            if (!empty($badCost)) {
+                $names = $joinNames($badCost);
+                $phrases[] = "tingkat {$names} yang tinggi";
+            }
+
+            // If strictly medium but low score?
+            if (empty($phrases) && !empty($mediumTraits)) {
+                $names = $joinNames($mediumTraits);
+                $phrases[] = "nilai {$names} yang belum optimal";
+            }
+
+            $traitStr = implode(", serta ", $phrases);
+            $alasan = "Santri tidak direkomendasikan karena {$traitStr} sehingga menghasilkan nilai akhir yang rendah ({$scoreStr}).";
+        }
+
+        // Save and Update
+        Santri::where('id', $santriId)->update(['nilai_akhir' => $nilaiAkhir]);
         RiwayatHitung::updateOrCreate(
             ['santri_id' => $santriId, 'periode_id' => $periodeId],
-            ['nilai_akhir' => $nilaiAkhir]
+            ['nilai_akhir' => $nilaiAkhir, 'alasan' => $alasan]
         );
 
         return $detail ? [
             'nilai_akhir' => $nilaiAkhir,
-            'detail' => $detailPerhitungan
+            'detail' => $detailPerhitungan,
+            'alasan' => $alasan
         ] : $nilaiAkhir;
     }
 
@@ -268,6 +404,7 @@ class PerhitunganController extends Controller
             });
         }
 
+
         $periodesPaginated = $periodeQuery->paginate(10); // Paginate periods
 
         // Load riwayatHitung for each period
@@ -285,5 +422,25 @@ class PerhitunganController extends Controller
         $allPeriodes = Periode::orderBy('created_at', 'desc')->get(); // For the filter dropdown
 
         return view('perhitungan.history', compact('periodesPaginated', 'allPeriodes'));
+    }
+
+    public function recalculateBatch()
+    {
+        $periode = Periode::where('is_active', true)->first();
+
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Tidak ada periode aktif.');
+        }
+
+        $riwayat = RiwayatHitung::where('periode_id', $periode->id)->get();
+
+        $count = 0;
+        foreach ($riwayat as $item) {
+            $this->hitungNilaiAkhir($item->santri_id, $periode->id);
+            $count++;
+        }
+
+        return redirect()->route('perhitungan.rekomendasi')
+            ->with('success', "Berhasil menghitung ulang {$count} data santri.");
     }
 }

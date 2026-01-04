@@ -14,7 +14,8 @@ class RiwayatHitung extends Model
     protected $fillable = [
         'santri_id',
         'periode_id',
-        'nilai_akhir'
+        'nilai_akhir',
+        'alasan'
     ];
 
     public function santri()
