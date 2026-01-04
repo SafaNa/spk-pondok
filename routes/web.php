@@ -11,8 +11,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 
 // Auth Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+// Auth Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Change Password Routes

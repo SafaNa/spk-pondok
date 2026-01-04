@@ -188,7 +188,7 @@
                                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                                         <span
                                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $item->nilai_akhir >= 0.7 ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]' :
                                             ($item->nilai_akhir >= 0.4 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                                                             {{ number_format($item->nilai_akhir, 2, ',', '.') }}
                                                                         </span>
@@ -217,7 +217,7 @@
                                                                             <div class="group relative inline-block">
                                                                                 <button type="button"
                                                                                     onclick="showAlasan('{{ $item->santri->nama }}', '{{ $item->alasan ?? 'Tidak ada data alasan' }}')"
-                                                                                    class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                                                    class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                                                         viewBox="0 0 24 24" stroke="currentColor">
                                                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -316,11 +316,11 @@
             Swal.fire({
                 title: 'Alasan Rekomendasi',
                 html: `
-                        <p class="text-sm text-gray-600 mb-2">Santri: <strong>${nama}</strong></p>
-                        <div class="bg-gray-50 p-4 rounded-md text-left">
-                            <p class="text-gray-800">${alasan}</p>
-                        </div>
-                    `,
+                            <p class="text-sm text-gray-600 mb-2">Santri: <strong>${nama}</strong></p>
+                            <div class="bg-gray-50 p-4 rounded-md text-left">
+                                <p class="text-gray-800">${alasan}</p>
+                            </div>
+                        `,
                 icon: 'info',
                 confirmButtonText: 'Tutup',
                 confirmButtonColor: 'var(--color-primary-600)'
