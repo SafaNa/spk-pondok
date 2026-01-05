@@ -356,6 +356,55 @@ class PerhitunganController extends Controller
         return view('perhitungan.rekomendasi', compact('santri', 'periode'));
     }
 
+    public function rekomendasiV2()
+    {
+        $periode = Periode::where('is_active', true)->first();
+
+        if (!$periode) {
+            $riwayat = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            $stats = ['total' => 0, 'recommended' => 0, 'consider' => 0, 'not_recommended' => 0];
+            return view('rekomendasi-v2', compact('riwayat', 'periode', 'stats'));
+        }
+
+        $riwayat = RiwayatHitung::with('santri')
+            ->where('periode_id', $periode->id)
+            ->orderBy('nilai_akhir', 'desc')
+            ->paginate(10);
+
+        // Stats
+        $allRiwayat = RiwayatHitung::where('periode_id', $periode->id)->get();
+        $stats = [
+            'total' => $allRiwayat->count(),
+            'recommended' => $allRiwayat->where('nilai_akhir', '>=', 0.7)->count(),
+            'consider' => $allRiwayat->whereBetween('nilai_akhir', [0.4, 0.7])->count(),
+            'not_recommended' => $allRiwayat->where('nilai_akhir', '<', 0.4)->count(),
+        ];
+
+        return view('rekomendasi-v2', compact('riwayat', 'periode', 'stats'));
+    }
+
+    public function hasilV2($id)
+    {
+        $santri = Santri::findOrFail($id);
+        $periode = Periode::where('is_active', true)->first();
+
+        if (!$periode) {
+            return redirect()->route('rekomendasi-v2')->with('error', 'Tidak ada periode aktif.');
+        }
+
+        $riwayat = RiwayatHitung::where('santri_id', $id)
+            ->where('periode_id', $periode->id)
+            ->first();
+
+        if (!$riwayat) {
+            return redirect()->route('rekomendasi-v2')->with('error', 'Data perhitungan tidak ditemukan.');
+        }
+
+        $perhitungan = $this->hitungNilaiAkhir($id, $periode->id, true);
+
+        return view('rekomendasi-detail-v2', compact('santri', 'periode', 'riwayat', 'perhitungan'));
+    }
+
     public function cetak()
     {
         $periode = Periode::where('is_active', true)->first();
@@ -424,6 +473,49 @@ class PerhitunganController extends Controller
         return view('perhitungan.history', compact('periodesPaginated', 'allPeriodes'));
     }
 
+    public function historyV2(Request $request)
+    {
+        $periodeQuery = Periode::orderBy('created_at', 'desc');
+        $search = $request->search;
+
+        if (!$request->has('periode_filter') && !$request->has('search')) {
+            $activePeriode = Periode::where('is_active', true)->first();
+            if ($activePeriode) {
+                $request->merge(['periode_filter' => $activePeriode->id]);
+            }
+        }
+
+        if ($request->filled('periode_filter')) {
+            $periodeQuery->where('id', $request->periode_filter);
+        }
+
+        if ($request->filled('search')) {
+            $periodeQuery->whereHas('riwayatHitung', function ($q) use ($search) {
+                $q->whereHas('santri', function ($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $periodesPaginated = $periodeQuery->paginate(10);
+
+        $periodesPaginated->getCollection()->each(function ($periode) use ($search) {
+            $riwayatQuery = $periode->riwayatHitung()->with('santri');
+            if ($search) {
+                $riwayatQuery->whereHas('santri', function ($sq) use ($search) {
+                    $sq->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nis', 'like', "%{$search}%");
+                });
+            }
+            $periode->setRelation('riwayatHitung', $riwayatQuery->orderBy('nilai_akhir', 'desc')->get());
+        });
+
+        $allPeriodes = Periode::orderBy('created_at', 'desc')->get();
+
+        return view('riwayat-v2', compact('periodesPaginated', 'allPeriodes'));
+    }
+
     public function recalculateBatch()
     {
         $periode = Periode::where('is_active', true)->first();
@@ -442,5 +534,22 @@ class PerhitunganController extends Controller
 
         return redirect()->route('perhitungan.rekomendasi')
             ->with('success', "Berhasil menghitung ulang {$count} data santri.");
+    }
+
+    public function sensitivitasV2()
+    {
+        $kriteria = Kriteria::orderBy('kode_kriteria')->get();
+        $periode = Periode::where('is_active', true)->first();
+
+        $riwayat = collect([]);
+        if ($periode) {
+            $riwayat = RiwayatHitung::with('santri')
+                ->where('periode_id', $periode->id)
+                ->orderBy('nilai_akhir', 'desc')
+                ->limit(10)
+                ->get();
+        }
+
+        return view('sensitivitas-v2', compact('kriteria', 'periode', 'riwayat'));
     }
 }

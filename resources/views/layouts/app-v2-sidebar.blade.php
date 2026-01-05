@@ -96,6 +96,18 @@
                             class="material-symbols-outlined text-[24px] {{ request()->routeIs('rekomendasi-v2') ? 'fill-1' : '' }}">calculate</span>
                         <span class="text-sm font-medium">SAW Analysis</span>
                     </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('riwayat-v2') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('riwayat-v2') }}">
+                        <span
+                            class="material-symbols-outlined text-[24px] {{ request()->routeIs('riwayat-v2') ? 'fill-1' : '' }}">history</span>
+                        <span class="text-sm font-medium">Riwayat</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('sensitivitas-v2') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('sensitivitas-v2') }}">
+                        <span
+                            class="material-symbols-outlined text-[24px] {{ request()->routeIs('sensitivitas-v2') ? 'fill-1' : '' }}">tune</span>
+                        <span class="text-sm font-medium">Sensitivitas</span>
+                    </a>
                     <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
                         href="#">
                         <span class="material-symbols-outlined text-[24px]">settings</span>

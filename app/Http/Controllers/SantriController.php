@@ -40,6 +40,12 @@ class SantriController extends Controller
         return view('santri.index', compact('santri'));
     }
 
+    public function indexV2()
+    {
+        $santri = Santri::latest()->paginate(10);
+        return view('santri-v2', compact('santri'));
+    }
+
     public function create()
     {
         return view('santri.create');

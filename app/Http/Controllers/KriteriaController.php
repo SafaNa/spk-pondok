@@ -14,6 +14,20 @@ class KriteriaController extends Controller
         return view('kriteria.index', compact('kriteria', 'totalBobot'));
     }
 
+    public function indexV2()
+    {
+        $kriteria = Kriteria::with('subkriteria')->get();
+        $totalBobot = $kriteria->sum('bobot');
+        return view('kriteria-v2', compact('kriteria', 'totalBobot'));
+    }
+
+    public function createV2()
+    {
+        $totalBobot = Kriteria::sum('bobot');
+        $remainingBobot = 100 - $totalBobot;
+        return view('kriteria-form-v2', compact('totalBobot', 'remainingBobot'));
+    }
+
     public function create()
     {
         $currentTotal = Kriteria::sum('bobot');
@@ -43,6 +57,14 @@ class KriteriaController extends Controller
 
         return redirect()->route('kriteria.index')
             ->with('success', 'Kriteria berhasil ditambahkan');
+    }
+
+    public function editV2($id)
+    {
+        $kriterium = Kriteria::findOrFail($id);
+        $totalBobot = Kriteria::where('id', '!=', $id)->sum('bobot');
+        $remainingBobot = 100 - $totalBobot;
+        return view('kriteria-form-v2', compact('kriterium', 'totalBobot', 'remainingBobot'));
     }
 
     public function edit(Kriteria $kriterium)

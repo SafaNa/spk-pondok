@@ -11,7 +11,16 @@ class PenilaianController extends Controller
      */
     public function index()
     {
-        //
+        $penilaian = \App\Models\Penilaian::with(['santri', 'kriteria', 'subkriteria'])->latest()->paginate(10);
+        return view('penilaian.index', compact('penilaian'));
+    }
+
+    public function indexV2()
+    {
+        $penilaian = \App\Models\Penilaian::with(['santri', 'kriteria', 'subkriteria'])->latest()->paginate(10);
+        $periodes = \App\Models\Periode::orderBy('created_at', 'desc')->get();
+        $santriList = \App\Models\Santri::orderBy('nama')->get();
+        return view('penilaian-v2', compact('penilaian', 'periodes', 'santriList'));
     }
 
     /**

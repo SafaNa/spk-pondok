@@ -15,6 +15,15 @@ class PeriodeController extends Controller
         return view('periode.index', compact('periodes'));
     }
 
+    public function indexV2()
+    {
+        $activePeriode = Periode::where('is_active', true)->first();
+        $periodes = Periode::where('is_active', false)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        return view('periode-v2', compact('activePeriode', 'periodes'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -24,7 +33,7 @@ class PeriodeController extends Controller
 
         Periode::create($request->all());
 
-        return redirect()->route('periode.index')->with('success', 'Periode berhasil ditambahkan');
+        return redirect()->route('periode-v2')->with('success', 'Periode berhasil ditambahkan');
     }
 
     public function update(Request $request, Periode $periode)
@@ -36,7 +45,7 @@ class PeriodeController extends Controller
 
         $periode->update($request->all());
 
-        return redirect()->route('periode.index')->with('success', 'Periode berhasil diperbarui');
+        return redirect()->route('periode-v2')->with('success', 'Periode berhasil diperbarui');
     }
 
     public function destroy(Periode $periode)
@@ -46,7 +55,7 @@ class PeriodeController extends Controller
         }
 
         $periode->delete();
-        return redirect()->route('periode.index')->with('success', 'Periode berhasil dihapus');
+        return redirect()->route('periode-v2')->with('success', 'Periode berhasil dihapus');
     }
 
     public function activate(Periode $periode)
@@ -57,6 +66,6 @@ class PeriodeController extends Controller
         // Activate selected
         $periode->update(['is_active' => true]);
 
-        return redirect()->route('periode.index')->with('success', 'Periode ' . $periode->nama . ' diaktifkan.');
+        return redirect()->route('periode-v2')->with('success', 'Periode ' . $periode->nama . ' diaktifkan.');
     }
 }
