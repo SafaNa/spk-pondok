@@ -82,4 +82,44 @@ Route::middleware(['auth'])->group(function () {
         }
         return back();
     })->name('theme.set');
+
+    // Temporary V2 Route (Static)
+    Route::get('/v2', function () {
+        return view('dashboard-v2');
+    })->name('dashboard-v2');
+
+    // Santri V2 Route (Static)
+    Route::get('/v2/santri', function () {
+        return view('santri-v2');
+    })->name('santri-v2');
+
+    // Kriteria V2 Route (Static)
+    Route::get('/v2/kriteria', function () {
+        return view('kriteria-v2');
+    })->name('kriteria-v2');
+
+    // Periode V2 Route (Static)
+    Route::get('/v2/periode', function () {
+        return view('periode-v2');
+    })->name('periode-v2');
+
+    // Penilaian V2 Route (Static)
+    Route::get('/v2/penilaian', function () {
+        return view('penilaian-v2');
+    })->name('penilaian-v2');
+
+    // Penilaian Form V2 Route (Static)
+    Route::get('/v2/penilaian/create', function () {
+        return view('penilaian-form-v2');
+    })->name('penilaian-form-v2');
+
+    // Rekomendasi V2 Route (Static)
+    Route::get('/v2/rekomendasi', function () {
+        return view('rekomendasi-v2');
+    })->name('rekomendasi-v2');
+
+    // Rekomendasi Detail V2 Route (Static)
+    Route::get('/v2/rekomendasi/{id}', function ($id) {
+        return view('rekomendasi-detail-v2');
+    })->name('rekomendasi-detail-v2');
 });

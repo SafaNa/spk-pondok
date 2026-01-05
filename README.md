@@ -103,4 +103,213 @@ Ikuti langkah berikut untuk menjalankan proyek ini di komputer lokal (Localhost)
 8.  Cetak laporan hasil keputusan.
 
 ---
+
+## 📊 Activity Diagram & Flowchart
+
+### Activity Diagram - Sistem Keseluruhan
+
+```mermaid
+flowchart TB
+    subgraph User["🧑 User/Admin"]
+        Start([Start])
+        End([End])
+    end
+    
+    subgraph Auth["🔐 Authentication"]
+        Login[Login]
+        CheckAuth{Authenticated?}
+        ShowLoginPage[Show Login Page]
+        ValidateCredentials[Validate Credentials]
+    end
+    
+    subgraph Dashboard["📊 Dashboard"]
+        ViewDashboard[View Dashboard]
+        ShowStats[Display Statistics]
+    end
+    
+    subgraph MasterData["📁 Master Data Management"]
+        ManageSantri[Manage Santri]
+        ManageKriteria[Manage Kriteria]
+        ManageSubkriteria[Manage Subkriteria]
+        ManagePeriode[Manage Periode]
+    end
+    
+    subgraph Calculation["🔢 SPK Calculation"]
+        InputPenilaian[Input Penilaian]
+        RunCalculation[Run SAW Calculation]
+        ViewHasil[View Hasil Perhitungan]
+        ViewRekomendasi[View Rekomendasi]
+        SensitivityAnalysis[Sensitivity Analysis]
+    end
+    
+    Start --> Login
+    Login --> ValidateCredentials
+    ValidateCredentials --> CheckAuth
+    CheckAuth -->|No| ShowLoginPage
+    ShowLoginPage --> Login
+    CheckAuth -->|Yes| ViewDashboard
+    ViewDashboard --> ShowStats
+    
+    ShowStats --> ManageSantri
+    ShowStats --> ManageKriteria
+    ShowStats --> ManagePeriode
+    ShowStats --> InputPenilaian
+    
+    ManageKriteria --> ManageSubkriteria
+    InputPenilaian --> RunCalculation
+    RunCalculation --> ViewHasil
+    ViewHasil --> ViewRekomendasi
+    ViewRekomendasi --> SensitivityAnalysis
+    
+    ManageSantri --> End
+    ViewRekomendasi --> End
+    SensitivityAnalysis --> End
+```
+
+### Flowchart - Algoritma SAW
+
+```mermaid
+flowchart TD
+    A([Mulai Perhitungan SAW]) --> B[Ambil semua data kriteria dan bobot]
+    B --> C[Ambil data penilaian santri untuk periode aktif]
+    C --> D[Hitung Total Bobot Semua Kriteria]
+    D --> E[Loop: Untuk setiap kriteria]
+    
+    E --> F{Jenis Kriteria?}
+    
+    F -->|Benefit| G[Ambil nilai MAX dari subkriteria]
+    G --> H["Normalisasi = Nilai / MAX"]
+    
+    F -->|Cost| I[Ambil nilai MIN dari subkriteria]
+    I --> J["Normalisasi = MIN / Nilai"]
+    
+    H --> K["Bobot Ternormalisasi = Bobot / Total Bobot"]
+    J --> K
+    
+    K --> L["Nilai Kriteria = Normalisasi × Bobot Ternormalisasi"]
+    L --> M[Tambahkan ke Nilai Akhir]
+    M --> N{Masih ada kriteria?}
+    N -->|Ya| E
+    N -->|Tidak| O[Simpan Nilai Akhir ke database]
+    O --> P{Nilai Akhir >= 0.7?}
+    
+    P -->|Ya| Q["Status: DIREKOMENDASIKAN ✅"]
+    P -->|Tidak| R{Nilai Akhir >= 0.4?}
+    R -->|Ya| S["Status: DIPERTIMBANGKAN ⚠️"]
+    R -->|Tidak| T["Status: TIDAK DIREKOMENDASIKAN ❌"]
+    
+    Q --> U[Generate Alasan Rekomendasi]
+    S --> U
+    T --> U
+    U --> V[Simpan ke Riwayat Hitung]
+    V --> W([Selesai])
+```
+
+### Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+    USER {
+        uuid id PK
+        string name
+        string email UK
+        string password
+    }
+    
+    SANTRI {
+        uuid id PK
+        string nis UK
+        string nama
+        string kelas
+        string status
+        float nilai_akhir
+    }
+    
+    KRITERIA {
+        uuid id PK
+        string nama_kriteria
+        float bobot
+        string jenis
+    }
+    
+    SUBKRITERIA {
+        uuid id PK
+        uuid kriteria_id FK
+        string nama_subkriteria
+        float nilai
+    }
+    
+    PERIODE {
+        uuid id PK
+        string nama
+        boolean is_active
+    }
+    
+    PENILAIAN {
+        uuid id PK
+        uuid santri_id FK
+        uuid kriteria_id FK
+        uuid subkriteria_id FK
+        uuid periode_id FK
+        float nilai
+    }
+    
+    RIWAYAT_HITUNG {
+        uuid id PK
+        uuid santri_id FK
+        uuid periode_id FK
+        float nilai_akhir
+        text alasan
+    }
+    
+    KRITERIA ||--o{ SUBKRITERIA : "has"
+    SANTRI ||--o{ PENILAIAN : "assessed in"
+    KRITERIA ||--o{ PENILAIAN : "evaluated by"
+    SUBKRITERIA ||--o{ PENILAIAN : "scored with"
+    PERIODE ||--o{ PENILAIAN : "belongs to"
+    SANTRI ||--o{ RIWAYAT_HITUNG : "has calculation"
+    PERIODE ||--o{ RIWAYAT_HITUNG : "belongs to"
+```
+
+### Use Case Diagram
+
+```mermaid
+flowchart LR
+    subgraph System["SPK Pondok Pesantren"]
+        UC1((Login))
+        UC2((Manage Santri))
+        UC3((Manage Kriteria))
+        UC4((Manage Periode))
+        UC5((Input Penilaian))
+        UC6((Hitung SAW))
+        UC7((Lihat Rekomendasi))
+        UC8((Cetak Laporan))
+        UC9((Analisis Sensitivitas))
+    end
+    
+    Admin["🧑‍💼 Admin"] --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Admin --> UC7
+    Admin --> UC8
+    Admin --> UC9
+    
+    UC5 -.->|include| UC6
+    UC6 -.->|include| UC7
+```
+
+### Logika Rekomendasi
+
+| Nilai Akhir | Status | Deskripsi |
+|:-----------:|:------:|-----------|
+| ≥ 0.70 | ✅ Direkomendasikan | Santri memenuhi kriteria dengan sangat baik |
+| 0.40 - 0.69 | ⚠️ Dipertimbangkan | Santri memiliki potensi, perlu evaluasi lebih lanjut |
+| < 0.40 | ❌ Tidak Direkomendasikan | Santri belum memenuhi kriteria minimum |
+
+> 📄 **Dokumentasi lengkap**: Lihat [docs/activity_diagram_flowchart.md](docs/activity_diagram_flowchart.md) untuk diagram tambahan termasuk Sequence Diagram dan Activity Diagram per modul.
+
+---
 **Skripsi Tahun 2025/2026**
