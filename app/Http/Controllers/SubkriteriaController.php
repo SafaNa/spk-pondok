@@ -16,7 +16,7 @@ class SubkriteriaController extends Controller
     public function index(Kriteria $kriteria)
     {
         $subkriteria = $kriteria->subkriteria()->orderBy('nilai', 'desc')->paginate(10);
-        return view('subkriteria.index', compact('kriteria', 'subkriteria'));
+        return view('v2.subkriteria.index', compact('kriteria', 'subkriteria'));
     }
 
     /**
@@ -24,7 +24,7 @@ class SubkriteriaController extends Controller
      */
     public function create(Kriteria $kriteria)
     {
-        return view('subkriteria.create', compact('kriteria'));
+        return view('v2.subkriteria.create', compact('kriteria'));
     }
 
     /**
@@ -40,7 +40,7 @@ class SubkriteriaController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $kriteria->subkriteria()->create([
                 'nama_subkriteria' => $validated['nama_subkriteria'],
                 'nilai' => $validated['nilai'],
@@ -50,7 +50,7 @@ class SubkriteriaController extends Controller
             DB::commit();
             return redirect()->route('kriteria.subkriteria.index', $kriteria->id)
                 ->with('success', 'Subkriteria berhasil ditambahkan');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Gagal menambahkan subkriteria: ' . $e->getMessage());
@@ -62,7 +62,7 @@ class SubkriteriaController extends Controller
      */
     public function show(Kriteria $kriteria, Subkriteria $subkriteria)
     {
-        return view('subkriteria.show', compact('kriteria', 'subkriteria'));
+        return view('v2.subkriteria.show', compact('kriteria', 'subkriteria'));
     }
 
     /**
@@ -70,7 +70,7 @@ class SubkriteriaController extends Controller
      */
     public function edit(Kriteria $kriteria, Subkriteria $subkriteria)
     {
-        return view('subkriteria.edit', compact('kriteria', 'subkriteria'));
+        return view('v2.subkriteria.edit', compact('kriteria', 'subkriteria'));
     }
 
     /**
@@ -86,7 +86,7 @@ class SubkriteriaController extends Controller
 
         try {
             DB::beginTransaction();
-            
+
             $subkriteria->update([
                 'nama_subkriteria' => $validated['nama_subkriteria'],
                 'nilai' => $validated['nilai'],
@@ -96,7 +96,7 @@ class SubkriteriaController extends Controller
             DB::commit();
             return redirect()->route('kriteria.subkriteria.index', $kriteria->id)
                 ->with('success', 'Subkriteria berhasil diperbarui');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Gagal memperbarui subkriteria: ' . $e->getMessage());
@@ -110,18 +110,18 @@ class SubkriteriaController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
             // Check if subkriteria is used in penilaian
             if ($subkriteria->penilaian()->exists()) {
                 return back()->with('error', 'Tidak dapat menghapus subkriteria karena sudah digunakan dalam penilaian.');
             }
-            
+
             $subkriteria->delete();
-            
+
             DB::commit();
             return redirect()->route('kriteria.subkriteria.index', $kriteria->id)
                 ->with('success', 'Subkriteria berhasil dihapus');
-                
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus subkriteria: ' . $e->getMessage());

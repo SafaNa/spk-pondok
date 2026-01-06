@@ -37,18 +37,38 @@ class SantriController extends Controller
     public function index()
     {
         $santri = Santri::latest()->paginate(10);
-        return view('santri.index', compact('santri'));
-    }
-
-    public function indexV2()
-    {
-        $santri = Santri::latest()->paginate(10);
-        return view('santri-v2', compact('santri'));
+        return view('v2.santri.index', compact('santri'));
     }
 
     public function create()
     {
-        return view('santri.create');
+        return view('v2.santri.create');
+    }
+
+    public function edit(Santri $santri)
+    {
+        return view('v2.santri.edit', compact('santri'));
+    }
+
+    public function show(Santri $santri)
+    {
+        // Get active periode
+        $periodeAktif = \App\Models\Periode::where('is_active', true)->first();
+
+        // Load penilaian filtered by active periode
+        if ($periodeAktif) {
+            $santri->load([
+                'penilaian' => function ($query) use ($periodeAktif) {
+                    $query->where('periode_id', $periodeAktif->id)
+                        ->with(['kriteria', 'subkriteria']);
+                }
+            ]);
+        } else {
+            // If no active periode, load empty collection
+            $santri->setRelation('penilaian', collect([]));
+        }
+
+        return view('v2.santri.show', compact('santri', 'periodeAktif'));
     }
 
     public function store(Request $request)
@@ -67,18 +87,10 @@ class SantriController extends Controller
 
         Santri::create($validated);
 
+
+
         return redirect()->route('santri.index')
             ->with('success', 'Data santri berhasil ditambahkan');
-    }
-
-    public function show(Santri $santri)
-    {
-        return view('santri.show', compact('santri'));
-    }
-
-    public function edit(Santri $santri)
-    {
-        return view('santri.edit', compact('santri'));
     }
 
     public function update(Request $request, Santri $santri)
@@ -108,6 +120,7 @@ class SantriController extends Controller
     public function destroy(Santri $santri)
     {
         $santri->delete();
+
         return redirect()->route('santri.index')
             ->with('success', 'Data santri berhasil dihapus');
     }

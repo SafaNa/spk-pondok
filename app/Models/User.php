@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'departemen_id',
     ];
 
     /**
@@ -45,5 +47,37 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relasi ke Departemen
+     */
+    public function departemen()
+    {
+        return $this->belongsTo(\App\Models\Departemen::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is departmental staff
+     */
+    public function isPengurusDepartemen()
+    {
+        return $this->role === 'pengurus_departemen';
+    }
+
+    /**
+     * Check if user is perizinan staff
+     */
+    public function isPengurusPerizinan()
+    {
+        return $this->role === 'pengurus_perizinan';
     }
 }

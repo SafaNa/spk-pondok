@@ -3,30 +3,54 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Departemen;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        // Check if admin exists
-        // if (!User::where('email', 'admin@pondok.com')->exists()) {
-        Schema::disableForeignKeyConstraints();
-        User::truncate();
-        Schema::enableForeignKeyConstraints();
+        $password = Hash::make('password'); // Password sama untuk semua user
 
-        User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@pondok.com',
-            'password' => Hash::make('password'),
-        ]);
-        // }
+        // 1. Admin User
+        User::firstOrCreate(
+            ['email' => 'admin@pondok.test'],
+            [
+                'name' => 'Administrator',
+                'password' => $password,
+                'role' => 'admin',
+                'departemen_id' => null,
+            ]
+        );
+
+        // 2. Pengurus Perizinan
+        User::firstOrCreate(
+            ['email' => 'perizinan@pondok.test'],
+            [
+                'name' => 'Pengurus Perizinan',
+                'password' => $password,
+                'role' => 'pengurus_perizinan',
+                'departemen_id' => null,
+            ]
+        );
+
+        // 3. Pengurus Departemen - satu untuk setiap departemen
+        $departemen = Departemen::all();
+
+        foreach ($departemen as $dept) {
+            User::firstOrCreate(
+                ['email' => strtolower($dept->singkatan) . '@pondok.test'],
+                [
+                    'name' => 'Pengurus ' . $dept->singkatan,
+                    'password' => $password,
+                    'role' => 'pengurus_departemen',
+                    'departemen_id' => $dept->id,
+                ]
+            );
+        }
     }
 }

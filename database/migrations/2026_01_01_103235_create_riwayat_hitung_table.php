@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignUuid('santri_id')->constrained('santri')->onDelete('cascade');
             $table->foreignUuid('periode_id')->constrained('periodes')->onDelete('cascade');
             $table->decimal('nilai_akhir', 8, 4);
+            $table->text('alasan')->nullable();
             $table->timestamps();
         });
     }

@@ -11,31 +11,20 @@ class KriteriaController extends Controller
     {
         $kriteria = Kriteria::with('subkriteria')->get();
         $totalBobot = $kriteria->sum('bobot');
-        return view('kriteria.index', compact('kriteria', 'totalBobot'));
-    }
-
-    public function indexV2()
-    {
-        $kriteria = Kriteria::with('subkriteria')->get();
-        $totalBobot = $kriteria->sum('bobot');
-        return view('kriteria-v2', compact('kriteria', 'totalBobot'));
-    }
-
-    public function createV2()
-    {
-        $totalBobot = Kriteria::sum('bobot');
-        $remainingBobot = 100 - $totalBobot;
-        return view('kriteria-form-v2', compact('totalBobot', 'remainingBobot'));
+        return view('v2.kriteria.index', compact('kriteria', 'totalBobot'));
     }
 
     public function create()
     {
-        $currentTotal = Kriteria::sum('bobot');
-        if ($currentTotal >= 100) {
+        $totalBobot = Kriteria::sum('bobot');
+        $remainingBobot = 100 - $totalBobot;
+
+        if ($remainingBobot <= 0) {
             return redirect()->route('kriteria.index')
                 ->with('error', 'Total bobot sudah mencapai 100%. Harap kurangi bobot kriteria lain sebelum menambah yang baru.');
         }
-        return view('kriteria.create');
+
+        return view('v2.kriteria.form', compact('totalBobot', 'remainingBobot'));
     }
 
     public function store(Request $request)
@@ -53,23 +42,17 @@ class KriteriaController extends Controller
             return back()->withInput()->withErrors(['bobot' => 'Total bobot melebihi 100. Sisa bobot yang tersedia: ' . (100 - $currentTotal)]);
         }
 
-        $kriteria = Kriteria::create($validated);
+        Kriteria::create($validated);
 
         return redirect()->route('kriteria.index')
             ->with('success', 'Kriteria berhasil ditambahkan');
     }
 
-    public function editV2($id)
-    {
-        $kriterium = Kriteria::findOrFail($id);
-        $totalBobot = Kriteria::where('id', '!=', $id)->sum('bobot');
-        $remainingBobot = 100 - $totalBobot;
-        return view('kriteria-form-v2', compact('kriterium', 'totalBobot', 'remainingBobot'));
-    }
-
     public function edit(Kriteria $kriterium)
     {
-        return view('kriteria.edit', compact('kriterium'));
+        $totalBobot = Kriteria::where('id', '!=', $kriterium->id)->sum('bobot');
+        $remainingBobot = 100 - $totalBobot;
+        return view('v2.kriteria.form', compact('kriterium', 'totalBobot', 'remainingBobot'));
     }
 
     public function update(Request $request, Kriteria $kriterium)

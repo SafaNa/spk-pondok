@@ -12,10 +12,19 @@ class SensitivityController extends Controller
 {
     public function index()
     {
-        $kriteria = Kriteria::all();
+        $kriteria = Kriteria::orderBy('kode_kriteria')->get();
         $periode = Periode::where('is_active', true)->first();
 
-        return view('sensitivity.index', compact('kriteria', 'periode'));
+        $riwayat = collect([]);
+        if ($periode) {
+            $riwayat = RiwayatHitung::with('santri')
+                ->where('periode_id', $periode->id)
+                ->orderBy('nilai_akhir', 'desc')
+                ->limit(10)
+                ->get();
+        }
+
+        return view('v2.sensitivitas.index', compact('kriteria', 'periode', 'riwayat'));
     }
 
     public function analyze(Request $request)
@@ -112,7 +121,7 @@ class SensitivityController extends Controller
             $res['rank_change'] = $res['original_rank'] - $res['new_rank']; // Positive means moved UP (e.g. 5 -> 1 = +4)
         }
 
-        return view('sensitivity.index', [
+        return view('v2.sensitivitas.index', [
             'kriteria' => $kriteriaData,
             'periode' => $periode,
             'results' => $results,

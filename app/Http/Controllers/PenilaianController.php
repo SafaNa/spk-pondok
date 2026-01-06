@@ -12,15 +12,9 @@ class PenilaianController extends Controller
     public function index()
     {
         $penilaian = \App\Models\Penilaian::with(['santri', 'kriteria', 'subkriteria'])->latest()->paginate(10);
-        return view('penilaian.index', compact('penilaian'));
-    }
-
-    public function indexV2()
-    {
-        $penilaian = \App\Models\Penilaian::with(['santri', 'kriteria', 'subkriteria'])->latest()->paginate(10);
         $periodes = \App\Models\Periode::orderBy('created_at', 'desc')->get();
         $santriList = \App\Models\Santri::orderBy('nama')->get();
-        return view('penilaian-v2', compact('penilaian', 'periodes', 'santriList'));
+        return view('v2.penilaian.index', compact('penilaian', 'periodes', 'santriList'));
     }
 
     /**
@@ -28,7 +22,13 @@ class PenilaianController extends Controller
      */
     public function create()
     {
-        //
+        $kriteria = \App\Models\Kriteria::with('subkriteria')->get();
+        $santri = \App\Models\Santri::where('status', 'aktif')->orderBy('nama')->get();
+        // Use active periode logic similar to PerhitunganController
+        $activePeriode = \App\Models\Periode::where('is_active', true)->first();
+        $periodes = \App\Models\Periode::orderBy('created_at', 'desc')->get(); // For dropdown if needed
+
+        return view('v2.penilaian.form', compact('kriteria', 'santri', 'activePeriode', 'periodes'));
     }
 
     /**

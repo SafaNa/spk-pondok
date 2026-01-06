@@ -12,40 +12,6 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalSantri = Santri::count();
-        $totalKriteria = Kriteria::count();
-        $totalPenilaian = Penilaian::distinct('santri_id')->count('santri_id');
-
-        // Data for Charts
-        // 1. Santri Status Distribution
-        $santriStatus = Santri::select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status');
-
-        // 2. Top 5 Santri by Score (Active Period)
-        $periode = \App\Models\Periode::where('is_active', true)->first();
-        $topSantri = collect([]); // Default empty collection
-
-        if ($periode) {
-            $topSantri = \App\Models\RiwayatHitung::with('santri')
-                ->where('periode_id', $periode->id)
-                ->orderBy('nilai_akhir', 'desc')
-                ->take(5)
-                ->get();
-        }
-
-        return view('dashboard', compact(
-            'totalSantri',
-            'totalKriteria',
-            'totalPenilaian',
-            'santriStatus',
-            'topSantri',
-            'periode'
-        ));
-    }
-
-    public function indexV2()
-    {
         // Get active periode
         $activePeriode = \App\Models\Periode::where('is_active', true)->first();
 
@@ -96,7 +62,7 @@ class DashboardController extends Controller
         $notRecommendedPercent = $assessedSantri > 0 ? round(($notRecommendedCount / $assessedSantri) * 100) : 0;
         $pendingPercent = $totalSantri > 0 ? round(($pendingCount / $totalSantri) * 100) : 0;
 
-        return view('dashboard-v2', compact(
+        return view('v2.dashboard', compact(
             'activePeriode',
             'totalSantri',
             'totalKriteria',

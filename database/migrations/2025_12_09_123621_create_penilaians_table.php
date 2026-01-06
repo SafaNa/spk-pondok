@@ -12,10 +12,12 @@ return new class extends Migration {
             $table->foreignUuid('santri_id')->constrained('santri')->onDelete('cascade');
             $table->foreignUuid('kriteria_id')->constrained('kriteria')->onDelete('cascade');
             $table->foreignUuid('subkriteria_id')->constrained('subkriteria')->onDelete('cascade');
+            $table->foreignUuid('periode_id')->constrained('periodes')->onDelete('cascade');
             $table->decimal('nilai', 5, 2);
             $table->timestamps();
 
-            // $table->unique(['santri_id', 'kriteria_id']); // Moved to later migration with periode_id
+            // Unique constraint: satu santri hanya bisa dinilai sekali per kriteria per periode
+            $table->unique(['santri_id', 'kriteria_id', 'periode_id']);
         });
     }
 

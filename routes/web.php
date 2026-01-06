@@ -55,8 +55,8 @@ Route::middleware(['auth'])->group(function () {
     // Penilaian Routes
     Route::resource('penilaian', PenilaianController::class);
 
-    // Perhitungan Routes
-    Route::prefix('perhitungan')->group(function () {
+    // Perhitungan Routes (Admin & Pengurus Perizinan)
+    Route::middleware(['role:admin,pengurus_perizinan'])->prefix('perhitungan')->group(function () {
         Route::get('/', [PerhitunganController::class, 'index'])->name('perhitungan.index');
         Route::post('/hitung', [PerhitunganController::class, 'hitung'])->name('perhitungan.hitung');
         Route::delete('/delete/{santri}', [PerhitunganController::class, 'destroy'])->name('perhitungan.destroy');
@@ -71,6 +71,41 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/periode/{periode}/activate', [App\Http\Controllers\PeriodeController::class, 'activate'])->name('periode.activate');
     Route::resource('periode', App\Http\Controllers\PeriodeController::class);
 
+    // Department Management Routes (Admin only)
+    Route::middleware(['role:admin'])->group(function () {
+        Route::resource('departemen', App\Http\Controllers\DepartemenController::class)->parameters(['departemen' => 'departemen']);
+
+        // These nested routes might be deprecated if we move completely to top-level, but keeping for now
+        Route::prefix('departemen/{departemen}')->name('departemen.')->group(function () {
+            Route::resource('jenis-pelanggaran', App\Http\Controllers\JenisPelanggaranController::class);
+        });
+    });
+
+    // Master Data Pelanggaran Routes (Admin & Pengurus)
+    Route::middleware(['role:admin,pengurus_departemen'])->group(function () {
+        Route::resource('kategori-pelanggaran', App\Http\Controllers\KategoriPelanggaranController::class);
+        Route::resource('jenis-pelanggaran', App\Http\Controllers\JenisPelanggaranController::class);
+    });
+
+    // Violation Management Routes (Admin, Pengurus Departemen & Pengurus Perizinan)
+    Route::middleware(['role:admin,pengurus_departemen,pengurus_perizinan'])->prefix('pelanggaran')->group(function () {
+        Route::get('/', [App\Http\Controllers\PelanggaranController::class, 'index'])->name('pelanggaran.index');
+        Route::get('/create', [App\Http\Controllers\PelanggaranController::class, 'create'])->name('pelanggaran.create');
+        Route::post('/', [App\Http\Controllers\PelanggaranController::class, 'store'])->name('pelanggaran.store');
+
+        // Specific ID permissions handled in Controller
+        Route::get('/{id}/edit', [App\Http\Controllers\PelanggaranController::class, 'edit'])->name('pelanggaran.edit');
+        Route::put('/{id}', [App\Http\Controllers\PelanggaranController::class, 'update'])->name('pelanggaran.update');
+        Route::delete('/{id}', [App\Http\Controllers\PelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
+
+        Route::get('/{id}', [App\Http\Controllers\PelanggaranController::class, 'show'])->name('pelanggaran.show');
+        Route::post('/{id}/verify', [App\Http\Controllers\PelanggaranController::class, 'verifySanksi'])->name('pelanggaran.verify');
+    });
+
+    // Santri Violation History (accessible by all authenticated users)
+    Route::get('/santri/{santri}/riwayat-pelanggaran', [App\Http\Controllers\PelanggaranController::class, 'riwayat'])
+        ->name('santri.riwayat-pelanggaran');
+
     // Sensitivity Analysis
     Route::get('/sensitivity', [App\Http\Controllers\SensitivityController::class, 'index'])->name('sensitivity.index');
     Route::post('/sensitivity/analyze', [App\Http\Controllers\SensitivityController::class, 'analyze'])->name('sensitivity.analyze');
@@ -83,55 +118,5 @@ Route::middleware(['auth'])->group(function () {
         return back();
     })->name('theme.set');
 
-    // Dashboard V2 Route (Dynamic)
-    Route::get('/v2', [\App\Http\Controllers\DashboardController::class, 'indexV2'])->name('dashboard-v2');
 
-    // Santri V2 Route (Dynamic)
-    Route::get('/v2/santri', [\App\Http\Controllers\SantriController::class, 'indexV2'])->name('santri-v2');
-
-    // Kriteria V2 Route (Dynamic)
-    Route::get('/v2/kriteria', [\App\Http\Controllers\KriteriaController::class, 'indexV2'])->name('kriteria-v2');
-
-    // Kriteria Form V2 Route (Dynamic)
-    Route::get('/v2/kriteria/create', [\App\Http\Controllers\KriteriaController::class, 'createV2'])->name('kriteria-form-v2');
-
-    // Kriteria Edit V2 Route (Dynamic)
-    Route::get('/v2/kriteria/{id}/edit', [\App\Http\Controllers\KriteriaController::class, 'editV2'])->name('kriteria-edit-v2');
-
-    // Periode V2 Routes (Dynamic)
-    Route::get('/v2/periode', [\App\Http\Controllers\PeriodeController::class, 'indexV2'])->name('periode-v2');
-    Route::post('/v2/periode', [\App\Http\Controllers\PeriodeController::class, 'store'])->name('periode-v2.store');
-    Route::put('/v2/periode/{periode}', [\App\Http\Controllers\PeriodeController::class, 'update'])->name('periode-v2.update');
-    Route::delete('/v2/periode/{periode}', [\App\Http\Controllers\PeriodeController::class, 'destroy'])->name('periode-v2.destroy');
-    Route::patch('/v2/periode/{periode}/activate', [\App\Http\Controllers\PeriodeController::class, 'activate'])->name('periode-v2.activate');
-
-    // Penilaian V2 Route (Dynamic)
-    Route::get('/v2/penilaian', [\App\Http\Controllers\PenilaianController::class, 'indexV2'])->name('penilaian-v2');
-
-    // Penilaian Form V2 Route (Static)
-    Route::get('/v2/penilaian/create', function () {
-        return view('penilaian-form-v2');
-    })->name('penilaian-form-v2');
-
-    // Rekomendasi V2 Route (Dynamic)
-    Route::get('/v2/rekomendasi', [\App\Http\Controllers\PerhitunganController::class, 'rekomendasiV2'])->name('rekomendasi-v2');
-
-    // Rekomendasi Detail V2 Route (Dynamic)
-    Route::get('/v2/rekomendasi/{id}', [\App\Http\Controllers\PerhitunganController::class, 'hasilV2'])->name('rekomendasi-detail-v2');
-
-    // Riwayat V2 Route (Dynamic)
-    Route::get('/v2/riwayat', [\App\Http\Controllers\PerhitunganController::class, 'historyV2'])->name('riwayat-v2');
-
-    // Sensitivitas V2 Route (Dynamic)
-    Route::get('/v2/sensitivitas', [\App\Http\Controllers\PerhitunganController::class, 'sensitivitasV2'])->name('sensitivitas-v2');
-
-    // Login V2 Route (Static)
-    Route::get('/v2/login', function () {
-        return view('login-v2');
-    })->name('login-v2');
-
-    // Ganti Password V2 Route (Static)
-    Route::get('/v2/ganti-password', function () {
-        return view('ganti-password-v2');
-    })->name('ganti-password-v2');
 });

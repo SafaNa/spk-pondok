@@ -22,6 +22,14 @@ return new class extends Migration {
             $table->string('no_hp_ortu');
             $table->float('nilai_akhir')->nullable();
             $table->enum('status', ['aktif', 'non-aktif', 'lulus', 'drop-out'])->default('aktif');
+
+            // SPP & Hafalan fields (untuk SAW)
+            $table->enum('status_spp', ['lunas', 'belum_lunas', 'menunggak'])->default('lunas');
+            $table->decimal('jumlah_tunggakan_spp', 10, 2)->nullable();
+            $table->enum('status_hafalan', ['lengkap', 'belum_lengkap'])->default('lengkap');
+            $table->integer('jumlah_hafalan_tercapai')->nullable();
+            $table->integer('target_hafalan')->nullable();
+
             $table->timestamps();
         });
     }
