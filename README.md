@@ -34,6 +34,14 @@ Aplikasi ini adalah Sistem Informasi Manajemen (SIM) yang dirancang untuk digita
 - **Tagihan & Tunggakan**: Monitoring status pembayaran santri.
 - **Laporan Keuangan**: Rekap pemasukan periode tertentu.
 
+### 6. Notifikasi WhatsApp (Click-to-Chat)
+- **Tanpa API Berbayar**: Menggunakan fitur "Click to Chat" WhatsApp (gratis & aman).
+- **Notifikasi Otomatis**: Prompt pengiriman pesan muncul setelah aksi simpan.
+- **Cakupan Notifikasi**:
+    - Pembayaran SPP (Diterima/Update).
+    - Pencatatan Pelanggaran Santri.
+    - Izin Pulang/Keluar Santri.
+
 ## 🛠️ Metode Pengembangan: Waterfall
 
 Sistem ini dibangun mengikuti tahapan SDLC **Waterfall**:

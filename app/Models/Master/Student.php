@@ -81,4 +81,9 @@ class Student extends Model
     {
         return $this->hasMany(\App\Models\Licensing\StudentLicense::class);
     }
+
+    public function getNotificationPhoneAttribute()
+    {
+        return $this->phone;
+    }
 }

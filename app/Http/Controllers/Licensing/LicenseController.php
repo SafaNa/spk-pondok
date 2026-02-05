@@ -51,7 +51,28 @@ class LicenseController extends Controller
             'description' => $validated['description'],
         ]);
 
-        return redirect()->route('licenses.index')->with('success', 'Izin individu berhasil dicatat.');
+        // WhatsApp Notification Link
+        $waRedirectUrl = null;
+        try {
+            $student = Student::find($validated['student_id']);
+            if ($student && $student->notification_phone) {
+                $service = new \App\Services\WhatsAppService();
+                $startDate = \Carbon\Carbon::parse($validated['start_date'])->format('d-m-Y');
+                $endDate = \Carbon\Carbon::parse($validated['end_date'])->format('d-m-Y');
+                $message = "IZIN PULANG: \n" .
+                    "Ananda {$student->name} telah diberikan izin pulang/keluar. \n" .
+                    "Tanggal: {$startDate} s.d {$endDate}. \n" .
+                    "Keterangan: {$validated['description']}. \n" .
+                    "Mohon pengawasannya. Terima kasih.";
+                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link License: " . $e->getMessage());
+        }
+
+        return redirect()->route('licenses.index')
+            ->with('success', 'Izin individu berhasil dicatat.')
+            ->with('wa_url', $waRedirectUrl);
     }
 
     // Edit Form

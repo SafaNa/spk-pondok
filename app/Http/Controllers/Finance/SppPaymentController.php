@@ -87,8 +87,22 @@ class SppPaymentController extends Controller
             'user_id' => Auth::id(), // Record who created it
         ]);
 
+        // WhatsApp Notification Link
+        $waRedirectUrl = null;
+        try {
+            $student = Student::find($request->student_id);
+            if ($student && $student->notification_phone) {
+                $service = new \App\Services\WhatsAppService();
+                $message = "Pembayaran SPP atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diterima (Status: {$request->status}). Terima kasih.";
+                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP: " . $e->getMessage());
+        }
+
         return redirect()->route('spp-payments.index')
-            ->with('success', 'Pembayaran SPP berhasil ditambahkan');
+            ->with('success', 'Pembayaran SPP berhasil ditambahkan')
+            ->with('wa_url', $waRedirectUrl);
     }
 
     /**
@@ -124,6 +138,18 @@ class SppPaymentController extends Controller
             'note' => $request->note,
             // user_id typically not updated on edit, or maybe strictly for creation logging
         ]);
+
+        // Send WhatsApp Notification (Update)
+        try {
+            $student = Student::find($request->student_id);
+            if ($student && $student->notification_phone) {
+                $service = new \App\Services\WhatsAppService();
+                $message = "Update Pembayaran SPP atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
+                $service->sendMessage($student->notification_phone, $message);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send WA SPP Update: " . $e->getMessage());
+        }
 
         return redirect()->route('spp-payments.index')
             ->with('success', 'Pembayaran SPP berhasil diperbarui');

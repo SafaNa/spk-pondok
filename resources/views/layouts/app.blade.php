@@ -333,12 +333,6 @@
                                     class="material-symbols-outlined text-[24px] {{ request()->routeIs('students.*') ? 'fill-1' : '' }}">group</span>
                                 <span class="text-sm font-medium">Data Santri</span>
                             </a>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('spp-payments.index') }}">
-                                <span
-                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('spp-payments.*') ? 'fill-1' : '' }}">payments</span>
-                                <span class="text-sm font-medium">Pembayaran SPP</span>
-                            </a>
                         @endif
                     </div>
 
@@ -399,6 +393,19 @@
                     @endif
 
 
+
+                    @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
+                        <div class="mb-2">
+                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
+                            </p>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('spp-payments.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                                <span class="text-sm font-medium">Pembayaran SPP</span>
+                            </a>
+                        </div>
+                    @endif
 
                     @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
                         <div class="mb-2">
@@ -792,8 +799,50 @@
 
     <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- WhatsApp Notification Popup -->
+    @if(session('wa_url'))
+        <div x-data="{ 
+                open: true, 
+                url: '{{ session('wa_url') }}' 
+             }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
+
+            <!-- Modal -->
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+
+                    <div
+                        class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30">
+                        <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[28px]">chat</span>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Kirim Notifikasi WA?</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Data berhasil disimpan. Apakah Anda ingin
+                        mengirim notifikasi ke Orang Tua?</p>
+
+                    <div class="flex gap-3">
+                        <button @click="open = false"
+                            class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            Nanti Saja
+                        </button>
+                        <a :href="url" target="_blank" @click="open = false"
+                            class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                            <span>Kirim</span>
+                            <span class="material-symbols-outlined text-[18px]">send</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+</body>
+
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 
 </html>
