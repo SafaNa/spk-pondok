@@ -72,53 +72,110 @@ usecaseDiagram
 ### 2. Entity Relationship Diagram (ERD)
 Sesuaikan dengan struktur database saat ini:
 
+### 2. Entity Relationship Diagram (ERD)
+Diagram relasi antar entitas database yang diperbarui:
+
 ```mermaid
 erDiagram
+    %% --- PENGGUNA ---
     USERS {
         uuid id PK
         string name
         string email
-        string role
+        string role "admin/staff"
     }
-    
+
+    %% --- DATA MASTER ---
+    ACADEMIC_YEARS {
+        uuid id PK
+        string name "2024/2025"
+        boolean is_active
+    }
+    RAYONS {
+        uuid id PK
+        string name "Nama Gedung"
+    }
+    ROOMS {
+        uuid id PK
+        uuid rayon_id FK
+        string name
+    }
+    EDUCATION_LEVELS {
+        uuid id PK
+        string name "SMP/SMA"
+    }
+    DEPARTMENTS {
+        uuid id PK
+        string name
+    }
+
+    %% --- DATA UTAMA ---
     STUDENTS {
         uuid id PK
         string nis UK
         string name
         uuid rayon_id FK
         uuid room_id FK
-        string status
+        uuid education_level_id FK "Opsional"
+        string status "active/graduated"
     }
-    
+
+    %% --- PERIZINAN ---
     STUDENT_LICENSES {
         uuid id PK
         uuid student_id FK
-        date start_date
-        date end_date
-        string type
-        string status
+        datetime start_date
+        datetime end_date
+        string type "individual"
+        string status "approved/rejected"
+        text description
+        boolean memorization_check
     }
-    
-    VIOLATIONS {
+
+    %% --- PELANGGARAN ---
+    VIOLATION_CATEGORIES {
+        uuid id PK
+        string name "Berat/Sedang/Ringan"
+        string severity
+    }
+    VIOLATION_TYPES {
+        uuid id PK
+        uuid category_id FK
+        string name
+        int points
+    }
+    VIOLATION_RECORDS {
         uuid id PK
         uuid student_id FK
         uuid violation_type_id FK
         date date
-        string note
+        text notes
+        string status
     }
-    
+
+    %% --- KEUANGAN ---
     SPP_PAYMENTS {
         uuid id PK
         uuid student_id FK
         uuid academic_year_id FK
         int month
         decimal amount
+        datetime paid_at
     }
 
+    %% RELASI
+    RAYONS ||--o{ ROOMS : "contains"
+    ROOMS ||--o{ STUDENTS : "houses"
+    
     STUDENTS ||--o{ STUDENT_LICENSES : "requests"
-    STUDENTS ||--o{ VIOLATIONS : "commits"
+    USERS ||--o{ STUDENT_LICENSES : "validates"
+    
+    VIOLATION_CATEGORIES ||--o{ VIOLATION_TYPES : "classifies"
+    VIOLATION_TYPES ||--o{ VIOLATION_RECORDS : "defines"
+    STUDENTS ||--o{ VIOLATION_RECORDS : "commits"
+
+    ACADEMIC_YEARS ||--o{ SPP_PAYMENTS : "periods"
     STUDENTS ||--o{ SPP_PAYMENTS : "pays"
-    USERS ||--o{ STUDENT_LICENSES : "approves"
 ```
 
 ### 3. Detail Modul: Perizinan
