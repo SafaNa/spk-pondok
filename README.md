@@ -4,6 +4,7 @@
 ![Development Method](https://img.shields.io/badge/Method-Waterfall-blue)
 ![Laravel](https://img.shields.io/badge/Framework-Laravel-red)
 ![Tailwind](https://img.shields.io/badge/UI-TailwindCSS-blue)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)
 
 Aplikasi ini adalah Sistem Informasi Manajemen (SIM) yang dirancang untuk digitalisasi administrasi pondok pesantren. Sistem ini dikembangkan menggunakan metode **Waterfall** untuk memastikan alur pengembangan yang terstruktur dan sesuai dengan kebutuhan pengguna.
 
