@@ -323,7 +323,7 @@
                             href="{{ route('dashboard') }}">
                             <span
                                 class="material-symbols-outlined text-[24px] {{ request()->routeIs('dashboard', 'home') ? 'fill-1' : '' }}">dashboard</span>
-                            <span class="text-sm font-medium">Dashboard</span>
+                            <span class="text-sm font-medium">Dashboardku</span>
                         </a>
 
                         @if(Auth::user()->isAdmin())
@@ -802,9 +802,9 @@
     <!-- WhatsApp Notification Popup -->
     @if(session('wa_url'))
         <div x-data="{ 
-                open: true, 
-                url: '{{ session('wa_url') }}' 
-             }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+                    open: true, 
+                    url: '{{ session('wa_url') }}' 
+                 }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
 
             <!-- Backdrop -->
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
