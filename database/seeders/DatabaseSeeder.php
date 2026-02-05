@@ -9,16 +9,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-                // Department and violation structure FIRST
-            DepartemenSeeder::class,
-            KategoriPelanggaranSeeder::class,
-            JenisPelanggaranSeeder::class,
-                // Then users and master data
+            DepartmentSeeder::class,
             UserSeeder::class,
-            PeriodeMigrationSeeder::class,
-            KriteriaSeeder::class,
+            \Laravolt\Indonesia\Seeds\DatabaseSeeder::class,
+            AcademicYearSeeder::class,
+            EducationLevelSeeder::class,
+            RayonSeeder::class,
+            RoomSeeder::class,
+            MemorizationTypeSeeder::class,
             SantriSeeder::class,
-            DummyDataSeeder::class,
         ]);
     }
 }

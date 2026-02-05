@@ -1,291 +1,212 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en" class="light">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SPK Santri P2AL II</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - SPK Kepulangan Santri</title>
 
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
 
-        .login-bg {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            position: relative;
-            overflow: hidden;
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
         }
-
-        .login-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            /* IE and Edge */
-            scrollbar-width: none;
-            /* Firefox */
-        }
-    </style>
+    </script>
 </head>
 
-<body class="h-screen flex items-stretch overflow-hidden">
-    <!-- Left Side - Form -->
-    <div class="flex-1 flex items-center justify-center p-6 bg-white relative z-10">
-        <div class="w-full max-w-sm">
-            <div class="text-center mb-6">
-                <div
-                    class="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-emerald-50 text-emerald-600 mb-4 p-2 shadow-sm">
-                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="h-full w-full object-contain">
+<body class="bg-background-light dark:bg-background-dark text-[#0d141b] dark:text-slate-200 font-display antialiased">
+    <div class="min-h-screen flex w-full">
+        <!-- Left Section: Visual / Context (Desktop Only) -->
+        <div class="hidden lg:flex w-1/2 relative bg-primary overflow-hidden flex-col justify-between p-12 text-white">
+            <div class="absolute inset-0 z-0">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary via-blue-600 to-blue-800"></div>
+                <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" />
+                            </pattern>
+                        </defs>
+                        <rect width="100" height="100" fill="url(#grid)" />
+                    </svg>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Selamat Datang</h1>
-                <p class="mt-2 text-sm text-gray-500">
-                    Sistem Pendukung Keputusan Kepulangan Santri
-                    <br class="hidden sm:block">
-                    Pondok Pesantren Annuqayah Latee II
+            </div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                        <span class="material-symbols-outlined text-3xl">school</span>
+                    </div>
+                    <span class="text-xl font-bold tracking-wide uppercase">Pesantren Connect</span>
+                </div>
+            </div>
+            <div class="relative z-10 max-w-lg">
+                <h1 class="text-5xl font-bold leading-tight mb-6">SPK Kepulangan Santri</h1>
+                <p class="text-lg text-blue-50 leading-relaxed opacity-90">
+                    Sistem pendukung keputusan objektif menggunakan metode Simple Additive Weighting (SAW) untuk
+                    menyederhanakan dan memvalidasi rekomendasi kepulangan santri.
                 </p>
             </div>
-
-            <form method="POST" action="{{ route('login') }}" class="space-y-4">
-                @csrf
-
-                <div class="space-y-1">
-                    <label for="email" class="block text-xs font-medium text-gray-700">Email Address</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <input type="email" name="email" id="email" required autofocus placeholder="masukan email anda"
-                            value="admin@pondok.test"
-                            class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition duration-200">
-                    </div>
-                    @error('email')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="space-y-1">
-                    <label for="password" class="block text-xs font-medium text-gray-700">Password</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                        </div>
-                        <input type="password" name="password" id="password" required placeholder="••••••••"
-                            value="password"
-                            class="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition duration-200">
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember_me" type="checkbox" name="remember"
-                            class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded cursor-pointer">
-                        <label for="remember_me" class="ml-2 block text-xs text-gray-600 cursor-pointer">
-                            Ingat Saya
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-emerald-500 transform transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
-                    Masuk ke Sistem
-                </button>
-            </form>
-
-            <div class="mt-6 border-t border-gray-100 pt-4 text-center">
-                <p class="text-xs text-gray-400">
-                    &copy; {{ date('Y') }} Pondok Pesantren Annuqayah Latee II.
-                </p>
+            <div class="relative z-10 text-sm text-blue-100 opacity-60">
+                © {{ date('Y') }} Pesantren Administration System.
             </div>
         </div>
-    </div>
 
-    <!-- Right Side - Visual -->
-    <div class="hidden lg:flex lg:flex-1 login-bg items-center justify-center relative">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-        <div class="relative z-10 w-full max-w-lg p-8 text-white"
-            x-data="{ activeSlide: 0, slides: [0, 1, 2], timer: null }"
-            x-init="timer = setInterval(() => activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1, 8000)">
-            <div class="glass-effect rounded-3xl p-8 text-emerald-900 shadow-2xl min-h-[320px] flex flex-col justify-between transition-all duration-500"
-                @mouseenter="clearInterval(timer)"
-                @mouseleave="timer = setInterval(() => activeSlide = activeSlide === slides.length - 1 ? 0 : activeSlide + 1, 8000)">
+        <!-- Right Section: Login Form -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-12 relative">
+            <!-- Mobile Header Logo (Visible only on small screens) -->
+            <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined text-3xl">school</span>
+                <span class="font-bold text-lg text-[#0d141b] dark:text-white">SPK Santri</span>
+            </div>
 
-                <!-- Slide Content Wrapper -->
-                <div class="flex-grow flex items-center justify-center overflow-hidden relative">
-                    <!-- Slide 1: Quote -->
-                    <div x-show="activeSlide === 0" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform translate-x-4"
-                        x-transition:enter-end="opacity-100 transform translate-x-0"
-                        x-transition:leave="transition ease-in duration-300"
-                        x-transition:leave-start="opacity-100 transform translate-x-0"
-                        x-transition:leave-end="opacity-0 transform -translate-x-4"
-                        class="absolute inset-0 flex flex-col justify-center items-center">
-                        <blockquote class="text-xl font-medium italic mb-4 text-center">
-                            "Memberikan penilaian yang objektif dan transparan demi kemaslahatan santri dan pondok
-                            pesantren."
-                        </blockquote>
-                        <div class="mt-4 font-bold uppercase tracking-wider text-sm text-emerald-700">
-                            Prinsip Metode SAW
+            <div class="w-full max-w-[480px] flex flex-col gap-6">
+                <!-- Page Heading -->
+                <div class="flex flex-col gap-2 mb-2">
+                    <h2 class="text-[#0d141b] dark:text-white tracking-tight text-[32px] font-bold leading-tight">
+                        Administrator Login</h2>
+                    <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal">
+                        Welcome back! Please enter your details to access the dashboard.
+                    </p>
+                </div>
+
+                <!-- Session Flash Message -->
+                @if(session('error'))
+                    <div
+                        class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
+                        <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Authentication Failed</h3>
+                            <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ session('error') }}</p>
                         </div>
                     </div>
+                @endif
 
-                    <!-- Slide 2: SAW Explanation -->
-                    <div x-show="activeSlide === 1" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform translate-x-4"
-                        x-transition:enter-end="opacity-100 transform translate-x-0"
-                        x-transition:leave="transition ease-in duration-300"
-                        x-transition:leave-start="opacity-100 transform translate-x-0"
-                        x-transition:leave-end="opacity-0 transform -translate-x-4"
-                        class="absolute inset-0 flex flex-col justify-center text-left">
-                        <h3
-                            class="text-xs font-bold text-center mb-3 text-emerald-800 uppercase tracking-wider border-b border-emerald-100 pb-2">
-                            Elemen Kunci Metode SAW</h3>
-                        <div class="space-y-2 text-[11px] text-gray-600 leading-snug pr-1">
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">1.</span>
-                                <div><strong class="text-emerald-800">Alternatif:</strong> Objek yang dievaluasi
-                                    (santri).</div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">2.</span>
-                                <div><strong class="text-emerald-800">Kriteria:</strong> Faktor penilaian (akhlak,
-                                    prestasi, dll).</div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">3.</span>
-                                <div><strong class="text-emerald-800">Bobot:</strong> Tingkat kepentingan relatif (Total
-                                    = 1).</div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">4.</span>
-                                <div><strong class="text-emerald-800">Rating (<span
-                                            class="italic">x<sub>ij</sub></span>):</strong> Nilai mentah dari setiap
-                                    kriteria.</div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">5.</span>
-                                <div>
-                                    <strong class="text-emerald-800">Normalisasi (<span
-                                            class="italic">r<sub>ij</sub></span>):</strong> Skala 0-1.
-                                    <div
-                                        class="ml-1 mt-0.5 grid grid-cols-2 gap-x-2 text-[10px] text-emerald-700 bg-emerald-50 p-1 rounded">
-                                        <span>&bull; <strong>Benefit:</strong> Lebih besar = Lebih Baik</span>
-                                        <span>&bull; <strong>Cost:</strong> Lebih kecil = Lebih Baik</span>
-                                    </div>
+                @if($errors->any())
+                    <div
+                        class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
+                        <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Authentication Failed</h3>
+                            <p class="text-sm text-red-600 dark:text-red-400 mt-1">
+                                The credentials provided do not match our records. Please try again.
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Login Form -->
+                <form action="{{ route('login') }}" method="POST" class="flex flex-col gap-5">
+                    @csrf
+
+                    <!-- Email Input Field -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[#0d141b] dark:text-slate-200 text-base font-medium leading-normal"
+                            for="email">Email Address</label>
+                        <div class="relative">
+                            <input
+                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('email') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-14 placeholder:text-[#4c739a] p-[15px] text-base font-normal leading-normal transition-all"
+                                id="email" name="email" placeholder="admin@pesantren.com" required type="email"
+                                value="admin@pondok.test" />
+                            @if($errors->has('email'))
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
+                                    <span class="material-symbols-outlined text-[20px]">warning</span>
                                 </div>
-                            </div>
-                            <div class="flex items-start gap-2">
-                                <span class="font-bold text-emerald-700 text-xs w-4">6.</span>
-                                <div><strong class="text-emerald-800">Nilai Akhir (<span
-                                            class="italic">V<sub>i</sub></span>):</strong> Bobot &times; Normalisasi =
-                                    Ranking.</div>
-                            </div>
+                            @endif
                         </div>
+                        @error('email')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <!-- Slide 3: Tujuan Sistem -->
-                    <div x-show="activeSlide === 2" x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform translate-x-4"
-                        x-transition:enter-end="opacity-100 transform translate-x-0"
-                        x-transition:leave="transition ease-in duration-300"
-                        x-transition:leave-start="opacity-100 transform translate-x-0"
-                        x-transition:leave-end="opacity-0 transform -translate-x-4"
-                        class="absolute inset-0 flex flex-col justify-center items-center text-center">
-                        <h3 class="text-sm font-bold mb-2 text-emerald-800 uppercase tracking-wide">Tujuan Sistem</h3>
-                        <div class="space-y-1.5 text-[10px] text-gray-700 w-full px-1 overflow-hidden">
-                            <div
-                                class="flex items-start space-x-2 bg-emerald-50/50 p-1.5 rounded-lg border border-emerald-100/50 items-center">
-                                <div
-                                    class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
-                                    1</div>
-                                <span class="font-medium text-left leading-tight">Membantu menentukan santri yang layak
-                                    untuk kepulangan.</span>
-                            </div>
-                            <div
-                                class="flex items-start space-x-2 bg-emerald-50/50 p-1.5 rounded-lg border border-emerald-100/50 items-center">
-                                <div
-                                    class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
-                                    2</div>
-                                <span class="font-medium text-left leading-tight">Mengurangi subjektivitas pengambilan
-                                    keputusan.</span>
-                            </div>
-                            <div
-                                class="flex items-start space-x-2 bg-emerald-50/50 p-1.5 rounded-lg border border-emerald-100/50 items-center">
-                                <div
-                                    class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
-                                    3</div>
-                                <span class="font-medium text-left leading-tight">Perhitungan objektif & terukur sesuai
-                                    kriteria.</span>
-                            </div>
-                            <div
-                                class="flex items-start space-x-2 bg-emerald-50/50 p-1.5 rounded-lg border border-emerald-100/50 items-center">
-                                <div
-                                    class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
-                                    4</div>
-                                <span class="font-medium text-left leading-tight">Keputusan berdasarkan fakta dan data,
-                                    bukan asumsi.</span>
-                            </div>
-                            <div
-                                class="flex items-start space-x-2 bg-emerald-50/50 p-1.5 rounded-lg border border-emerald-100/50 items-center">
-                                <div
-                                    class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
-                                    5</div>
-                                <span class="font-medium text-left leading-tight">Hasil rekomendasi transparan & dapat
-                                    dipertanggungjawabkan.</span>
-                            </div>
+                    <!-- Password Input Field -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[#0d141b] dark:text-slate-200 text-base font-medium leading-normal"
+                                for="password">Password</label>
                         </div>
+                        <div class="flex w-full items-stretch rounded-lg relative group">
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('password') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 focus:border-primary h-14 placeholder:text-[#4c739a] p-[15px] pr-12 text-base font-normal leading-normal transition-all"
+                                id="password" name="password" placeholder="Enter your password" required type="password"
+                                value="password" />
+                            <button
+                                class="absolute right-0 top-0 h-full px-4 text-[#4c739a] hover:text-primary dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-colors"
+                                type="button" onclick="togglePassword()">
+                                <span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+                            </button>
+                        </div>
+                        @error('password')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                </div>
 
-                <!-- Indicators -->
-                <div class="flex items-center justify-center space-x-2 mt-6 z-20">
-                    <button @click="activeSlide = 0"
-                        :class="activeSlide === 0 ? 'w-8 bg-emerald-600' : 'w-2 bg-emerald-600/40 hover:bg-emerald-600/60'"
-                        class="h-1.5 rounded-full transition-all duration-300 focus:outline-none"></button>
-                    <button @click="activeSlide = 1"
-                        :class="activeSlide === 1 ? 'w-8 bg-emerald-600' : 'w-2 bg-emerald-600/40 hover:bg-emerald-600/60'"
-                        class="h-1.5 rounded-full transition-all duration-300 focus:outline-none"></button>
-                    <button @click="activeSlide = 2"
-                        :class="activeSlide === 2 ? 'w-8 bg-emerald-600' : 'w-2 bg-emerald-600/40 hover:bg-emerald-600/60'"
-                        class="h-1.5 rounded-full transition-all duration-300 focus:outline-none"></button>
-                </div>
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between mt-1">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <div class="relative flex items-center">
+                                <input
+                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 checked:bg-primary checked:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
+                                    type="checkbox" name="remember" />
+                                <span
+                                    class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 text-[16px] pointer-events-none font-bold">check</span>
+                            </div>
+                            <span
+                                class="text-sm font-medium text-[#0d141b] dark:text-slate-300 group-hover:text-primary transition-colors">Remember
+                                me</span>
+                        </label>
+                        <a class="text-sm font-bold text-primary hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+                            href="#">
+                            Forgot Password?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-md hover:shadow-lg mt-4 gap-2"
+                        type="submit">
+                        <span class="material-symbols-outlined text-[20px]">login</span>
+                        <span class="truncate">Sign In</span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.textContent = 'visibility';
+            }
+        }
+    </script>
 </body>
 
 </html>

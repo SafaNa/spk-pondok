@@ -312,4 +312,79 @@ flowchart LR
 > 📄 **Dokumentasi lengkap**: Lihat [docs/activity_diagram_flowchart.md](docs/activity_diagram_flowchart.md) untuk diagram tambahan termasuk Sequence Diagram dan Activity Diagram per modul.
 
 ---
+---
+
+## 🔐 Modul Perizinan (Licensing System)
+
+Modul ini menangani proses perizinan pulang santri, mulai dari pengajuan, validasi, hingga pencetakan surat izin.
+
+### 1. Use Case Diagram - Perizinan
+```mermaid
+usecaseDiagram
+    actor "Admin / Petugas Izin" as Admin
+    
+    package "Sistem Perizinan" {
+        usecase "Input Izin Individu" as UC_Individu
+        usecase "Edit Data Izin" as UC_Edit
+        usecase "Cetak Surat Jalan" as UC_Print
+        usecase "Validasi Kepulangan" as UC_Validate
+        usecase "Lihat Riwayat Izin" as UC_History
+    }
+
+    Admin --> UC_Individu
+    Admin --> UC_Edit
+    Admin --> UC_Print
+    Admin --> UC_Validate
+    Admin --> UC_History
+```
+
+### 2. Activity Diagram - Alur Pembuatan Izin
+```mermaid
+activityDiagram
+    start
+    :Admin Login;
+    :Masuk Menu Perizinan;
+    if (Izin Baru?) then (Ya)
+        :Klik 'Izin Individu';
+        :Pilih Santri;
+        :Input Tanggal & Alasan;
+        if (Hafalan Valid?) then (Ya)
+            :Input Checklist Hafalan (Opsional);
+        else (Tidak)
+            :Beri Catatan;
+        endif
+        :Simpan Data;
+    else (Edit)
+        :Pilih Data Izin;
+        :Klik Edit;
+        :Update Data;
+        :Simpan Perubahan;
+    endif
+    :Data Tersimpan 'Approved';
+    :Cetak Surat Jalan;
+    stop
+```
+
+### 3. Flowchart - Logika Validasi Izin
+```mermaid
+flowchart TD
+    Start([Mulai]) --> InputData[Input Data Santri & Tanggal]
+    InputData --> CheckDurasi{Cek Durasi Izin}
+    CheckDurasi -->|<= 3 Hari| StatusOK[Status: Approved]
+    CheckDurasi -->|> 3 Hari| CheckAlasan{Cek Alasan}
+    CheckAlasan -->|Sakit/Penting| StatusOK
+    CheckAlasan -->|Lainnya| Warning[Tampilkan Peringatan]
+    Warning --> StatusOK
+    
+    StatusOK --> SaveDB[(Simpan ke Database)]
+    SaveDB --> GenSurat[Generate Surat Izin PDF]
+    GenSurat --> End([Selesai])
+```
+
+### 4. Desain Prototipe (Dashboard Perizinan)
+Berikut adalah desain antarmuka untuk Dashboard Sistem Perizinan yang telah diimplementasikan:
+
+![Dashboard Perizinan Mockup](public/docs/images/licensing_dashboard_mockup.png)
+
+---
 **Skripsi Tahun 2025/2026**

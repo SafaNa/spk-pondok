@@ -6,12 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\Master\Department;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,8 +23,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'departemen_id',
+        'department_id',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -48,36 +53,27 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
     /**
-     * Relasi ke Departemen
+     * Check if user is an administrator.
      */
-    public function departemen()
-    {
-        return $this->belongsTo(\App\Models\Departemen::class);
-    }
-
-    /**
-     * Check if user is admin
-     */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
     /**
-     * Check if user is departmental staff
+     * Check if user is a licensing officer.
      */
-    public function isPengurusDepartemen()
+    public function isLicensingOfficer(): bool
     {
-        return $this->role === 'pengurus_departemen';
+        return $this->role === 'licensing_officer';
     }
 
     /**
-     * Check if user is perizinan staff
+     * Check if user is a department officer.
      */
-    public function isPengurusPerizinan()
+    public function isDepartmentOfficer(): bool
     {
-        return $this->role === 'pengurus_perizinan';
+        return $this->role === 'department_officer';
     }
 }

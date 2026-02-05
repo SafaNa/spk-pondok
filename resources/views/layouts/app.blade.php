@@ -18,15 +18,15 @@
         rel="stylesheet" />
     <!-- Tailwind CSS (CDN for V2 Styles) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Alpine.js Plugins -->
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-    <!-- Alpine.js Core -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Choices.js -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    <!-- Select2 for searchable dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
         /* Custom Choices.js Styles for Tailwind */
         .choices__inner {
@@ -39,15 +39,18 @@
             display: flex;
             align-items: center;
         }
+
         .dark .choices__inner {
             background-color: #1e293b;
             border-color: #334155;
             color: #fff;
         }
+
         .choices.is-focused .choices__inner {
             border-color: #3b82f6;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
+
         .choices__list--dropdown {
             background-color: #fff;
             border: 1px solid #e2e8f0;
@@ -56,22 +59,27 @@
             margin-top: 0.5rem;
             z-index: 50;
         }
+
         .dark .choices__list--dropdown {
             background-color: #1e293b;
             border-color: #334155;
             color: #fff;
         }
+
         .choices__list--dropdown .choices__item--selectable {
             padding: 0.75rem 1rem;
         }
+
         .choices__list--dropdown .choices__item--selectable.is-highlighted {
             background-color: #eff6ff;
             color: #1e293b;
         }
+
         .dark .choices__list--dropdown .choices__item--selectable.is-highlighted {
             background-color: #334155;
             color: #fff;
         }
+
         /* Mobile adjustments */
         @media (max-width: 640px) {
             .choices__inner {
@@ -79,27 +87,33 @@
                 font-size: 0.875rem;
             }
         }
+
         /* Fix Arrow Logic: Hide default Choices.js triangle and use SVG */
         .choices[data-type*="select-one"]::after {
             display: none !important;
         }
+
         .choices__inner {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 1rem center;
             background-repeat: no-repeat;
             background-size: 1.25em 1.25em;
-            padding-right: 3rem !important; /* Space for Arrow + Clear Button */
+            padding-right: 3rem !important;
+            /* Space for Arrow + Clear Button */
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
+
         .dark .choices__inner {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
         }
-        
+
         /* Adjust inner padding to accommodate both icons */
         .choices__inner {
-            position: relative; /* Ensure absolute positioning works relative to this */
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); /* Increased stroke width to 2 */
+            position: relative;
+            /* Ensure absolute positioning works relative to this */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            /* Increased stroke width to 2 */
             background-position: right 1rem center;
             background-repeat: no-repeat;
             background-size: 1.25em 1.25em;
@@ -107,9 +121,12 @@
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
+
         .dark .choices__inner {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); /* Increased stroke width to 2 */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            /* Increased stroke width to 2 */
         }
+
         .choices__list--single .choices__item {
             white-space: nowrap;
             overflow: hidden;
@@ -121,46 +138,107 @@
         localStorage.removeItem("theme");
         document.documentElement.classList.remove("dark");
     </script>
-    <script>
-        // Define store setup function
-        const setupDeleteModalStore = () => {
-            if (Alpine.store('deleteModal')) return; // Prevent double init
+    <style>
+        .material-symbols-outlined.fill-1 {
+            font-variation-settings: 'FILL' 1;
+        }
 
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+    <!-- Alpine.js Store Setup (Head - Synchronous) -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            // console.log('Alpine Init: Registering Stores');
+
+            // Delete Modal Store
             Alpine.store('deleteModal', {
                 show: false,
                 message: '',
+                form: null,
 
                 open(form, message = 'Apakah Anda yakin ingin menghapus data ini?') {
-                    console.log('Opening modal', form);
-                    window.deleteModalForm = form; // Use global var for robustness
+                    this.form = form;
                     this.message = message;
                     this.show = true;
                 },
 
                 confirm() {
-                    console.log('Confirming delete', window.deleteModalForm);
-                    if (window.deleteModalForm) {
-                        // Directly submit the form element
-                        window.deleteModalForm.submit();
-                    } else {
-                        console.error('No form to submit');
-                    }
+                    if (this.form) this.form.submit();
                     this.show = false;
                 },
 
                 cancel() {
                     this.show = false;
-                    window.deleteModalForm = null;
+                    this.form = null;
                 }
             });
-        };
 
-        // Initialize immediately if Alpine is ready, otherwise wait for init
-        if (window.Alpine) {
-            setupDeleteModalStore();
-        } else {
-            document.addEventListener('alpine:init', setupDeleteModalStore);
-        }
+            // Confirm Modal Store
+            Alpine.store('confirmModal', {
+                show: false,
+                title: 'Konfirmasi',
+                message: '',
+                confirmText: 'Ya, Lanjutkan',
+                cancelText: 'Batal',
+                type: 'primary',
+                form: null,
+
+                open(form, title = 'Konfirmasi', message = 'Apakah Anda yakin?', confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', type = 'primary') {
+                    this.form = form;
+                    this.title = title;
+                    this.message = message;
+                    this.confirmText = confirmText;
+                    this.cancelText = cancelText;
+                    this.type = type;
+                    this.show = true;
+                },
+
+                confirm() {
+                    if (this.form) this.form.submit();
+                    this.show = false;
+                },
+
+                cancel() {
+                    this.show = false;
+                    this.form = null;
+                }
+            });
+
+            // Image Preview Modal Store
+            Alpine.store('imageModal', {
+                show: false,
+                imageUrl: '',
+                altText: '',
+
+                open(url, alt = 'Preview') {
+                    this.imageUrl = url;
+                    this.altText = alt;
+                    this.show = true;
+                },
+
+                close() {
+                    this.show = false;
+                    setTimeout(() => {
+                        this.imageUrl = '';
+                        this.altText = '';
+                    }, 300); // Wait for transition
+                }
+            });
+        });
     </script>
     <!-- Tailwind Config -->
     <script>
@@ -180,7 +258,6 @@
                 },
             },
         }
-    </script>
     </script>
     <style>
         .material-symbols-outlined.fill-1 {
@@ -238,114 +315,124 @@
 
             <!-- Nav Items (Scrollable area) -->
             <div class="flex-1 overflow-y-auto px-3 py-2 scroll-smooth no-scrollbar">
-                <nav class="flex flex-col gap-1">
-                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('dashboard') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                        href="{{ route('dashboard') }}">
-                        <span
-                            class="material-symbols-outlined text-[24px] {{ request()->routeIs('dashboard') ? 'fill-1' : '' }}">dashboard</span>
-                        <span class="text-sm font-medium">Dashboard</span>
-                    </a>
-                    @if(Auth::user()->isAdmin())
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('santri.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('santri.index') }}">
+                <nav class="flex flex-col gap-2">
+                    <div class="mb-0 space-y-0.5">
+                        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Menu Utama
+                        </p>
+                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('dashboard', 'home') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                            href="{{ route('dashboard') }}">
                             <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('santri.*') ? 'fill-1' : '' }}">group</span>
-                            <span class="text-sm font-medium">Data Santri</span>
+                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('dashboard', 'home') ? 'fill-1' : '' }}">dashboard</span>
+                            <span class="text-sm font-medium">Dashboard</span>
                         </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('kriteria.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('kriteria.index') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('kriteria.*') ? 'fill-1' : '' }}">tune</span>
-                            <span class="text-sm font-medium">Kriteria</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('periode.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('periode.index') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('periode.*') ? 'fill-1' : '' }}">calendar_month</span>
-                            <span class="text-sm font-medium">Periode</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('departemen.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('departemen.index') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('departemen.*') ? 'fill-1' : '' }}">apartment</span>
-                            <span class="text-sm font-medium">Departemen</span>
-                        </a>
-                    @endif
 
-                    @if(Auth::user()->isAdmin() || Auth::user()->isPengurusDepartemen() || Auth::user()->isPengurusPerizinan())
-                        <div x-data="{ open: {{ request()->routeIs('pelanggaran.*') || request()->routeIs('kategori-pelanggaran.*') || request()->routeIs('jenis-pelanggaran.*') ? 'true' : 'false' }} }">
+                        @if(Auth::user()->isAdmin())
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('students.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('students.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('students.*') ? 'fill-1' : '' }}">group</span>
+                                <span class="text-sm font-medium">Data Santri</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('spp-payments.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                                <span class="text-sm font-medium">Pembayaran SPP</span>
+                            </a>
+                        @endif
+                    </div>
+
+                    @if(Auth::user()->isAdmin())
+
+                        <!-- Data Master Group -->
+                        <div x-data="{ open: {{ (request()->is('academic-years*', 'periods*', 'education-levels*', 'rayons*', 'rooms*', 'departments*', 'memorization-types*')) ? 'true' : 'false' }} }"
+                            class="mb-2">
                             <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors group {{ request()->routeIs('pelanggaran.*') || request()->routeIs('kategori-pelanggaran.*') || request()->routeIs('jenis-pelanggaran.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }}">
+                                class="flex items-center justify-between w-full gap-3 px-3 py-2.5 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors group">
                                 <div class="flex items-center gap-3">
-                                    <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('pelanggaran.*') || request()->routeIs('kategori-pelanggaran.*') || request()->routeIs('jenis-pelanggaran.*') ? 'fill-1' : '' }}">warning</span>
-                                    <span class="text-sm font-medium">Pelanggaran</span>
+                                    <span class="material-symbols-outlined text-[24px]">database</span>
+                                    <span class="text-sm font-medium">Data Master</span>
                                 </div>
-                                <span class="material-symbols-outlined text-[20px] transition-transform duration-300"
+                                <span class="material-symbols-outlined text-[20px] transition-transform duration-200"
                                     :class="open ? 'rotate-180' : ''">expand_more</span>
                             </button>
-                            <div x-show="open" x-collapse
-                                class="overflow-hidden">
-                                <div class="pl-11 pr-3 py-2 space-y-1">
-                                    <a href="{{ route('pelanggaran.index') }}"
-                                        class="block py-2 text-sm {{ request()->routeIs('pelanggaran.index') || request()->routeIs('pelanggaran.show') || request()->routeIs('pelanggaran.create') ? 'text-primary font-bold' : 'text-[#4c739a] hover:text-[#0d141b] dark:text-slate-500 dark:hover:text-white' }} transition-colors">
-                                        Data Pelanggaran
-                                    </a>
-                                    @if(Auth::user()->isAdmin())
-                                        <a href="{{ route('kategori-pelanggaran.index') }}"
-                                            class="block py-2 text-sm {{ request()->routeIs('kategori-pelanggaran.*') ? 'text-primary font-bold' : 'text-[#4c739a] hover:text-[#0d141b] dark:text-slate-500 dark:hover:text-white' }} transition-colors">
-                                            Kategori
-                                        </a>
-                                        <a href="{{ route('jenis-pelanggaran.index') }}"
-                                            class="block py-2 text-sm {{ request()->routeIs('jenis-pelanggaran.*') ? 'text-primary font-bold' : 'text-[#4c739a] hover:text-[#0d141b] dark:text-slate-500 dark:hover:text-white' }} transition-colors">
-                                            Jenis Pelanggaran
-                                        </a>
-                                    @endif
-                                </div>
+
+                            <div x-show="open" x-collapse style="display: none;"
+                                class="flex flex-col gap-1 mt-1 pl-3 border-l-2 border-slate-100 dark:border-slate-800 ml-5">
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('academic-years.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('academic-years.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">event_note</span>
+                                    <span class="text-sm font-medium">Tahun Ajaran</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('periods.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('periods.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                    <span class="text-sm font-medium">Periode</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('education-levels.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">school</span>
+                                    <span class="text-sm font-medium">Jenjang</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('departments.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">apartment</span>
+                                    <span class="text-sm font-medium">Departemen</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('rayons.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('rayons.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">domain</span>
+                                    <span class="text-sm font-medium">Rayon</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('rooms.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('rooms.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">meeting_room</span>
+                                    <span class="text-sm font-medium">Kamar</span>
+                                </a>
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('memorization-types.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('memorization-types.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                                    <span class="text-sm font-medium">Ketentuan Hafalan</span>
+                                </a>
                             </div>
                         </div>
                     @endif
 
-                    @if(Auth::user()->isAdmin() || Auth::user()->isPengurusPerizinan())
-                        {{-- Perizinan Menu (New) --}}
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('perizinan.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="#" onclick="alert('Fitur Perizinan Santri akan segera hadir'); return false;">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('perizinan.*') ? 'fill-1' : '' }}">assignment_return</span>
-                            <span class="text-sm font-medium">Izin Kepulangan</span>
-                        </a>
 
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('penilaian.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('penilaian.index') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('penilaian.*') ? 'fill-1' : '' }}">grading</span>
-                            <span class="text-sm font-medium">Penilaian</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('perhitungan.rekomendasi') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('perhitungan.rekomendasi') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('perhitungan.rekomendasi') ? 'fill-1' : '' }}">calculate</span>
-                            <span class="text-sm font-medium">SAW Analysis</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('perhitungan.history') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('perhitungan.history') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('perhitungan.history') ? 'fill-1' : '' }}">history</span>
-                            <span class="text-sm font-medium">Riwayat</span>
-                        </a>
+
+                    @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
+                        <div class="mb-2">
+                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
+                            </p>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('violations.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('violations.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('violations.*') ? 'fill-1' : '' }}">gavel</span>
+                                <span class="text-sm font-medium">Catat Pelanggaran</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('violation-types.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('violation-types.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('violation-types.*') ? 'fill-1' : '' }}">category</span>
+                                <span class="text-sm font-medium">Jenis Pelanggaran</span>
+                            </a>
+                        </div>
                     @endif
 
-                    @if(Auth::user()->isAdmin())
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('sensitivity.index') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                            href="{{ route('sensitivity.index') }}">
-                            <span
-                                class="material-symbols-outlined text-[24px] {{ request()->routeIs('sensitivity.index') ? 'fill-1' : '' }}">tune</span>
-                            <span class="text-sm font-medium">Sensitivitas</span>
-                        </a>
-                        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined text-[24px]">settings</span>
-                            <span class="text-sm font-medium">Settings</span>
-                        </a>
+
+
+                    {{-- Licensing Menu --}}
+                    @if(Auth::user()->isAdmin() || Auth::user()->isLicensingOfficer())
+                        <div class="mb-2">
+                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perizinan</p>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('licenses.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('licenses.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('licenses.*') ? 'fill-1' : '' }}">assignment_turned_in</span>
+                                <span class="text-sm font-medium">Validasi Pulang</span>
+                            </a>
+                            {{-- Event Liburan Removed --}}
+                        </div>
                     @endif
                 </nav>
             </div>
@@ -375,7 +462,7 @@
                         <button type="submit"
                             class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-sm font-medium">
                             <span class="material-symbols-outlined text-[20px]">logout</span>
-                            <span>Logout</span>
+                            <span>Keluar</span>
                         </button>
                     </form>
                 </div>
@@ -397,8 +484,17 @@
                 <!-- Breadcrumbs -->
                 <div class="hidden lg:flex items-center gap-2">
                     <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors"
-                        href="{{ route('dashboard') }}">Home</a>
+                        href="{{ route('dashboard') }}">Beranda</a>
                     <span class="text-[#4c739a] text-sm">/</span>
+
+                    @if(View::hasSection('breadcrumb_parent'))
+                        <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors"
+                            href="{{ route(View::yieldContent('breadcrumb_parent_route')) }}">
+                            @yield('breadcrumb_parent')
+                        </a>
+                        <span class="text-[#4c739a] text-sm">/</span>
+                    @endif
+
                     <span class="text-[#0d141b] dark:text-white text-sm font-medium">@yield('breadcrumb', 'Page')</span>
                 </div>
                 <div class="flex flex-1 justify-end gap-3 items-center">
@@ -440,7 +536,7 @@
                                         <button type="submit"
                                             class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors">
                                             <span class="material-symbols-outlined text-[18px]">logout</span>
-                                            Logout
+                                            Keluar
                                         </button>
                                     </form>
                                 </div>
@@ -531,8 +627,173 @@
                 </div>
             </div>
         </div>
+
+        {{-- Generic Confirmation Modal --}}
+        <div x-data @keydown.escape.window="$store.confirmModal.cancel()" x-show="$store.confirmModal.show" x-cloak
+            class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+            {{-- Backdrop --}}
+            <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0" @click="$store.confirmModal.cancel()"
+                class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm">
+            </div>
+
+            {{-- Modal --}}
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                    @click.stop class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+
+                    {{-- Icon --}}
+                    <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full" :class="{
+                        'bg-blue-100 dark:bg-blue-900/30': $store.confirmModal.type === 'primary',
+                        'bg-red-100 dark:bg-red-900/30': $store.confirmModal.type === 'danger',
+                        'bg-amber-100 dark:bg-amber-900/30': $store.confirmModal.type === 'warning'
+                    }">
+                        <span class="material-symbols-outlined text-[28px]" :class="{
+                            'text-blue-600 dark:text-blue-400': $store.confirmModal.type === 'primary',
+                            'text-red-600 dark:text-red-400': $store.confirmModal.type === 'danger',
+                            'text-amber-600 dark:text-amber-400': $store.confirmModal.type === 'warning'
+                        }" x-text="$store.confirmModal.type === 'danger' ? 'warning' : 'info'">
+                        </span>
+                    </div>
+
+                    {{-- Title --}}
+                    <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
+                        x-text="$store.confirmModal.title">
+                    </h3>
+
+                    {{-- Message --}}
+                    <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-6"
+                        x-text="$store.confirmModal.message"></p>
+
+                    {{-- Buttons --}}
+                    <div class="flex gap-3">
+                        <button @click="$store.confirmModal.cancel()" type="button"
+                            class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            x-text="$store.confirmModal.cancelText">
+                        </button>
+                        <button @click="$store.confirmModal.confirm()" type="button"
+                            class="flex-1 px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white"
+                            :class="{
+                            'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
+                            'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
+                            'bg-amber-500 hover:bg-amber-600': $store.confirmModal.type === 'warning'
+                        }" x-text="$store.confirmModal.confirmText">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Backdrop --}}
+        <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" @click="$store.confirmModal.cancel()"
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm">
+        </div>
+
+        {{-- Modal --}}
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95" @click.stop
+                class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+
+                {{-- Icon --}}
+                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full" :class="{
+                        'bg-blue-100 dark:bg-blue-900/30': $store.confirmModal.type === 'primary',
+                        'bg-red-100 dark:bg-red-900/30': $store.confirmModal.type === 'danger',
+                        'bg-amber-100 dark:bg-amber-900/30': $store.confirmModal.type === 'warning'
+                    }">
+                    <span class="material-symbols-outlined text-[28px]" :class="{
+                            'text-blue-600 dark:text-blue-400': $store.confirmModal.type === 'primary',
+                            'text-red-600 dark:text-red-400': $store.confirmModal.type === 'danger',
+                            'text-amber-600 dark:text-amber-400': $store.confirmModal.type === 'warning'
+                        }" x-text="$store.confirmModal.type === 'danger' ? 'warning' : 'info'">
+                    </span>
+                </div>
+
+                {{-- Title --}}
+                <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
+                    x-text="$store.confirmModal.title">
+                </h3>
+
+                {{-- Message --}}
+                <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-6"
+                    x-text="$store.confirmModal.message"></p>
+
+                {{-- Buttons --}}
+                <div class="flex gap-3">
+                    <button @click="$store.confirmModal.cancel()" type="button"
+                        class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                        x-text="$store.confirmModal.cancelText">
+                    </button>
+                    <button @click="$store.confirmModal.confirm()" type="button"
+                        class="flex-1 px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white"
+                        :class="{
+                            'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
+                            'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
+                            'bg-amber-500 hover:bg-amber-600': $store.confirmModal.type === 'warning'
+                        }" x-text="$store.confirmModal.confirmText">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
+    {{-- Image Preview Modal --}}
+    <div x-data @keydown.escape.window="$store.imageModal.close()" x-show="$store.imageModal.show" x-cloak
+        class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
+        {{-- Backdrop --}}
+        <div x-show="$store.imageModal.show" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" @click="$store.imageModal.close()"
+            class="fixed inset-0 bg-black/90 backdrop-blur-sm">
+        </div>
+
+        {{-- Close Button (Fixed) --}}
+        <button @click="$store.imageModal.close()" x-show="$store.imageModal.show"
+            x-transition:enter="transition ease-out duration-300 delay-100"
+            x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+            class="fixed top-6 right-6 z-[70] text-white/50 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
+            <span class="material-symbols-outlined text-[40px]">close</span>
+        </button>
+
+        {{-- Modal Content --}}
+        <div class="flex min-h-screen items-center justify-center p-4 text-center">
+            <div x-show="$store.imageModal.show" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-90" @click.stop
+                class="relative max-w-5xl w-full inline-block align-middle">
+
+                {{-- Image --}}
+                <img :src="$store.imageModal.imageUrl" :alt="$store.imageModal.altText"
+                    class="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl ring-1 ring-white/10 mx-auto">
+
+                {{-- Caption (Optional) --}}
+                <p class="text-white/80 text-center mt-4 text-base font-medium uppercase tracking-wide"
+                    x-text="$store.imageModal.altText"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page-specific Scripts -->
+    @stack('scripts')
+
+    <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 
 </html>

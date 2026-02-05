@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('v2.auth.login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
@@ -42,7 +42,7 @@ class AuthController extends Controller
 
     public function showChangePasswordForm()
     {
-        return view('v2.auth.change-password');
+        return view('auth.change-password');
     }
 
     public function changePassword(Request $request)

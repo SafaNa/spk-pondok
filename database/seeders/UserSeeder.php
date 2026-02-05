@@ -2,55 +2,45 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Departemen;
+use App\Models\Master\Department;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        $password = Hash::make('password'); // Password sama untuk semua user
+        $password = Hash::make('password');
 
-        // 1. Admin User
-        User::firstOrCreate(
-            ['email' => 'admin@pondok.test'],
-            [
-                'name' => 'Administrator',
+        // Admin
+        User::create([
+            'name' => 'Administrator',
+            'email' => 'admin@pondok.test',
+            'password' => $password,
+            'role' => 'admin',
+        ]);
+
+        // Licensing Officer
+        User::create([
+            'name' => 'Petugas Perizinan',
+            'email' => 'perizinan@pondok.test',
+            'password' => $password,
+            'role' => 'licensing_officer',
+        ]);
+
+        // Department Officers
+        $departments = Department::all();
+        foreach ($departments as $dept) {
+            // Generate email from department name (e.g. keamanan@pondok.test)
+            $emailName = strtolower(str_replace(' ', '', $dept->name));
+            User::create([
+                'name' => 'Petugas ' . $dept->name,
+                'email' => $emailName . '@pondok.test',
                 'password' => $password,
-                'role' => 'admin',
-                'departemen_id' => null,
-            ]
-        );
-
-        // 2. Pengurus Perizinan
-        User::firstOrCreate(
-            ['email' => 'perizinan@pondok.test'],
-            [
-                'name' => 'Pengurus Perizinan',
-                'password' => $password,
-                'role' => 'pengurus_perizinan',
-                'departemen_id' => null,
-            ]
-        );
-
-        // 3. Pengurus Departemen - satu untuk setiap departemen
-        $departemen = Departemen::all();
-
-        foreach ($departemen as $dept) {
-            User::firstOrCreate(
-                ['email' => strtolower($dept->singkatan) . '@pondok.test'],
-                [
-                    'name' => 'Pengurus ' . $dept->singkatan,
-                    'password' => $password,
-                    'role' => 'pengurus_departemen',
-                    'departemen_id' => $dept->id,
-                ]
-            );
+                'role' => 'department_officer',
+                'department_id' => $dept->id,
+            ]);
         }
     }
 }
