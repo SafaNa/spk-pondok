@@ -17,7 +17,7 @@
                 </div>
                 <h1 class="font-outfit text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Pantau progres penilaian santri dan kelola kriteria sistem.
+                    Pantau aktivitas validasi izin, pembayaran SPP, dan pencatatan pelanggaran santri.
                     @if($activePeriod)
                         <span
                             class="ml-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
@@ -34,10 +34,10 @@
                         class="material-symbols-outlined text-[22px] transition-transform group-hover:rotate-90">settings</span>
                     Konfigurasi
                 </a>
-                <a href="#"
-                    class="inline-flex items-center gap-2 rounded-xl bg-gray-300 px-5 py-3 text-sm font-bold text-white opacity-50 cursor-not-allowed">
-                    <span class="material-symbols-outlined text-[22px]">add</span>
-                    Penilaian Baru
+                <a href="{{ route('licenses.index') }}"
+                    class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all">
+                    <span class="material-symbols-outlined text-[22px]">assignment_turned_in</span>
+                    Validasi Pulang
                 </a>
             </div>
         </div>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        {{-- Card 2: Evaluation Criteria --}}
+        {{-- Card 2: SPP Payments --}}
         <div class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
             style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); color: white; box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.3);">
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full" style="background: rgba(255, 255, 255, 0.1);">
@@ -68,14 +68,14 @@
             <div class="relative">
                 <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm"
                     style="background: rgba(255, 255, 255, 0.2);">
-                    <span class="material-symbols-outlined text-[28px]">tune</span>
+                    <span class="material-symbols-outlined text-[28px]">payments</span>
                 </div>
-                <div class="text-3xl font-bold">{{ $totalCriteria }}</div>
-                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Kriteria Aktif</div>
+                <div class="text-3xl font-bold">{{ isset($totalPayments) ? number_format($totalPayments) : '0' }}</div>
+                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Pembayaran SPP</div>
             </div>
         </div>
 
-        {{-- Card 3: Assessed Santri --}}
+        {{-- Card 3: License Approvals --}}
         <div class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
             style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);">
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full" style="background: rgba(255, 255, 255, 0.1);">
@@ -83,14 +83,15 @@
             <div class="relative">
                 <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm"
                     style="background: rgba(255, 255, 255, 0.2);">
-                    <span class="material-symbols-outlined text-[28px]">fact_check</span>
+                    <span class="material-symbols-outlined text-[28px]">assignment_turned_in</span>
                 </div>
-                <div class="text-3xl font-bold">{{ number_format($assessedStudents) }}</div>
-                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Santri Dinilai</div>
+                <div class="text-3xl font-bold">{{ isset($approvedLicenses) ? number_format($approvedLicenses) : '0' }}
+                </div>
+                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Izin Disetujui</div>
             </div>
         </div>
 
-        {{-- Card 4: Pending Review --}}
+        {{-- Card 4: Violations --}}
         <div class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
             style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white; box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);">
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full" style="background: rgba(255, 255, 255, 0.1);">
@@ -98,10 +99,10 @@
             <div class="relative">
                 <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-xl backdrop-blur-sm"
                     style="background: rgba(255, 255, 255, 0.2);">
-                    <span class="material-symbols-outlined text-[28px]">pending</span>
+                    <span class="material-symbols-outlined text-[28px]">gavel</span>
                 </div>
-                <div class="text-3xl font-bold">{{ number_format($pendingCount) }}</div>
-                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Menunggu Tinjauan</div>
+                <div class="text-3xl font-bold">{{ isset($totalViolations) ? number_format($totalViolations) : '0' }}</div>
+                <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Total Pelanggaran</div>
             </div>
         </div>
     </div>
@@ -110,14 +111,14 @@
     <div class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
         <div class="flex items-center justify-between mb-3">
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Tingkat Penyelesaian</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Progress penilaian seluruh santri</p>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Tingkat Validasi Izin</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Persentase izin yang telah divalidasi bulan ini</p>
             </div>
-            <span class="text-2xl font-bold text-primary">{{ $completionRate }}%</span>
+            <span class="text-2xl font-bold text-primary">{{ isset($completionRate) ? $completionRate : '0' }}%</span>
         </div>
         <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
             <div class="h-3 rounded-full bg-gradient-to-r from-primary to-blue-600 transition-all duration-500"
-                style="width: {{ $completionRate }}%"></div>
+                style="width: {{ isset($completionRate) ? $completionRate : '0' }}%"></div>
         </div>
     </div>
 
@@ -128,8 +129,8 @@
             class="lg:col-span-2 rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 p-6">
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Santri Berprestasi</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Nilai akhir tertinggi (Segera Hadir)</p>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Statistik Izin Pulang</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ringkasan validasi perizinan (Segera Hadir)</p>
                 </div>
             </div>
 
@@ -139,7 +140,7 @@
                         class="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 mx-auto dark:from-slate-700 dark:to-slate-600">
                         <span class="material-symbols-outlined text-[40px] text-gray-400">bar_chart</span>
                     </div>
-                    <p class="text-gray-500 dark:text-gray-400">Modul perhitungan sedang dalam pembangunan</p>
+                    <p class="text-gray-500 dark:text-gray-400">Modul statistik sedang dalam pembangunan</p>
                 </div>
             </div>
         </div>
@@ -147,7 +148,7 @@
         {{-- Right Column: Recommendation Status (Donut Chart) --}}
         <div
             class="lg:col-span-1 rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 p-6 flex flex-col">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Status Rekomendasi</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Status Validasi</h3>
             <div class="flex-1 flex flex-col items-center justify-center">
                 {{-- CSS Pie Chart --}}
                 @php
@@ -158,8 +159,9 @@
                     style="background: conic-gradient(#137fec 0% {{ $recEnd }}%, #fbbf24 {{ $recEnd }}% {{ $pendEnd }}%, #9ca3af {{ $pendEnd }}% 100%);">
                     <div
                         class="absolute inset-0 m-auto w-32 h-32 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center flex-col shadow-sm">
-                        <span class="text-3xl font-bold text-gray-900 dark:text-white">{{ $assessedStudents }}</span>
-                        <span class="text-xs text-gray-500">Dinilai</span>
+                        <span
+                            class="text-3xl font-bold text-gray-900 dark:text-white">{{ isset($totalLicenses) ? $totalLicenses : '0' }}</span>
+                        <span class="text-xs text-gray-500">Total Izin</span>
                     </div>
                 </div>
                 {{-- Legend --}}
@@ -167,7 +169,7 @@
                     <div class="flex items-center justify-between text-sm">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-primary"></span>
-                            <span class="text-gray-600 dark:text-gray-400">Direkomendasikan</span>
+                            <span class="text-gray-600 dark:text-gray-400">Disetujui</span>
                         </div>
                         <span class="font-semibold text-gray-900 dark:text-white">{{ $recommendedPercent }}%</span>
                     </div>
@@ -181,7 +183,7 @@
                     <div class="flex items-center justify-between text-sm">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-gray-400"></span>
-                            <span class="text-gray-600 dark:text-gray-400">Tidak Direkomendasikan</span>
+                            <span class="text-gray-600 dark:text-gray-400">Ditolak</span>
                         </div>
                         <span class="font-semibold text-gray-900 dark:text-white">{{ $notRecommendedPercent }}%</span>
                     </div>
@@ -223,11 +225,11 @@
                         style="background: rgba(255, 255, 255, 0.2);">
                         <span class="material-symbols-outlined text-[28px] text-white">checklist</span>
                     </div>
-                    <h4 class="font-semibold text-white">Kelola Kriteria</h4>
-                    <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.9);">Sesuaikan bobot dan kriteria sistem.
+                    <h4 class="font-semibold text-white">Kelola Pelanggaran</h4>
+                    <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.9);">Catat dan pantau pelanggaran santri.
                     </p>
                     <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-white">
-                        Ubah pengaturan
+                        Ke halaman pelanggaran
                         <span
                             class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
                     </span>
@@ -240,8 +242,8 @@
             class="lg:col-span-2 rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 overflow-hidden">
             <div
                 class="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100/50 px-6 py-4 dark:border-slate-700 dark:from-slate-700/50 dark:to-slate-700/30">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Penilaian Terbaru</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Aktivitas terakhir sistem</p>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Aktivitas Terbaru</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Izin dan transaksi terakhir sistem</p>
             </div>
             <ul class="divide-y divide-gray-100 dark:divide-slate-700" role="list">
                 @if(isset($recentAssessments) && count($recentAssessments) > 0)
@@ -274,7 +276,7 @@
                                 class="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-700">
                                 <span class="material-symbols-outlined text-[32px] text-gray-400">history</span>
                             </div>
-                            <p class="font-medium text-gray-500 dark:text-gray-400">Belum ada penilaian terbaru</p>
+                            <p class="font-medium text-gray-500 dark:text-gray-400">Belum ada aktivitas terbaru</p>
                         </div>
                     </li>
                 @endif

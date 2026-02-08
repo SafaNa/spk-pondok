@@ -62,6 +62,9 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
     // Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
     Route::resource('students', StudentController::class);
+
+    // User Management (Licensing & Finance)
+    Route::resource('users', \App\Http\Controllers\UserController::class);
     // Legacy mapping for views if they still point to 'santri' (Optional, but better to fix views)
     // Route::resource('santri', StudentController::class);
 

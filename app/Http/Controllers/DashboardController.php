@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Master\Student;
 use App\Models\Master\Period;
 use App\Models\Assessment\Assessment;
+use App\Models\Finance\SppPayment;
+use App\Models\Licensing\StudentLicense;
+use App\Models\Violation\ViolationRecord;
 
 class DashboardController extends Controller
 {
@@ -15,28 +18,36 @@ class DashboardController extends Controller
 
         // KPI Stats
         $totalStudents = Student::count();
-        $totalCriteria = 0;
+
+        // New metrics for the updated system
+        $totalPayments = SppPayment::count();
+        $approvedLicenses = StudentLicense::where('status', 'approved')->count();
+        $totalViolations = ViolationRecord::count();
+        $totalLicenses = StudentLicense::count();
 
         // Stats currently placeholder until Calculation Module is refactored
         $assessedStudents = 0;
-        $recommendedCount = 0;
-        $notRecommendedCount = 0;
+        $recommendedCount = $approvedLicenses;
+        $notRecommendedCount = StudentLicense::where('status', 'rejected')->count();
 
         // Pending
-        $pendingCount = $totalStudents - $assessedStudents;
+        $pendingCount = StudentLicense::where('status', 'pending')->count();
 
-        // Completion rate
-        $completionRate = $totalStudents > 0 ? round(($assessedStudents / $totalStudents) * 100) : 0;
+        // Completion rate - now represents license validation rate
+        $completionRate = $totalLicenses > 0 ? round(($approvedLicenses / $totalLicenses) * 100) : 0;
 
-        // Percentages
-        $recommendedPercent = 0;
-        $notRecommendedPercent = 0;
-        $pendingPercent = $totalStudents > 0 ? round(($pendingCount / $totalStudents) * 100) : 0;
+        // Percentages for the pie chart
+        $recommendedPercent = $totalLicenses > 0 ? round(($approvedLicenses / $totalLicenses) * 100) : 0;
+        $notRecommendedPercent = $totalLicenses > 0 ? round(($notRecommendedCount / $totalLicenses) * 100) : 0;
+        $pendingPercent = $totalLicenses > 0 ? round(($pendingCount / $totalLicenses) * 100) : 0;
 
         return view('dashboard', compact(
             'activePeriod',
             'totalStudents',
-            'totalCriteria',
+            'totalPayments',
+            'approvedLicenses',
+            'totalViolations',
+            'totalLicenses',
             'assessedStudents',
             'pendingCount',
             'completionRate',
