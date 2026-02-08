@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - SPK Kepulangan Santri</title>
+    <title>Admin Login - SIM Kepulangan Santri</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,14 +58,15 @@
                     <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                         <span class="material-symbols-outlined text-3xl">school</span>
                     </div>
-                    <span class="text-xl font-bold tracking-wide uppercase">Pesantren Connect</span>
+                    <span class="text-xl font-bold tracking-wide uppercase">Sistem Informasi Manajemen Santri</span>
                 </div>
             </div>
             <div class="relative z-10 max-w-lg">
-                <h1 class="text-5xl font-bold leading-tight mb-6">SPK Kepulangan Santri</h1>
+                <h1 class="text-2xl md:text-3xl font-bold leading-tight mb-6">SISTEM VALIDASI IZIN DAN KEPULANGAN SANTRI
+                </h1>
                 <p class="text-lg text-blue-50 leading-relaxed opacity-90">
-                    Sistem pendukung keputusan objektif menggunakan metode Simple Additive Weighting (SAW) untuk
-                    menyederhanakan dan memvalidasi rekomendasi kepulangan santri.
+                    Sistem informasi terintegrasi untuk mengelola validasi perizinan kepulangan santri, pembayaran SPP,
+                    dan pencatatan pelanggaran dalam satu platform yang terpadu dan efisien.
                 </p>
             </div>
             <div class="relative z-10 text-sm text-blue-100 opacity-60">
@@ -78,7 +79,7 @@
             <!-- Mobile Header Logo (Visible only on small screens) -->
             <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-primary">
                 <span class="material-symbols-outlined text-3xl">school</span>
-                <span class="font-bold text-lg text-[#0d141b] dark:text-white">SPK Santri</span>
+                <span class="font-bold text-lg text-[#0d141b] dark:text-white">SIM Santri</span>
             </div>
 
             <div class="w-full max-w-[480px] flex flex-col gap-6">

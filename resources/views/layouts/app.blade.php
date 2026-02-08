@@ -323,8 +323,17 @@
                             href="{{ route('dashboard') }}">
                             <span
                                 class="material-symbols-outlined text-[24px] {{ request()->routeIs('dashboard', 'home') ? 'fill-1' : '' }}">dashboard</span>
-                            <span class="text-sm font-medium">Dashboardku</span>
+                            <span class="text-sm font-medium">Dashboard</span>
                         </a>
+
+                        @if(Auth::user()->isAdmin())
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('users.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('users.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('users.*') ? 'fill-1' : '' }}">manage_accounts</span>
+                                <span class="text-sm font-medium">Manajemen User</span>
+                            </a>
+                        @endif
 
                         @if(Auth::user()->isAdmin())
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('students.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
@@ -394,7 +403,7 @@
 
 
 
-                    @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
+                    @if(Auth::user()->isAdmin() || Auth::user()->isFinanceOfficer())
                         <div class="mb-2">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
                             </p>
@@ -802,9 +811,9 @@
     <!-- WhatsApp Notification Popup -->
     @if(session('wa_url'))
         <div x-data="{ 
-                    open: true, 
-                    url: '{{ session('wa_url') }}' 
-                 }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+                                open: true, 
+                                url: '{{ session('wa_url') }}' 
+                             }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
 
             <!-- Backdrop -->
             <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
