@@ -6,11 +6,16 @@ use App\Models\User;
 use App\Models\Master\Department;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class UserSeeder extends Seeder
 {
     public function run()
     {
+        Schema::disableForeignKeyConstraints();
+        User::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $password = Hash::make('password');
 
         // Admin
@@ -32,8 +37,14 @@ class UserSeeder extends Seeder
         // Department Officers
         $departments = Department::all();
         foreach ($departments as $dept) {
-            // Generate email from department name (e.g. keamanan@pondok.test)
-            $emailName = strtolower(str_replace(' ', '', $dept->name));
+            // Generate email from department name (e.g. perizinan@pondok.test)
+            // Use str_word_count to ignore symbols like '&' (e.g. "Sarana & Prasarana" -> ["Sarana", "Prasarana"])
+            $words = str_word_count($dept->name, 1);
+            $emailName = strtolower($words[0]);
+            $check = User::where('email', $emailName . '@pondok.test')->first();
+            if ($check) {
+                $emailName = strtolower($words[1]);
+            }
             User::create([
                 'name' => 'Petugas ' . $dept->name,
                 'email' => $emailName . '@pondok.test',
