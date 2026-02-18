@@ -110,6 +110,45 @@
                     {{-- SECTION 2: Detail Pembayaran --}}
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             {{-- Tahap Pembayaran --}}
+                             <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    Tahap Pembayaran <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative group">
+                                    <div
+                                        class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">filter_1</span>
+                                    </div>
+                                    <select name="stage" required style="background-image: none;"
+                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                        <option value="1" {{ old('stage', $sppPayment->stage) == '1' ? 'selected' : '' }}>Tahap 1</option>
+                                        <option value="2" {{ old('stage', $sppPayment->stage) == '2' ? 'selected' : '' }}>Tahap 2</option>
+                                        <option value="full" {{ old('stage', $sppPayment->stage) == 'full' ? 'selected' : '' }}>Langsung Lunas (Full)</option>
+                                    </select>
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500">
+                                        <span class="material-symbols-outlined">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Batas Waktu (Info) --}}
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    Batas Waktu <span class="text-slate-400 font-normal ml-1">(Otomatis)</span>
+                                </label>
+                                <div class="relative group">
+                                    <div
+                                        class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">event_busy</span>
+                                    </div>
+                                    <input type="text" id="deadline_display" readonly
+                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium focus:outline-none cursor-not-allowed"
+                                        placeholder="- Pilih Tahap Dahulu -">
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1" id="deadline_info">Pilih tahap untuk melihat batas waktu pembayaran.</p>
+                            </div>
                             {{-- Nominal --}}
                             <div class="space-y-2">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -158,6 +197,24 @@
                                         <span class="material-symbols-outlined">expand_more</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            {{-- Late Fee Waiver --}}
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+                                    <div class="relative flex items-center">
+                                        <input type="checkbox" name="is_late_fee_waived" id="is_late_fee_waived" value="1" 
+                                            class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-primary checked:bg-primary hover:shadow-sm focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-700 dark:checked:border-primary dark:checked:bg-primary"
+                                            {{ old('is_late_fee_waived', $sppPayment->is_late_fee_waived) ? 'checked' : '' }}>
+                                        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity">
+                                            <span class="material-symbols-outlined text-sm font-bold">check</span>
+                                        </span>
+                                    </div>
+                                    <label for="is_late_fee_waived" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 selection:bg-transparent">
+                                        Bebaskan Denda <span class="text-slate-400 font-normal ml-1">(Izin Telat)</span>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-1">Jika dicentang, denda tidak akan dikenakan meskipun pembayaran terlambat.</p>
                             </div>
 
                             {{-- Catatan (Full Width) --}}
@@ -223,7 +280,7 @@
             // Auto-fill amount based on Academic Year
             const amountInput = $('#amount');
             const amountDisplay = $('#amount_display');
-
+            
             // Format number to Indonesian currency (Ribuan)
             function formatRupiah(angka) {
                 if (!angka) return '';
@@ -256,6 +313,49 @@
             
             // Note: On edit, we don't auto-run anything on load 
             // because we strictly resolve to the existing saved amount
+
+            // Deadlines Data based on the Payment's Academic Year
+            const deadlines = {
+                1: "{{ $sppPayment->academicYear->stage1_deadline ? \Carbon\Carbon::parse($sppPayment->academicYear->stage1_deadline)->isoFormat('D MMMM Y') : '-' }}",
+                2: "{{ $sppPayment->academicYear->stage2_deadline ? \Carbon\Carbon::parse($sppPayment->academicYear->stage2_deadline)->isoFormat('D MMMM Y') : '-' }}",
+                full: "{{ $sppPayment->academicYear->stage1_deadline ? \Carbon\Carbon::parse($sppPayment->academicYear->stage1_deadline)->isoFormat('D MMMM Y') : '-' }}"
+            };
+
+            // SPP Amount
+            const fullAmount = {{ $sppPayment->academicYear->spp_amount }};
+
+            // Handle Stage Change
+            $('select[name="stage"]').on('change', function() {
+                const stage = $(this).val();
+                const deadline = deadlines[stage] || '-';
+                $('#deadline_display').val(deadline);
+                
+                // Determine Amount (Only on change, not on init to preserve edits)
+                // Actually, if user changes stage, they likely want the amount to update.
+                // But we must be careful not to overwrite custom input if they just want to see deadline.
+                // For simplicity/UX in this system: Update it. User can edit back if needed.
+                let amount = 0;
+                if (stage == 'full') {
+                    amount = fullAmount; // Full Payment = Total SPP
+                } else if (stage == '1' || stage == '2') {
+                    amount = fullAmount / 2; // Half Payment
+                }
+
+                if (amount > 0) {
+                    amountInput.val(amount);
+                    amountDisplay.val(formatRupiah(amount));
+                }
+
+                if (deadline !== '-') {
+                    $('#deadline_info').text(`Jika melewati ${deadline}, denda Rp 500 akan otomatis dicatat.`);
+                } else {
+                    $('#deadline_info').text('Tidak ada batas waktu untuk tahap ini.');
+                }
+            }); 
+            // Trigger change only to set deadline info, not amount (to preserve saved amount)
+             const initialStage = $('select[name="stage"]').val();
+             const initialDeadline = deadlines[initialStage] || '-';
+             $('#deadline_display').val(initialDeadline);
         });
     </script>
 
@@ -263,9 +363,6 @@
         /* Base Container */
         .select2-container--default .select2-selection--single {
             height: 54px !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 0.75rem !important; /* rounded-xl */
-            background-color: #ffffff !important;
             display: flex !important;
             align-items: center !important;
             padding: 0 1rem 0 3rem !important; /* pl-12 equivalent */

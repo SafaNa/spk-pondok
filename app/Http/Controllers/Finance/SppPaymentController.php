@@ -71,17 +71,43 @@ class SppPaymentController extends Controller
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'academic_year_id' => 'required|exists:academic_years,id',
+            'stage' => 'required|in:1,2,full',
             'amount' => 'required|integer|min:0',
             'payment_date' => 'required|date',
+            // 'deadline' => 'nullable|date', // Removed manual deadline
             'status' => 'required|in:paid,pending',
             'note' => 'nullable|string',
+            'is_late_fee_waived' => 'nullable|boolean',
         ]);
+
+        $academicYear = \App\Models\Master\AcademicYear::findOrFail($request->academic_year_id);
+
+        // Determine Deadline based on Stage
+        $deadline = null;
+        if ($request->stage == '1' || $request->stage == 'full') {
+            // Full payment follows Stage 1 deadline (early payment logic)
+            $deadline = $academicYear->stage1_deadline;
+        } elseif ($request->stage == '2') {
+            $deadline = $academicYear->stage2_deadline;
+        }
+
+        // Calculate Late Fee
+        $lateFee = 0;
+        $isWaived = $request->has('is_late_fee_waived');
+
+        if ($deadline && $request->payment_date > $deadline->format('Y-m-d') && !$isWaived) {
+            $lateFee = 500;
+        }
 
         SppPayment::create([
             'student_id' => $request->student_id,
             'academic_year_id' => $request->academic_year_id,
+            'stage' => $request->stage,
             'amount' => $request->amount,
             'payment_date' => $request->payment_date,
+            'deadline' => $deadline, // Save the deadline used for record
+            'late_fee' => $lateFee,
+            'is_late_fee_waived' => $isWaived,
             'status' => $request->status,
             'note' => $request->note,
             'user_id' => Auth::id(), // Record who created it
@@ -93,7 +119,8 @@ class SppPaymentController extends Controller
             $student = Student::find($request->student_id);
             if ($student && $student->notification_phone) {
                 $service = new \App\Services\WhatsAppService();
-                $message = "Pembayaran SPP atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diterima (Status: {$request->status}). Terima kasih.";
+                $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
+                $message = "Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diterima (Status: {$request->status}). Terima kasih.";
                 $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
             }
         } catch (\Exception $e) {
@@ -123,17 +150,42 @@ class SppPaymentController extends Controller
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'academic_year_id' => 'required|exists:academic_years,id',
+            'stage' => 'required|in:1,2,full',
             'amount' => 'required|integer|min:0',
             'payment_date' => 'required|date',
+            // 'deadline' => 'nullable|date', // Removed manual deadline
             'status' => 'required|in:paid,pending',
             'note' => 'nullable|string',
+            'is_late_fee_waived' => 'nullable|boolean',
         ]);
+
+        $academicYear = \App\Models\Master\AcademicYear::findOrFail($request->academic_year_id);
+
+        // Determine Deadline based on Stage
+        $deadline = null;
+        if ($request->stage == '1' || $request->stage == 'full') {
+            $deadline = $academicYear->stage1_deadline;
+        } elseif ($request->stage == '2') {
+            $deadline = $academicYear->stage2_deadline;
+        }
+
+        // Calculate Late Fee
+        $lateFee = 0;
+        $isWaived = $request->has('is_late_fee_waived');
+
+        if ($deadline && $request->payment_date > $deadline->format('Y-m-d') && !$isWaived) {
+            $lateFee = 500;
+        }
 
         $sppPayment->update([
             'student_id' => $request->student_id,
             'academic_year_id' => $request->academic_year_id,
+            'stage' => $request->stage,
             'amount' => $request->amount,
             'payment_date' => $request->payment_date,
+            'deadline' => $deadline, // Save the deadline used for record
+            'late_fee' => $lateFee,
+            'is_late_fee_waived' => $isWaived,
             'status' => $request->status,
             'note' => $request->note,
             // user_id typically not updated on edit, or maybe strictly for creation logging
@@ -144,7 +196,8 @@ class SppPaymentController extends Controller
             $student = Student::find($request->student_id);
             if ($student && $student->notification_phone) {
                 $service = new \App\Services\WhatsAppService();
-                $message = "Update Pembayaran SPP atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
+                $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
+                $message = "Update Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
                 $service->sendMessage($student->notification_phone, $message);
             }
         } catch (\Exception $e) {

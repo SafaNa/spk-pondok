@@ -73,6 +73,36 @@
                         </div>
                     </div>
 
+                    {{-- SECTION 1.5: Tahun Ajaran --}}
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    Tahun Ajaran <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">calendar_month</span>
+                                    </div>
+                                    <select name="academic_year_id" required style="background-image: none;"
+                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                        @foreach ($academicYears as $year)
+                                            <option value="{{ $year->id }}" {{ old('academic_year_id', $license->academic_year_id) == $year->id ? 'selected' : '' }}>
+                                                {{ $year->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('academic_year_id')
+                                    <p class="text-sm text-red-500 flex items-center gap-1 mt-1">
+                                        <span class="material-symbols-outlined text-[16px]">error</span>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- SECTION 2: Detail Waktu --}}
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

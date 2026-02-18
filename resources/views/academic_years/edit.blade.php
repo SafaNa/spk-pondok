@@ -44,6 +44,39 @@
                         @error('name') <p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span
                         class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- Deadlines --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="stage1_deadline" class="text-sm font-bold text-slate-700 dark:text-slate-300">Batas
+                                Waktu Tahap 1</label>
+                            <div class="relative group">
+                                <div
+                                    class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">event</span>
+                                </div>
+                                <input type="date" name="stage1_deadline" id="stage1_deadline"
+                                    value="{{ old('stage1_deadline', $academicYear->stage1_deadline ? $academicYear->stage1_deadline->format('Y-m-d') : '') }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
+                            </div>
+                            @error('stage1_deadline') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="stage2_deadline" class="text-sm font-bold text-slate-700 dark:text-slate-300">Batas
+                                Waktu Tahap 2</label>
+                            <div class="relative group">
+                                <div
+                                    class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">event</span>
+                                </div>
+                                <input type="date" name="stage2_deadline" id="stage2_deadline"
+                                    value="{{ old('stage2_deadline', $academicYear->stage2_deadline ? $academicYear->stage2_deadline->format('Y-m-d') : '') }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
+                            </div>
+                            @error('stage2_deadline') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Actions --}}

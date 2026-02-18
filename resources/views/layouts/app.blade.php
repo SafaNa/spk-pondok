@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <!-- Vite HMR Support -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -335,7 +336,7 @@
                             </a>
                         @endif
 
-                        @if(Auth::user()->isAdmin())
+                        @if(Auth::user()->isAdmin() || Auth::user()->isFinanceSecretary())
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('students.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('students.index') }}">
                                 <span
@@ -430,7 +431,18 @@
                                 href="{{ route('violation-types.index') }}">
                                 <span
                                     class="material-symbols-outlined text-[24px] {{ request()->routeIs('violation-types.*') ? 'fill-1' : '' }}">category</span>
-                                <span class="text-sm font-medium">Jenis Pelanggaran</span>
+                            </a>
+                        </div>
+                    @endif
+
+                    @if(Auth::user()->isAdmin() || Auth::user()->isMemorizationOfficer())
+                        <div class="mb-2">
+                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hafalan</p>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('memorization.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('memorization.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('memorization.*') ? 'fill-1' : '' }}">auto_stories</span>
+                                <span class="text-sm font-medium">Cek Hafalan Santri</span>
                             </a>
                         </div>
                     @endif
@@ -563,7 +575,7 @@
             </header>
 
             <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+            <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
                 <div class="max-w-[1200px] mx-auto flex flex-col gap-6">
                     @yield('content')
                 </div>
@@ -665,15 +677,15 @@
 
                     {{-- Icon --}}
                     <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full" :class="{
-                        'bg-blue-100 dark:bg-blue-900/30': $store.confirmModal.type === 'primary',
-                        'bg-red-100 dark:bg-red-900/30': $store.confirmModal.type === 'danger',
-                        'bg-amber-100 dark:bg-amber-900/30': $store.confirmModal.type === 'warning'
-                    }">
+                    'bg-blue-100 dark:bg-blue-900/30': $store.confirmModal.type === 'primary',
+                    'bg-red-100 dark:bg-red-900/30': $store.confirmModal.type === 'danger',
+                    'bg-amber-100 dark:bg-amber-900/30': $store.confirmModal.type === 'warning'
+                }">
                         <span class="material-symbols-outlined text-[28px]" :class="{
-                            'text-blue-600 dark:text-blue-400': $store.confirmModal.type === 'primary',
-                            'text-red-600 dark:text-red-400': $store.confirmModal.type === 'danger',
-                            'text-amber-600 dark:text-amber-400': $store.confirmModal.type === 'warning'
-                        }" x-text="$store.confirmModal.type === 'danger' ? 'warning' : 'info'">
+                        'text-blue-600 dark:text-blue-400': $store.confirmModal.type === 'primary',
+                        'text-red-600 dark:text-red-400': $store.confirmModal.type === 'danger',
+                        'text-amber-600 dark:text-amber-400': $store.confirmModal.type === 'warning'
+                    }" x-text="$store.confirmModal.type === 'danger' ? 'warning' : 'info'">
                         </span>
                     </div>
 
@@ -695,157 +707,100 @@
                         <button @click="$store.confirmModal.confirm()" type="button"
                             class="flex-1 px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white"
                             :class="{
-                            'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
-                            'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
-                            'bg-amber-500 hover:bg-amber-600': $store.confirmModal.type === 'warning'
-                        }" x-text="$store.confirmModal.confirmText">
+                        'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
+                        'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
+                        'bg-amber-500 hover:bg-amber-600': $store.confirmModal.type === 'warning'
+                    }" x-text="$store.confirmModal.confirmText">
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Backdrop --}}
-        <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0" @click="$store.confirmModal.cancel()"
-            class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm">
-        </div>
-
-        {{-- Modal --}}
-        <div class="flex min-h-full items-center justify-center p-4">
-            <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95" @click.stop
-                class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
-
-                {{-- Icon --}}
-                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full" :class="{
-                        'bg-blue-100 dark:bg-blue-900/30': $store.confirmModal.type === 'primary',
-                        'bg-red-100 dark:bg-red-900/30': $store.confirmModal.type === 'danger',
-                        'bg-amber-100 dark:bg-amber-900/30': $store.confirmModal.type === 'warning'
-                    }">
-                    <span class="material-symbols-outlined text-[28px]" :class="{
-                            'text-blue-600 dark:text-blue-400': $store.confirmModal.type === 'primary',
-                            'text-red-600 dark:text-red-400': $store.confirmModal.type === 'danger',
-                            'text-amber-600 dark:text-amber-400': $store.confirmModal.type === 'warning'
-                        }" x-text="$store.confirmModal.type === 'danger' ? 'warning' : 'info'">
-                    </span>
-                </div>
-
-                {{-- Title --}}
-                <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
-                    x-text="$store.confirmModal.title">
-                </h3>
-
-                {{-- Message --}}
-                <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-6"
-                    x-text="$store.confirmModal.message"></p>
-
-                {{-- Buttons --}}
-                <div class="flex gap-3">
-                    <button @click="$store.confirmModal.cancel()" type="button"
-                        class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                        x-text="$store.confirmModal.cancelText">
-                    </button>
-                    <button @click="$store.confirmModal.confirm()" type="button"
-                        class="flex-1 px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white"
-                        :class="{
-                            'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
-                            'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
-                            'bg-amber-500 hover:bg-amber-600': $store.confirmModal.type === 'warning'
-                        }" x-text="$store.confirmModal.confirmText">
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    {{-- Image Preview Modal --}}
-    <div x-data @keydown.escape.window="$store.imageModal.close()" x-show="$store.imageModal.show" x-cloak
-        class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
-        {{-- Backdrop --}}
-        <div x-show="$store.imageModal.show" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0" @click="$store.imageModal.close()"
-            class="fixed inset-0 bg-black/90 backdrop-blur-sm">
-        </div>
-
-        {{-- Close Button (Fixed) --}}
-        <button @click="$store.imageModal.close()" x-show="$store.imageModal.show"
-            x-transition:enter="transition ease-out duration-300 delay-100"
-            x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
-            class="fixed top-6 right-6 z-[70] text-white/50 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
-            <span class="material-symbols-outlined text-[40px]">close</span>
-        </button>
-
-        {{-- Modal Content --}}
-        <div class="flex min-h-screen items-center justify-center p-4 text-center">
+        {{-- Image Preview Modal --}}
+        <div x-data @keydown.escape.window="$store.imageModal.close()" x-show="$store.imageModal.show" x-cloak
+            class="fixed inset-0 z-[60] overflow-y-auto" style="display: none;">
+            {{-- Backdrop --}}
             <div x-show="$store.imageModal.show" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-90" @click.stop
-                class="relative max-w-5xl w-full inline-block align-middle">
-
-                {{-- Image --}}
-                <img :src="$store.imageModal.imageUrl" :alt="$store.imageModal.altText"
-                    class="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl ring-1 ring-white/10 mx-auto">
-
-                {{-- Caption (Optional) --}}
-                <p class="text-white/80 text-center mt-4 text-base font-medium uppercase tracking-wide"
-                    x-text="$store.imageModal.altText"></p>
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0" @click="$store.imageModal.close()"
+                class="fixed inset-0 bg-black/90 backdrop-blur-sm">
             </div>
-        </div>
-    </div>
 
+            {{-- Close Button (Fixed) --}}
+            <button @click="$store.imageModal.close()" x-show="$store.imageModal.show"
+                x-transition:enter="transition ease-out duration-300 delay-100"
+                x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                class="fixed top-6 right-6 z-[70] text-white/50 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
+                <span class="material-symbols-outlined text-[40px]">close</span>
+            </button>
 
-    <!-- Page-specific Scripts -->
-    @stack('scripts')
+            {{-- Modal Content --}}
+            <div class="flex min-h-screen items-center justify-center p-4 text-center">
+                <div x-show="$store.imageModal.show" x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90"
+                    @click.stop class="relative max-w-5xl w-full inline-block align-middle">
 
-    <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
+                    {{-- Image --}}
+                    <img :src="$store.imageModal.imageUrl" :alt="$store.imageModal.altText"
+                        class="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl ring-1 ring-white/10 mx-auto">
 
-    <!-- WhatsApp Notification Popup -->
-    @if(session('wa_url'))
-        <div x-data="{ 
-                                open: true, 
-                                url: '{{ session('wa_url') }}' 
-                             }" x-show="open" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
-
-            <!-- Backdrop -->
-            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
-
-            <!-- Modal -->
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
-
-                    <div
-                        class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30">
-                        <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[28px]">chat</span>
-                    </div>
-
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Kirim Notifikasi WA?</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Data berhasil disimpan. Apakah Anda ingin
-                        mengirim notifikasi ke Orang Tua?</p>
-
-                    <div class="flex gap-3">
-                        <button @click="open = false"
-                            class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                            Nanti Saja
-                        </button>
-                        <a :href="url" target="_blank" @click="open = false"
-                            class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                            <span>Kirim</span>
-                            <span class="material-symbols-outlined text-[18px]">send</span>
-                        </a>
-                    </div>
+                    {{-- Caption (Optional) --}}
+                    <p class="text-white/80 text-center mt-4 text-base font-medium uppercase tracking-wide"
+                        x-text="$store.imageModal.altText"></p>
                 </div>
             </div>
         </div>
-    @endif
+
+
+        <!-- Page-specific Scripts -->
+        @stack('scripts')
+
+        <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
+
+        <!-- WhatsApp Notification Popup -->
+        @if(session('wa_url'))
+            <div x-data="{ 
+                                                                    open: true, 
+                                                                    url: '{{ session('wa_url') }}' 
+                                                                 }" x-show="open" x-cloak
+                class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
+
+                <!-- Backdrop -->
+                <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
+
+                <!-- Modal -->
+                <div class="flex min-h-full items-center justify-center p-4">
+                    <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+
+                        <div
+                            class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30">
+                            <span
+                                class="material-symbols-outlined text-green-600 dark:text-green-400 text-[28px]">chat</span>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Kirim Notifikasi WA?</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Data berhasil disimpan. Apakah Anda ingin
+                            mengirim notifikasi ke Orang Tua?</p>
+
+                        <div class="flex gap-3">
+                            <button @click="open = false"
+                                class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                                Nanti Saja
+                            </button>
+                            <a :href="url" target="_blank" @click="open = false"
+                                class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                                <span>Kirim</span>
+                                <span class="material-symbols-outlined text-[18px]">send</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 </body>
 
 </html>

@@ -24,6 +24,8 @@ class AcademicYearController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:20',
+            'stage1_deadline' => 'nullable|date',
+            'stage2_deadline' => 'nullable|date',
         ]);
 
         AcademicYear::create($validated);
@@ -39,6 +41,8 @@ class AcademicYearController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:20',
+            'stage1_deadline' => 'nullable|date',
+            'stage2_deadline' => 'nullable|date',
         ]);
 
         $academicYear->update($validated);

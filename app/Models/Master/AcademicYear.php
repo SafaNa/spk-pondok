@@ -13,6 +13,11 @@ class AcademicYear extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'stage1_deadline' => 'date',
+        'stage2_deadline' => 'date',
+    ];
+
     public function periods()
     {
         return $this->hasMany(Period::class);

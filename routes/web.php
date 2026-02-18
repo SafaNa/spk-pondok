@@ -96,8 +96,15 @@ Route::middleware(['auth'])->group(function () {
     // Individual License
     Route::get('/licenses/create', [\App\Http\Controllers\Licensing\LicenseController::class, 'create'])->name('licenses.create');
     Route::post('/licenses/store-individual', [\App\Http\Controllers\Licensing\LicenseController::class, 'storeIndividual'])->name('licenses.store-individual');
+    Route::get('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'show'])->name('licenses.show');
     Route::get('/licenses/{license}/edit', [\App\Http\Controllers\Licensing\LicenseController::class, 'edit'])->name('licenses.edit');
     Route::put('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'update'])->name('licenses.update');
+    Route::post('/licenses/{license}/approve', [\App\Http\Controllers\Licensing\LicenseController::class, 'approve'])->name('licenses.approve');
+    Route::post('/licenses/{license}/reject', [\App\Http\Controllers\Licensing\LicenseController::class, 'reject'])->name('licenses.reject');
 
+
+    // Memorization Department Routes
+    Route::get('/memorization/licenses', [\App\Http\Controllers\Licensing\MemorizationController::class, 'index'])->name('memorization.index');
+    Route::post('/memorization/licenses/{license}/update-check', [\App\Http\Controllers\Licensing\MemorizationController::class, 'update'])->name('memorization.update');
 
 });

@@ -33,7 +33,8 @@
                         <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">Edit User Khusus
                         </h1>
                         <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">Perbarui informasi untuk user
-                            {{ $user->name }}.</p>
+                            {{ $user->name }}.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -110,6 +111,7 @@
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
                                     <option value="licensing_officer" {{ old('role', $user->role) == 'licensing_officer' ? 'selected' : '' }}>Petugas Perizinan</option>
                                     <option value="finance_officer" {{ old('role', $user->role) == 'finance_officer' ? 'selected' : '' }}>Petugas Keuangan</option>
+                                    <option value="finance_secretary" {{ old('role', $user->role) == 'finance_secretary' ? 'selected' : '' }}>Sekretaris Petugas Keuangan</option>
                                 </select>
                                 <div
                                     class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">

@@ -109,6 +109,45 @@
                     {{-- SECTION 2: Detail Pembayaran --}}
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             {{-- Tahap Pembayaran --}}
+                             <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    Tahap Pembayaran <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative group">
+                                    <div
+                                        class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">filter_1</span>
+                                    </div>
+                                    <select name="stage" required style="background-image: none;"
+                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                        <option value="1" {{ old('stage') == '1' ? 'selected' : '' }}>Tahap 1</option>
+                                        <option value="2" {{ old('stage') == '2' ? 'selected' : '' }}>Tahap 2</option>
+                                        <option value="full" {{ old('stage') == 'full' ? 'selected' : '' }}>Langsung Lunas (Full)</option>
+                                    </select>
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-500">
+                                        <span class="material-symbols-outlined">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Batas Waktu (Info) --}}
+                            <div class="space-y-2">
+                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    Batas Waktu <span class="text-slate-400 font-normal ml-1">(Otomatis)</span>
+                                </label>
+                                <div class="relative group">
+                                    <div
+                                        class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <span class="material-symbols-outlined">event_busy</span>
+                                    </div>
+                                    <input type="text" id="deadline_display" readonly
+                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium focus:outline-none cursor-not-allowed"
+                                        placeholder="- Pilih Tahap Dahulu -">
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1" id="deadline_info">Pilih tahap untuk melihat batas waktu pembayaran.</p>
+                            </div>
                             {{-- Nominal --}}
                             <div class="space-y-2">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -155,6 +194,24 @@
                                         <span class="material-symbols-outlined">expand_more</span>
                                     </div>
                                 </div>
+                            </div>
+
+                            {{-- Late Fee Waiver --}}
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50">
+                                    <div class="relative flex items-center">
+                                        <input type="checkbox" name="is_late_fee_waived" id="is_late_fee_waived" value="1" 
+                                            class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-primary checked:bg-primary hover:shadow-sm focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-700 dark:checked:border-primary dark:checked:bg-primary"
+                                            {{ old('is_late_fee_waived') ? 'checked' : '' }}>
+                                        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity">
+                                            <span class="material-symbols-outlined text-sm font-bold">check</span>
+                                        </span>
+                                    </div>
+                                    <label for="is_late_fee_waived" class="cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300 selection:bg-transparent">
+                                        Bebaskan Denda <span class="text-slate-400 font-normal ml-1">(Izin Telat)</span>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-slate-500 ml-1">Jika dicentang, denda tidak akan dikenakan meskipun pembayaran terlambat.</p>
                             </div>
 
                             {{-- Catatan (Full Width) --}}
@@ -221,12 +278,6 @@
             const amountInput = $('#amount');
             const amountDisplay = $('#amount_display');
             
-            // Amount from controller/view (passed as data attribute on a hidden element or variable)
-            // Since we removed the select, we can inject it directly or read from a data attribute if we added one.
-            // Let's rely on the PHP variable passed to JS, or add a data attribute to the hidden input.
-            // Actually, simpler: I'll just set the value directly in the input value attribute in blade.
-            // But wait, the previous logic handled formatting on load.
-            
             // Format number to Indonesian currency (Ribuan)
             function formatRupiah(angka) {
                 if (!angka) return '';
@@ -261,12 +312,47 @@
             if (amountInput.val()) {
                 amountDisplay.val(formatRupiah(amountInput.val()));
             } else {
-                 // Set default from active year if empty (first load)
-                 // We can grab this from a PHP variable we can output into script
                  var defaultAmount = {{ $activeYear->spp_amount }};
-                 amountInput.val(defaultAmount);
-                 amountDisplay.val(formatRupiah(defaultAmount));
+                 // Don't auto-set immediately, wait for stage selection
+                 // amountInput.val(defaultAmount);
+                 // amountDisplay.val(formatRupiah(defaultAmount));
             }
+
+            // Deadlines Data
+            const deadlines = {
+                1: "{{ $activeYear->stage1_deadline ? \Carbon\Carbon::parse($activeYear->stage1_deadline)->isoFormat('D MMMM Y') : '-' }}",
+                2: "{{ $activeYear->stage2_deadline ? \Carbon\Carbon::parse($activeYear->stage2_deadline)->isoFormat('D MMMM Y') : '-' }}",
+                full: "{{ $activeYear->stage1_deadline ? \Carbon\Carbon::parse($activeYear->stage1_deadline)->isoFormat('D MMMM Y') : '-' }}"
+            };
+
+            // SPP Amount
+            const fullAmount = {{ $activeYear->spp_amount }};
+
+            // Handle Stage Change
+            $('select[name="stage"]').on('change', function() {
+                const stage = $(this).val();
+                const deadline = deadlines[stage] || '-';
+                $('#deadline_display').val(deadline);
+                
+                // Determine Amount
+                let amount = 0;
+                if (stage == 'full') {
+                    amount = fullAmount; // Full Payment = Total SPP
+                } else if (stage == '1' || stage == '2') {
+                    amount = fullAmount / 2; // Half Payment
+                }
+
+                if (amount > 0) {
+                    amountInput.val(amount);
+                    amountDisplay.val(formatRupiah(amount));
+                }
+                
+                if (deadline !== '-') {
+                    $('#deadline_info').text(`Jika melewati ${deadline}, denda Rp 500 akan otomatis dicatat.`);
+                } else {
+                    $('#deadline_info').text('Tidak ada batas waktu untuk tahap ini.');
+                }
+            }).trigger('change');
         });
     </script>
 
