@@ -11,11 +11,15 @@
             <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                 <div class="flex flex-col gap-2">
                     <h2 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">Pembayaran SPP Pondok</h2>
-                    <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data pembayaran dan tagihan SPP santri</p>
+                    <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data pembayaran dan tagihan SPP santri
+                    </p>
                     @if(isset($currentContextYear) && $currentContextYear->spp_amount > 0)
-                        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 self-start">
-                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 tracking-wide">SPP Tahun Ajaran {{ $currentContextYear->name }}</span>
-                            <span class="text-sm font-black text-blue-700 dark:text-blue-300">Rp {{ number_format($currentContextYear->spp_amount, 0, ',', '.') }}</span>
+                        <div
+                            class="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 self-start">
+                            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 tracking-wide">SPP Tahun Ajaran
+                                {{ $currentContextYear->name }}</span>
+                            <span class="text-sm font-black text-blue-700 dark:text-blue-300">Rp
+                                {{ number_format($currentContextYear->spp_amount, 0, ',', '.') }}</span>
                         </div>
                     @endif
                 </div>
@@ -31,7 +35,8 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
+                            <div
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-500">
                                 <span class="material-symbols-outlined text-[20px]">filter_list</span>
                             </div>
                         </div>
@@ -65,8 +70,11 @@
                             <th class="px-6 py-4 font-semibold text-center w-16">No</th>
                             <th class="px-6 py-4 font-semibold">Santri</th>
                             <th class="px-6 py-4 font-semibold">Tahun Ajaran</th>
+                            <th class="px-6 py-4 font-semibold text-center">Tahap</th>
                             <th class="px-6 py-4 font-semibold">Tanggal Bayar</th>
+                            <th class="px-6 py-4 font-semibold">Batas Waktu</th>
                             <th class="px-6 py-4 font-semibold">Nominal</th>
+                            <th class="px-6 py-4 font-semibold text-red-500">Denda</th>
                             <th class="px-6 py-4 font-semibold text-center">Status</th>
                             <th class="px-6 py-4 font-semibold text-center">Aksi</th>
                         </tr>
@@ -81,7 +89,8 @@
                             @endphp
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                                 <td class="px-6 py-4 text-center text-[#4c739a]">
-                                    {{ $loop->iteration + $payments->firstItem() - 1 }}</td>
+                                    {{ $loop->iteration + $payments->firstItem() - 1 }}
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         @if ($payment->student->photo)
@@ -103,15 +112,38 @@
                                                 {{ $payment->student->name }}
                                             </div>
                                             <div class="text-xs text-[#4c739a]">{{ $payment->student->rayon?->name }} -
-                                                {{ $payment->student->room?->name }}</div>
+                                                {{ $payment->student->room?->name }}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-[#4c739a]">{{ $payment->academicYear->name ?? '-' }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
+                                        Tahap {{ $payment->stage ?? '-' }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 text-[#4c739a]">
-                                    {{ \Carbon\Carbon::parse($payment->payment_date)->isoFormat('D MMMM Y') }}</td>
+                                    {{ \Carbon\Carbon::parse($payment->payment_date)->isoFormat('D MMMM Y') }}
+                                </td>
+                                <td class="px-6 py-4 text-[#4c739a]">
+                                    @if($payment->deadline)
+                                        {{ \Carbon\Carbon::parse($payment->deadline)->isoFormat('D MMM Y') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 font-semibold text-[#0d141b] dark:text-white">Rp
-                                    {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                                    {{ number_format($payment->amount, 0, ',', '.') }}
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-red-500">
+                                    @if($payment->late_fee > 0)
+                                        Rp {{ number_format($payment->late_fee, 0, ',', '.') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 text-center">
                                     @if ($payment->status == 'paid')
                                         <span

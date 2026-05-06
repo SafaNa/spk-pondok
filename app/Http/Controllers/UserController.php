@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        $users = User::whereIn('role', ['licensing_officer', 'finance_officer'])
+        $users = User::whereIn('role', ['licensing_officer', 'finance_officer', 'finance_secretary'])
             ->orderBy('name')
             ->paginate(10);
 
@@ -44,7 +44,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => ['required', Rule::in(['licensing_officer', 'finance_officer'])],
+            'role' => ['required', Rule::in(['licensing_officer', 'finance_officer', 'finance_secretary'])],
         ]);
 
         User::create([
@@ -65,7 +65,7 @@ class UserController extends Controller
         $this->authorizeAdmin();
 
         // Prevent editing department officers or admins via this controller (use specialized controllers or profile)
-        if (!in_array($user->role, ['licensing_officer', 'finance_officer'])) {
+        if (!in_array($user->role, ['licensing_officer', 'finance_officer', 'finance_secretary'])) {
             return redirect()->route('users.index')->with('error', 'Anda hanya dapat mengedit Petugas Perizinan dan Keuangan di sini.');
         }
 
@@ -79,7 +79,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        if (!in_array($user->role, ['licensing_officer', 'finance_officer'])) {
+        if (!in_array($user->role, ['licensing_officer', 'finance_officer', 'finance_secretary'])) {
             return redirect()->route('users.index')->with('error', 'Invalid User Role for Edit.');
         }
 
@@ -88,7 +88,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             // Password optional
             'password' => 'nullable|string|min:8|confirmed',
-            'role' => ['required', Rule::in(['licensing_officer', 'finance_officer'])],
+            'role' => ['required', Rule::in(['licensing_officer', 'finance_officer', 'finance_secretary'])],
         ]);
 
         $data = [
@@ -113,7 +113,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        if (!in_array($user->role, ['licensing_officer', 'finance_officer'])) {
+        if (!in_array($user->role, ['licensing_officer', 'finance_officer', 'finance_secretary'])) {
             return redirect()->route('users.index')->with('error', 'Invalid User Role for Delete.');
         }
 

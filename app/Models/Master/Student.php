@@ -5,8 +5,9 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Master\Room;
+use App\Models\Master\Rayon;
 use App\Models\Master\EducationLevel;
-use App\Models\Assessment\Assessment;
+
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Laravolt\Indonesia\Models\Province;
 use Laravolt\Indonesia\Models\City;
@@ -47,10 +48,7 @@ class Student extends Model
         return $this->belongsTo(EducationLevel::class, 'religious_education_level_id');
     }
 
-    public function assessments()
-    {
-        return $this->hasMany(Assessment::class);
-    }
+
 
     public function province()
     {
@@ -80,6 +78,16 @@ class Student extends Model
     public function licenses()
     {
         return $this->hasMany(\App\Models\Licensing\StudentLicense::class);
+    }
+
+    public function violationRecords()
+    {
+        return $this->hasMany(\App\Models\Violation\ViolationRecord::class);
+    }
+
+    public function pendingViolations()
+    {
+        return $this->violationRecords()->where('sanction_status', 'pending');
     }
 
     public function getNotificationPhoneAttribute()

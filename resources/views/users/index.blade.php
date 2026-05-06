@@ -44,7 +44,7 @@
                         <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Nama Lengkap</th>
                         <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Email</th>
                         <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Role</th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase text-center whitespace-nowrap w-40">Aksi</th>
+<th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase text-center whitespace-nowrap w-40">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#e7edf3] dark:divide-slate-700">
@@ -57,11 +57,13 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800">Petugas Perizinan</span>
                                 @elseif($user->role === 'finance_officer')
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">Petugas Keuangan</span>
+                                @elseif($user->role === 'finance_secretary')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400 border border-teal-200 dark:border-teal-800">Sekretaris Keuangan</span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border border-gray-200 dark:border-gray-800">{{ $user->role }}</span>
                                 @endif
                             </td>
-                            <td class="p-4 whitespace-nowrap">
+<td class="p-4 whitespace-nowrap">
                                 <div class="flex items-center justify-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                     <a href="{{ route('users.edit', $user) }}" class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>

@@ -15,6 +15,12 @@ class SppPayment extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'deadline' => 'date',
+        'payment_date' => 'date',
+        'late_fee' => 'decimal:2',
+    ];
+
     public function student()
     {
         return $this->belongsTo(Student::class);

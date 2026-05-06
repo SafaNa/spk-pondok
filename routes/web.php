@@ -47,8 +47,8 @@ Route::middleware(['auth'])->group(function () {
     // Master Data: Academic Years & Periods
     Route::post('/academic-years/{academic_year}/toggle-status', [AcademicYearController::class, 'toggleStatus'])->name('academic-years.toggle-status');
     Route::resource('academic-years', AcademicYearController::class);
-    Route::resource('periods', PeriodController::class);
     Route::post('/periods/{period}/activate', [PeriodController::class, 'activate'])->name('periods.activate');
+    Route::resource('periods', PeriodController::class);
 
     // Master Data: Education (Jenjang) & Rooms
     Route::resource('education-levels', EducationLevelController::class);
@@ -83,9 +83,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('theme.set');
 
     // Violation Routes
-    Route::resource('violations', \App\Http\Controllers\Violation\ViolationController::class);
-    Route::post('/violations/{id}/verify-sanction', [\App\Http\Controllers\Violation\ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
     Route::get('/violations/history/{student}', [\App\Http\Controllers\Violation\ViolationController::class, 'history'])->name('violations.history');
+    Route::post('/violations/{id}/verify-sanction', [\App\Http\Controllers\Violation\ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
+    Route::resource('violations', \App\Http\Controllers\Violation\ViolationController::class);
 
     Route::resource('violation-types', \App\Http\Controllers\Violation\ViolationTypeController::class);
     Route::resource('violation-categories', \App\Http\Controllers\Violation\ViolationCategoryController::class);
@@ -96,8 +96,15 @@ Route::middleware(['auth'])->group(function () {
     // Individual License
     Route::get('/licenses/create', [\App\Http\Controllers\Licensing\LicenseController::class, 'create'])->name('licenses.create');
     Route::post('/licenses/store-individual', [\App\Http\Controllers\Licensing\LicenseController::class, 'storeIndividual'])->name('licenses.store-individual');
+    Route::get('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'show'])->name('licenses.show');
     Route::get('/licenses/{license}/edit', [\App\Http\Controllers\Licensing\LicenseController::class, 'edit'])->name('licenses.edit');
     Route::put('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'update'])->name('licenses.update');
+    Route::post('/licenses/{license}/approve', [\App\Http\Controllers\Licensing\LicenseController::class, 'approve'])->name('licenses.approve');
+    Route::post('/licenses/{license}/reject', [\App\Http\Controllers\Licensing\LicenseController::class, 'reject'])->name('licenses.reject');
 
+
+    // Memorization Department Routes
+    Route::get('/memorization/licenses', [\App\Http\Controllers\Licensing\MemorizationController::class, 'index'])->name('memorization.index');
+    Route::post('/memorization/licenses/{license}/update-check', [\App\Http\Controllers\Licensing\MemorizationController::class, 'update'])->name('memorization.update');
 
 });

@@ -32,8 +32,7 @@
                         </div>
                         <div>
                             <h1 class="text-2xl font-bold mb-2 text-slate-900 tracking-tight">Detail Data Santri</h1>
-                            <p class="text-slate-500 text-base max-w-xl">Informasi lengkap tentang biodata santri dan
-                                riwayat penilaian</p>
+                            <p class="text-slate-500 text-base max-w-xl">Informasi lengkap tentang biodata santri</p>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-3">
@@ -179,89 +178,5 @@
             </div>
         </div>
 
-        {{-- Riwayat Penilaian --}}
-        <div
-            class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            <div class="bg-blue-50 px-6 py-6 border-b border-blue-200">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Riwayat Penilaian</h3>
-                        <p class="text-sm text-slate-500 mt-1">
-                            @if($activePeriod)
-                                Penilaian periode: <span class="font-semibold text-primary">{{ $activePeriod->name ?? $activePeriod->nama_periode ?? 'Aktif' }}</span>
-                            @else
-                                Belum ada periode aktif
-                            @endif
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6">
-                @if ($student->assessments->isEmpty())
-                    <div class="text-center py-12">
-                        <span class="material-symbols-outlined text-[64px] text-slate-300">description</span>
-                        <h3 class="mt-4 text-lg font-medium text-slate-900">Belum ada penilaian</h3>
-                        <p class="mt-2 text-sm text-slate-500">Mulai dengan menambahkan penilaian baru untuk santri ini.
-                        </p>
-                        {{-- 
-                        <div class="mt-6">
-                            <a href="{{ route('assessments.create', ['student_id' => $student->id]) }}"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all">
-                                <span class="material-symbols-outlined text-[20px]">add</span>
-                                Tambah Penilaian
-                            </a>
-                        </div>
-                        --}}
-                    </div>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="border-b border-slate-200">
-                                    <th class="pb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">Kriteria
-                                    </th>
-                                    <th class="pb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                                        Subkriteria</th>
-                                    <th class="pb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">Nilai</th>
-                                    <th class="pb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">Tanggal
-                                    </th>
-                                    <th class="pb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                @foreach ($student->assessments as $assessment)
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="py-4 text-sm font-medium text-slate-900">
-                                            {{ $assessment->criteria->name ?? $assessment->criteria->criteria_name ?? '-' }}</td>
-                                        <td class="py-4 text-sm text-slate-500">
-                                            {{ $assessment->subCriteria ? ($assessment->subCriteria->name ?? $assessment->subCriteria->sub_criteria_name) : '-' }}
-                                        </td>
-                                        <td class="py-4 text-sm text-slate-500">{{ $assessment->value }}</td>
-                                        <td class="py-4 text-sm text-slate-500">
-                                            {{ $assessment->created_at->isoFormat('D MMMM Y') }}</td>
-                                        <td class="py-4 text-sm">
-                                            <div class="flex items-center gap-2">
-                                                {{-- 
-                                                <a href="{{ route('assessments.edit', $assessment->id) }}"
-                                                    class="text-primary hover:text-primary/80 font-medium">Edit</a>
-                                                <form action="{{ route('assessments.destroy', $assessment->id) }}" method="POST"
-                                                    class="inline-block">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus penilaian ini?')" type="button"
-                                                        class="text-red-600 hover:text-red-800 font-medium">Hapus</button>
-                                                </form>
-                                                --}}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
-        </div>
     </div>
 @endsection

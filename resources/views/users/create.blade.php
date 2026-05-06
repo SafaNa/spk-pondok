@@ -111,6 +111,8 @@
                                     <option value="licensing_officer" {{ old('role') == 'licensing_officer' ? 'selected' : '' }}>Petugas Perizinan</option>
                                     <option value="finance_officer" {{ old('role') == 'finance_officer' ? 'selected' : '' }}>
                                         Petugas Keuangan</option>
+                                    <option value="finance_secretary" {{ old('role') == 'finance_secretary' ? 'selected' : '' }}>
+                                        Sekretaris Petugas Keuangan</option>
                                 </select>
                                 <div
                                     class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">

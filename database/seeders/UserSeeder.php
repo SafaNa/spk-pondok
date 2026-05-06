@@ -42,6 +42,14 @@ class UserSeeder extends Seeder
             'role' => 'finance_officer',
         ]);
 
+        // Finance Secretary (New)
+        User::create([
+            'name' => 'Sekretaris Keuangan',
+            'email' => 'sekretaris@pondok.test',
+            'password' => $password,
+            'role' => 'finance_secretary',
+        ]);
+
         // Department Officers
         $departments = Department::all();
         foreach ($departments as $dept) {

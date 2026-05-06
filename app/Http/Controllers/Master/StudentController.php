@@ -17,6 +17,15 @@ use Laravolt\Indonesia\Models\Province;
 
 class StudentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->isAdmin() && !auth()->user()->isFinanceSecretary()) {
+                abort(403, 'Unauthorized action.');
+            }
+            return $next($request);
+        });
+    }
     // public function downloadTemplate()
     // {
     //     return Excel::download(new StudentTemplateExport, 'template_students.xlsx');
@@ -42,13 +51,6 @@ class StudentController extends Controller
         // Eager load relationships for better performance
         $students = Student::with(['room', 'formalEducation', 'religiousEducation'])->latest()->paginate(10);
         return view('students.index', compact('students'));
-        // Note: View might still be named 'santri.index', we can rename views later or now. 
-        // User said: "UI nya pakai bahasa indonesia". So the VIEW files can stay 'santri'? 
-        // Ideally views should also follow controller names for structure, but to save time, I will point to existing view folders.
-        // BUT variables passed to view must be compatible. 
-        // The view 'v2.santri.index' expects '$santri' variable probably. I should check view too.
-        // I will pass 'students' as 'santri' to keep view happy for now? 
-        // OR better: I will tackle Views in the next step. For now, let's keep the Controller logic consistent with English.
     }
 
     public function create()
@@ -75,22 +77,7 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        // Get active period
-        $activePeriod = \App\Models\Master\Period::where('is_active', true)->first();
-
-        // Load assessments filtered by active period
-        if ($activePeriod) {
-            $student->load([
-                'assessments' => function ($query) use ($activePeriod) {
-                    $query->where('period_id', $activePeriod->id)
-                        ->with(['criteria', 'subCriteria']);
-                }
-            ]);
-        } else {
-            $student->setRelation('assessments', collect([]));
-        }
-
-        return view('students.show', compact('student', 'activePeriod'));
+        return view('students.show', compact('student'));
     }
 
     public function store(Request $request)
