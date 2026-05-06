@@ -312,7 +312,7 @@
             if (amountInput.val()) {
                 amountDisplay.val(formatRupiah(amountInput.val()));
             } else {
-                 var defaultAmount = {{ $activeYear->spp_amount }};
+                 var defaultAmount = {{ $activeYear?->spp_amount ?? 0 }};
                  // Don't auto-set immediately, wait for stage selection
                  // amountInput.val(defaultAmount);
                  // amountDisplay.val(formatRupiah(defaultAmount));
@@ -326,7 +326,7 @@
             };
 
             // SPP Amount
-            const fullAmount = {{ $activeYear->spp_amount }};
+            const fullAmount = {{ $activeYear?->spp_amount ?? 0 }};
 
             // Handle Stage Change
             $('select[name="stage"]').on('change', function() {

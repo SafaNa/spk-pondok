@@ -47,8 +47,8 @@ Route::middleware(['auth'])->group(function () {
     // Master Data: Academic Years & Periods
     Route::post('/academic-years/{academic_year}/toggle-status', [AcademicYearController::class, 'toggleStatus'])->name('academic-years.toggle-status');
     Route::resource('academic-years', AcademicYearController::class);
-    Route::resource('periods', PeriodController::class);
     Route::post('/periods/{period}/activate', [PeriodController::class, 'activate'])->name('periods.activate');
+    Route::resource('periods', PeriodController::class);
 
     // Master Data: Education (Jenjang) & Rooms
     Route::resource('education-levels', EducationLevelController::class);
@@ -83,9 +83,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('theme.set');
 
     // Violation Routes
-    Route::resource('violations', \App\Http\Controllers\Violation\ViolationController::class);
-    Route::post('/violations/{id}/verify-sanction', [\App\Http\Controllers\Violation\ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
     Route::get('/violations/history/{student}', [\App\Http\Controllers\Violation\ViolationController::class, 'history'])->name('violations.history');
+    Route::post('/violations/{id}/verify-sanction', [\App\Http\Controllers\Violation\ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
+    Route::resource('violations', \App\Http\Controllers\Violation\ViolationController::class);
 
     Route::resource('violation-types', \App\Http\Controllers\Violation\ViolationTypeController::class);
     Route::resource('violation-categories', \App\Http\Controllers\Violation\ViolationCategoryController::class);

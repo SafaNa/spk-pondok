@@ -77,8 +77,7 @@ class ViolationTypeController extends Controller
      */
     public function show($id)
     {
-        $violationType = ViolationType::findOrFail($id);
-        return view('violation-types.show', compact('violationType'));
+        return redirect()->route('violation-types.index');
     }
 
     /**

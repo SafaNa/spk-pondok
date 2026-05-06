@@ -26,6 +26,8 @@ class AcademicYearController extends Controller
             'name' => 'required|string|max:20',
             'stage1_deadline' => 'nullable|date',
             'stage2_deadline' => 'nullable|date',
+            'max_leaves' => 'nullable|integer|min:1',
+            'spp_amount' => 'nullable|integer|min:0',
         ]);
 
         AcademicYear::create($validated);
@@ -43,6 +45,8 @@ class AcademicYearController extends Controller
             'name' => 'required|string|max:20',
             'stage1_deadline' => 'nullable|date',
             'stage2_deadline' => 'nullable|date',
+            'max_leaves' => 'nullable|integer|min:1',
+            'spp_amount' => 'nullable|integer|min:0',
         ]);
 
         $academicYear->update($validated);

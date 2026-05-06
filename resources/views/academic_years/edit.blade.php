@@ -77,6 +77,42 @@
                             @error('stage2_deadline') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
+
+                    {{-- SPP Amount --}}
+                    <div class="space-y-2">
+                        <label for="spp_amount" class="text-sm font-bold text-slate-700 dark:text-slate-300">Nominal SPP</label>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <span class="material-symbols-outlined">payments</span>
+                            </div>
+                            <input type="number" name="spp_amount" id="spp_amount"
+                                value="{{ old('spp_amount', $academicYear->spp_amount) }}" min="0"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                placeholder="Contoh: 500000">
+                        </div>
+                        <p class="text-xs text-slate-400">Nominal SPP penuh per santri untuk tahun ajaran ini.</p>
+                        @error('spp_amount') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Max Leaves --}}
+                    <div class="space-y-2">
+                        <label for="max_leaves" class="text-sm font-bold text-slate-700 dark:text-slate-300">Batas
+                            Maksimal Pulang</label>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <span class="material-symbols-outlined">counter_1</span>
+                            </div>
+                            <input type="number" name="max_leaves" id="max_leaves"
+                                value="{{ old('max_leaves', $academicYear->max_leaves) }}" min="1"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                placeholder="Kosongkan jika tidak ada batas">
+                        </div>
+                        <p class="text-xs text-slate-400">Jumlah maksimal izin pulang yang disetujui per santri.
+                            Kosongkan jika tidak ada batasan.</p>
+                        @error('max_leaves') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 {{-- Actions --}}

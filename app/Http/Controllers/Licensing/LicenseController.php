@@ -104,7 +104,16 @@ class LicenseController extends Controller
             'student.rayon',
             'academicYear'
         ]);
-        return view('licensing.show', compact('license'));
+
+        // Count approved leaves for this student in this academic year
+        $approvedCount = StudentLicense::where('student_id', $license->student_id)
+            ->where('academic_year_id', $license->academic_year_id)
+            ->where('status', 'approved')
+            ->count();
+
+        $maxLeaves = $license->academicYear->max_leaves;
+
+        return view('licensing.show', compact('license', 'approvedCount', 'maxLeaves'));
     }
 
     // Edit Form
@@ -142,6 +151,20 @@ class LicenseController extends Controller
     public function approve($id)
     {
         $license = StudentLicense::findOrFail($id);
+
+        // Check max_leaves limit
+        $academicYear = AcademicYear::find($license->academic_year_id);
+        if ($academicYear && $academicYear->max_leaves !== null) {
+            $approvedCount = StudentLicense::where('student_id', $license->student_id)
+                ->where('academic_year_id', $license->academic_year_id)
+                ->where('status', 'approved')
+                ->count();
+
+            if ($approvedCount >= $academicYear->max_leaves) {
+                return back()->with('error', 'Kuota izin pulang santri ini sudah penuh (' . $academicYear->max_leaves . 'x) untuk tahun ajaran ini.');
+            }
+        }
+
         $license->status = 'approved';
         $license->save();
 

@@ -5,6 +5,7 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Master\Room;
+use App\Models\Master\Rayon;
 use App\Models\Master\EducationLevel;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;

@@ -191,21 +191,23 @@ class SppPaymentController extends Controller
             // user_id typically not updated on edit, or maybe strictly for creation logging
         ]);
 
-        // Send WhatsApp Notification (Update)
+        // WhatsApp Notification Link
+        $waRedirectUrl = null;
         try {
             $student = Student::find($request->student_id);
             if ($student && $student->notification_phone) {
                 $service = new \App\Services\WhatsAppService();
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
                 $message = "Update Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
-                $service->sendMessage($student->notification_phone, $message);
+                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to send WA SPP Update: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP Update: " . $e->getMessage());
         }
 
         return redirect()->route('spp-payments.index')
-            ->with('success', 'Pembayaran SPP berhasil diperbarui');
+            ->with('success', 'Pembayaran SPP berhasil diperbarui')
+            ->with('wa_url', $waRedirectUrl);
     }
 
     /**

@@ -19,6 +19,14 @@
             <span class="text-sm font-semibold">Kembali ke Daftar</span>
         </a>
 
+        {{-- Error Flash --}}
+        @if(session('error'))
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 border border-red-200 dark:border-red-800 flex items-center gap-3">
+                <span class="material-symbols-outlined text-red-600 text-[24px]">error</span>
+                <p class="text-sm font-semibold text-red-700 dark:text-red-400">{{ session('error') }}</p>
+            </div>
+        @endif
+
         {{-- Status Banner --}}
         @if($license->status === 'approved')
             <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20">
@@ -51,6 +59,10 @@
                 </div>
             </div>
         @else
+            @php
+                $quotaFull = $maxLeaves !== null && $approvedCount >= $maxLeaves;
+                $canApprove = !($license->student->pending_violations_count > 0) && !$quotaFull;
+            @endphp
             <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-2xl p-6 border border-amber-500/20">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-5">
@@ -61,9 +73,15 @@
                         <div>
                             <h3 class="text-xl font-bold text-amber-700 dark:text-amber-500">Menunggu Persetujuan</h3>
                             <p class="text-amber-600/80 dark:text-amber-400 mt-1 text-sm">Perizinan ini masih menunggu persetujuan dari pengurus</p>
+                            @if($maxLeaves !== null)
+                                <span class="inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-lg text-xs font-bold {{ $quotaFull ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }}">
+                                    <span class="material-symbols-outlined text-[14px]">airplane_ticket</span>
+                                    Kuota Pulang: {{ $approvedCount }} / {{ $maxLeaves }}
+                                </span>
+                            @endif
                         </div>
                     </div>
-                    @if(!($license->student->pending_violations_count > 0))
+                    @if($canApprove)
                         <button type="button" @click="showApproveModal = true"
                             class="w-full sm:w-auto px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/30 font-bold flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                             <span class="material-symbols-outlined">check_circle</span>
@@ -81,6 +99,14 @@
                         <span class="material-symbols-outlined text-red-600 text-[20px]">warning</span>
                         <p class="text-sm text-red-700 dark:text-red-400 font-medium">
                             Santri memiliki {{ $license->student->pending_violations_count }} pelanggaran yang belum selesai. Selesaikan terlebih dahulu sebelum menyetujui izin.
+                        </p>
+                    </div>
+                @endif
+                @if($quotaFull)
+                    <div class="mt-4 flex items-center gap-2 rounded-xl bg-red-50 dark:bg-red-900/20 p-3 border border-red-200 dark:border-red-800">
+                        <span class="material-symbols-outlined text-red-600 text-[20px]">block</span>
+                        <p class="text-sm text-red-700 dark:text-red-400 font-medium">
+                            Kuota izin pulang santri ini sudah penuh ({{ $approvedCount }}/{{ $maxLeaves }}) untuk tahun ajaran ini. Izin tidak dapat disetujui.
                         </p>
                     </div>
                 @endif

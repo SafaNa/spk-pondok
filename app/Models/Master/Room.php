@@ -5,6 +5,8 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\Master\Student;
+use App\Models\Master\Rayon;
 
 class Room extends Model
 {

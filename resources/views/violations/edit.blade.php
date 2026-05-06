@@ -212,45 +212,6 @@
 
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for Student (Search Enabled)
-            $('#student_id').select2({
-                placeholder: '-- Pilih Santri --',
-                allowClear: true,
-                width: '100%',
-                dropdownCssClass: 'select2-premium-dropdown',
-                containerCssClass: 'select2-premium-container',
-                templateResult: formatStudent,
-                templateSelection: formatStudent
-            });
-
-            function formatStudent(student) {
-                if (!student.id) {
-                    return student.text;
-                }
-                
-                return student.text;
-            }
-
-            // Update Sanction when Violation Type is selected
-            // Defined JSON data for violation types
-            const violationTypesData = @json($violationTypes->mapWithKeys(function ($item) {
-                return [$item->id => $item->default_sanction];
-            }));
-
-            $('#violation_type_id').on('change', function() {
-                var selectedId = $(this).val();
-                
-                if (selectedId && violationTypesData[selectedId]) {
-                     $('#sanction').val(violationTypesData[selectedId]);
-                } else if (!selectedId) {
-                    $('#sanction').val('');
-                }
-            });
-        });
-    </script>
-    
-    <script>
-        $(document).ready(function() {
             // Initialize Select2 for Student
             $('#student_id').select2({
                 placeholder: "-- Pilih Santri --",

@@ -322,7 +322,7 @@
             };
 
             // SPP Amount
-            const fullAmount = {{ $sppPayment->academicYear->spp_amount }};
+            const fullAmount = {{ $sppPayment->academicYear?->spp_amount ?? 0 }};
 
             // Handle Stage Change
             $('select[name="stage"]').on('change', function() {
