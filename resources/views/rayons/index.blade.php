@@ -73,7 +73,7 @@
                                         </button>
 
                                         <div x-data>
-                                            <form action="{{ route('rayons.destroy', $rayon->id) }}" method="POST"
+                                            <form action="{{ route('admin.rayons.destroy', $rayon->id) }}" method="POST"
                                                 class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
@@ -111,7 +111,7 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <form action="{{ route('rayons.store') }}" method="POST">
+            <form action="{{ route('admin.rayons.store') }}" method="POST">
                 @csrf
                 <div class="p-6 space-y-4">
                     <div>

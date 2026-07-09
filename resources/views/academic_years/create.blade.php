@@ -10,7 +10,7 @@
     <div class="space-y-6">
         {{-- Header --}}
         <div class="flex items-center gap-4">
-            <a href="{{ route('academic-years.index') }}"
+            <a href="{{ route('admin.academic-years.index') }}"
                 class="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                 <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">arrow_back</span>
             </a>
@@ -23,7 +23,7 @@
         {{-- Form Card --}}
         <div
             class="bg-white dark:bg-slate-800 rounded-[20px] shadow-sm border border-slate-200 dark:border-slate-700 p-6 md:p-8">
-            <form action="{{ route('academic-years.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.academic-years.store') }}" method="POST" class="space-y-6">
                 @csrf
 
                 <div class="grid grid-cols-1 gap-6">
@@ -114,7 +114,7 @@
 
                 {{-- Actions --}}
                 <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-slate-100 dark:border-slate-700">
-                    <a href="{{ route('academic-years.index') }}"
+                    <a href="{{ route('admin.academic-years.index') }}"
                         class="px-6 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                         Batal
                     </a>

@@ -114,7 +114,7 @@
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </button>
-                                        <form action="{{ route('violation-categories.destroy', $category->id) }}" method="POST"
+                                        <form action="{{ route('admin.violation-categories.destroy', $category->id) }}" method="POST"
                                             class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -157,7 +157,7 @@
 
     {{-- Create Modal --}}
     <x-modal id="createModal" title="Tambah Kategori Pelanggaran">
-        <form action="{{ route('violation-categories.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.violation-categories.store') }}" method="POST" class="space-y-4">
             @csrf
             <div>
                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Kategori</label>

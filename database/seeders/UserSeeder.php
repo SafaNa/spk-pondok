@@ -34,21 +34,21 @@ class UserSeeder extends Seeder
             'role' => 'licensing_officer',
         ]);
 
-        // Finance Officer
-        User::create([
-            'name' => 'Petugas Keuangan',
-            'email' => 'keuangan@pondok.test',
-            'password' => $password,
-            'role' => 'finance_officer',
-        ]);
+        // [HIDDEN] Finance Officer
+        // User::create([
+        //     'name' => 'Petugas Keuangan',
+        //     'email' => 'keuangan@pondok.test',
+        //     'password' => $password,
+        //     'role' => 'finance_officer',
+        // ]);
 
-        // Finance Secretary (New)
-        User::create([
-            'name' => 'Sekretaris Keuangan',
-            'email' => 'sekretaris@pondok.test',
-            'password' => $password,
-            'role' => 'finance_secretary',
-        ]);
+        // [HIDDEN] Finance Secretary
+        // User::create([
+        //     'name' => 'Sekretaris Keuangan',
+        //     'email' => 'sekretaris@pondok.test',
+        //     'password' => $password,
+        //     'role' => 'finance_secretary',
+        // ]);
 
         // Department Officers
         $departments = Department::all();

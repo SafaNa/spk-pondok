@@ -37,7 +37,7 @@ class ViolationCategoryController extends Controller
 
         ViolationCategory::create($validated);
 
-        return redirect()->route('violation-categories.index')->with('success', 'Kategori pelanggaran berhasil ditambahkan');
+        return redirect()->route('admin.violation-categories.index')->with('success', 'Kategori pelanggaran berhasil ditambahkan');
     }
 
     /**
@@ -63,7 +63,7 @@ class ViolationCategoryController extends Controller
 
         $violationCategory->update($validated);
 
-        return redirect()->route('violation-categories.index')->with('success', 'Kategori pelanggaran berhasil diperbarui');
+        return redirect()->route('admin.violation-categories.index')->with('success', 'Kategori pelanggaran berhasil diperbarui');
     }
 
     /**
@@ -79,6 +79,6 @@ class ViolationCategoryController extends Controller
 
         $violationCategory->delete();
 
-        return redirect()->route('violation-categories.index')->with('success', 'Kategori pelanggaran berhasil dihapus');
+        return redirect()->route('admin.violation-categories.index')->with('success', 'Kategori pelanggaran berhasil dihapus');
     }
 }

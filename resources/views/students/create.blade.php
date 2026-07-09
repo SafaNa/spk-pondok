@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         {{-- Back Button --}}
-        <a href="{{ route('students.index') }}"
+        <a href="{{ route('admin.students.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -41,7 +41,7 @@
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data"
+            <form action="{{ route('admin.students.store') }}" method="POST" enctype="multipart/form-data"
                 class="p-6 sm:p-10 flex flex-col gap-10">
                 @csrf
 
@@ -685,7 +685,7 @@
 
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('students.index') }}"
+                    <a href="{{ route('admin.students.index') }}"
                         class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                         Batal
                     </a>
@@ -761,7 +761,7 @@
             // Event Listeners
             provinceSelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.cities') }}?province_code=${this.value}`, citySelect, 'Pilih Kabupaten/Kota');
+                    fetchOptions(`{{ route('admin.regions.cities') }}?province_code=${this.value}`, citySelect, 'Pilih Kabupaten/Kota');
                     districtSelect.innerHTML = '<option value="" disabled selected>Pilih Kecamatan</option>';
                     districtSelect.disabled = true;
                     villageSelect.innerHTML = '<option value="" disabled selected>Pilih Desa/Kelurahan</option>';
@@ -771,7 +771,7 @@
 
             citySelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.districts') }}?city_code=${this.value}`, districtSelect, 'Pilih Kecamatan');
+                    fetchOptions(`{{ route('admin.regions.districts') }}?city_code=${this.value}`, districtSelect, 'Pilih Kecamatan');
                     villageSelect.innerHTML = '<option value="" disabled selected>Pilih Desa/Kelurahan</option>';
                     villageSelect.disabled = true;
                 }
@@ -779,7 +779,7 @@
 
             districtSelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.villages') }}?district_code=${this.value}`, villageSelect, 'Pilih Desa/Kelurahan');
+                    fetchOptions(`{{ route('admin.regions.villages') }}?district_code=${this.value}`, villageSelect, 'Pilih Desa/Kelurahan');
                 }
             });
 
@@ -829,15 +829,15 @@
             // Initialize OLD values
             if (provinceSelect.value) {
                 // If province has value (from old input or user selection before reload?), trigger fetch
-                fetchOptions(`{{ route('regions.cities') }}?province_code=${provinceSelect.value}`, citySelect, 'Pilih Kabupaten/Kota', oldCity)
+                fetchOptions(`{{ route('admin.regions.cities') }}?province_code=${provinceSelect.value}`, citySelect, 'Pilih Kabupaten/Kota', oldCity)
                     .then(() => {
                         if (oldCity) {
-                            return fetchOptions(`{{ route('regions.districts') }}?city_code=${oldCity}`, districtSelect, 'Pilih Kecamatan', oldDistrict);
+                            return fetchOptions(`{{ route('admin.regions.districts') }}?city_code=${oldCity}`, districtSelect, 'Pilih Kecamatan', oldDistrict);
                         }
                     })
                     .then(() => {
                         if (oldDistrict) {
-                            return fetchOptions(`{{ route('regions.villages') }}?district_code=${oldDistrict}`, villageSelect, 'Pilih Desa/Kelurahan', oldVillage);
+                            return fetchOptions(`{{ route('admin.regions.villages') }}?district_code=${oldDistrict}`, villageSelect, 'Pilih Desa/Kelurahan', oldVillage);
                         }
                     });
             }

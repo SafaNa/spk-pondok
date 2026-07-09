@@ -13,7 +13,7 @@
             </div>
 
             <div class="p-6">
-                <form action="{{ route('password.update') }}" method="POST">
+                <form action="{{ route('admin.password.update') }}" method="POST">
                     @csrf
 
                     <div class="space-y-4">
@@ -64,7 +64,7 @@
                         </div>
 
                         <div class="flex items-center justify-end pt-4 space-x-3">
-                            <a href="{{ route('dashboard') }}"
+                            <a href="{{ route('admin.dashboard') }}"
                                 class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                                 Batal
                             </a>

@@ -136,7 +136,7 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @if(!$periode->is_active)
-                                            <form action="{{ route('periods.activate', $periode) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.periods.activate', $periode) }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit"
                                                     class="text-xs font-semibold text-primary hover:text-primary/80 hover:underline px-2">
@@ -149,7 +149,7 @@
                                             class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-[#4c739a] hover:text-primary transition-colors">
                                             <span class="material-symbols-outlined text-[18px]">edit</span>
                                         </button>
-                                        <form action="{{ route('periods.destroy', $periode->id) }}" method="POST"
+                                        <form action="{{ route('admin.periods.destroy', $periode->id) }}" method="POST"
                                             class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -211,7 +211,7 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <form action="{{ route('periods.store') }}" method="POST">
+            <form action="{{ route('admin.periods.store') }}" method="POST">
                 @csrf
                 <div class="p-6 space-y-4">
                     <div>

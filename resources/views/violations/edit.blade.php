@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         {{-- Back Button --}}
-        <a href="{{ route('violations.index') }}"
+        <a href="{{ route('admin.violations.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -39,7 +39,7 @@
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('violations.update', $violation->id) }}" method="POST" class="p-6 sm:p-10">
+            <form action="{{ route('admin.violations.update', $violation->id) }}" method="POST" class="p-6 sm:p-10">
                 @csrf
                 @method('PUT')
 
@@ -196,7 +196,7 @@
 
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('violations.index') }}"
+                    <a href="{{ route('admin.violations.index') }}"
                         class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                         Batal
                     </a>

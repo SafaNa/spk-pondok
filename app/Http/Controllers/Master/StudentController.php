@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Student;
 use App\Models\Master\Room;
+use App\Models\Master\Rayon;
 use App\Models\Master\EducationLevel;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Laravolt\Indonesia\Models\Province;
@@ -20,7 +20,7 @@ class StudentController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user()->isAdmin() && !auth()->user()->isFinanceSecretary()) {
+            if (!auth()->user()->isAdmin() && !auth()->user()->isLicensingOfficer()) {
                 abort(403, 'Unauthorized action.');
             }
             return $next($request);
@@ -39,18 +39,47 @@ class StudentController extends Controller
 
     //     try {
     //         Excel::import(new StudentImport, $request->file('file'));
-    //         return redirect()->route('students.index')->with('success', 'Students data imported successfully!');
+    //         return redirect()->route('admin.students.index')->with('success', 'Students data imported successfully!');
     //     } catch (\Exception $e) {
     //         \Illuminate\Support\Facades\Log::error('Import Error: ' . $e->getMessage());
-    //         return redirect()->route('students.index')->with('error', 'Failed to import data: ' . $e->getMessage());
+    //         return redirect()->route('admin.students.index')->with('error', 'Failed to import data: ' . $e->getMessage());
     //     }
     // }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Eager load relationships for better performance
-        $students = Student::with(['room', 'formalEducation', 'religiousEducation'])->latest()->paginate(10);
-        return view('students.index', compact('students'));
+        $query = Student::with(['rayon', 'room', 'formalEducation', 'religiousEducation']);
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('nis', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('education_level')) {
+            $query->where('formal_education_level_id', $request->education_level);
+        }
+
+        if ($request->filled('rayon')) {
+            $query->where('rayon_id', $request->rayon);
+        }
+
+        if ($request->filled('room')) {
+            $query->where('room_id', $request->room);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $students = $query->latest()->paginate(10)->withQueryString();
+
+        $rayons = Rayon::orderBy('name')->get();
+        $rooms = Room::with('rayon')->orderBy('name')->get();
+        $educationLevels = EducationLevel::where('type', 'formal')->orderBy('name')->get();
+
+        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels'));
     }
 
     public function create()
@@ -66,17 +95,21 @@ class StudentController extends Controller
 
     public function edit(Student $student)
     {
+        $student->load('guardians');
         $rooms = Room::with('rayon')->get();
         $rayons = \App\Models\Master\Rayon::orderBy('name')->get();
         $formalLevels = EducationLevel::where('type', 'formal')->get();
         $religiousLevels = EducationLevel::where('type', 'religious')->get();
         $provinces = Province::orderBy('name')->pluck('name', 'code');
 
-        return view('students.edit', compact('student', 'rooms', 'rayons', 'formalLevels', 'religiousLevels', 'provinces'));
+        return view('students.edit', compact(
+            'student', 'rooms', 'rayons', 'formalLevels', 'religiousLevels', 'provinces'
+        ));
     }
 
     public function show(Student $student)
     {
+        $student->load(['formalEducation', 'religiousEducation', 'rayon', 'room']);
         return view('students.show', compact('student'));
     }
 
@@ -125,7 +158,7 @@ class StudentController extends Controller
 
         Student::create($validated);
 
-        return redirect()->route('students.index')
+        return redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil ditambahkan');
     }
 
@@ -176,7 +209,7 @@ class StudentController extends Controller
 
         $student->update($validated);
 
-        return redirect()->route('students.index')
+        return redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil diperbarui');
     }
 
@@ -186,7 +219,7 @@ class StudentController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($student->photo);
         }
         $student->delete();
-        return redirect()->route('students.index')
+        return redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil dihapus');
     }
 

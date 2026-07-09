@@ -77,20 +77,9 @@ class User extends Authenticatable
         return $this->role === 'department_officer';
     }
 
-    /**
-     * Check if user is a finance officer.
-     */
-    public function isFinanceOfficer(): bool
-    {
-        return $this->role === 'finance_officer';
-    }
-    /**
-     * Check if user is a finance secretary.
-     */
-    public function isFinanceSecretary(): bool
-    {
-        return $this->role === 'finance_secretary';
-    }
+    // [HIDDEN] finance_officer & finance_secretary roles — hidden, not deleted
+    // public function isFinanceOfficer(): bool { return $this->role === 'finance_officer'; }
+    // public function isFinanceSecretary(): bool { return $this->role === 'finance_secretary'; }
 
     /**
      * Check if user is a memorization department officer.

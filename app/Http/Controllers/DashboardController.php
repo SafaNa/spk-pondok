@@ -13,6 +13,10 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->isLicensingOfficer()) {
+            return $this->licensingDashboard();
+        }
+
         // Get active period
         $activePeriod = Period::where('is_active', true)->first();
 
@@ -56,6 +60,47 @@ class DashboardController extends Controller
             'recommendedPercent',
             'notRecommendedPercent',
             'pendingPercent'
+        ));
+    }
+
+    private function licensingDashboard()
+    {
+        $totalStudents   = Student::where('status', 'active')->count();
+        $kepulangan      = StudentLicense::where('status', 'approved')
+                            ->whereDate('start_date', '<=', today())
+                            ->whereDate('end_date', '>=', today())
+                            ->count();
+        $izinDisetujui   = StudentLicense::where('status', 'approved')->count();
+        $izinPending     = StudentLicense::where('status', 'pending')->count();
+        $izinDitolak     = StudentLicense::where('status', 'rejected')->count();
+        $kasusDarurat    = StudentLicense::where('type', 'individual')
+                            ->where('status', 'pending')
+                            ->count();
+
+        $recentLicenses = StudentLicense::with(['student'])
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        // Notifications: students with pending violations + pending licenses
+        $violationNotifs = Student::with([
+                'pendingViolations',
+                'licenses' => fn($q) => $q->where('status', 'pending'),
+            ])
+            ->whereHas('pendingViolations')
+            ->whereHas('licenses', fn($q) => $q->where('status', 'pending'))
+            ->limit(5)
+            ->get();
+
+        return view('licensing.dashboard', compact(
+            'totalStudents',
+            'kepulangan',
+            'izinDisetujui',
+            'izinPending',
+            'izinDitolak',
+            'kasusDarurat',
+            'recentLicenses',
+            'violationNotifs'
         ));
     }
 }

@@ -88,7 +88,7 @@ class LicenseController extends Controller
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link License: " . $e->getMessage());
         }
 
-        return redirect()->route('licenses.index')
+        return redirect()->route('admin.licenses.index')
             ->with('success', 'Izin individu berhasil dicatat.')
             ->with('wa_url', $waRedirectUrl);
     }
@@ -145,7 +145,7 @@ class LicenseController extends Controller
             'description' => $validated['description'],
         ]);
 
-        return redirect()->route('licenses.index')->with('success', 'Data izin berhasil diperbarui.');
+        return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil diperbarui.');
     }
 
     public function approve($id)

@@ -18,7 +18,7 @@
                         real-time</p>
                 </div>
                 @if(!Auth::user()->isLicensingOfficer())
-                    <a href="{{ route('violations.create') }}"
+                    <a href="{{ route('admin.violations.create') }}"
                         class="group flex items-center justify-center gap-2 rounded-xl px-5 h-11 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
                         <span
                             class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
@@ -151,7 +151,7 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <a href="{{ route('violations.show', $violation->id) }}"
+                                <a href="{{ route('admin.violations.show', $violation->id) }}"
                                     class="px-4 py-2 text-sm text-primary hover:bg-primary/10 rounded transition-colors text-center">
                                     Detail
                                 </a>
@@ -159,11 +159,11 @@
                                 @if(Auth::user()->isAdmin() || (Auth::user()->isDepartmentOfficer() && $violation->violationType->department_id == Auth::user()->department_id))
                                     @if(Route::has('violations.edit') && $violation->sanction_status !== 'completed')
                                         <div class="flex gap-2">
-                                            <a href="{{ route('violations.edit', $violation->id) }}"
+                                            <a href="{{ route('admin.violations.edit', $violation->id) }}"
                                                 class="w-full px-4 py-2 text-sm bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded transition-colors text-center">
                                                 Edit
                                             </a>
-                                            <form action="{{ route('violations.destroy', $violation->id) }}" method="POST">
+                                            <form action="{{ route('admin.violations.destroy', $violation->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
@@ -177,7 +177,7 @@
 
                                     @if($violation->sanction_status === 'pending')
                                         <button type="button"
-                                            @click="verifyActionUrl = '{{ route('violations.verify-sanction', $violation->id) }}'; showVerifyModal = true"
+                                            @click="verifyActionUrl = '{{ route('admin.violations.verify-sanction', $violation->id) }}'; showVerifyModal = true"
                                             class="w-full px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
                                             Verifikasi
                                         </button>

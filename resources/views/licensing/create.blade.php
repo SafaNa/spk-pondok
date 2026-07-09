@@ -12,7 +12,7 @@
             {{-- Header --}}
             <div class="bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/5 px-4 py-6 sm:px-6 sm:py-8 border-b border-primary/10">
                 {{-- Back Button --}}
-                <a href="{{ route('licenses.index') }}"
+                <a href="{{ route('admin.licenses.index') }}"
                     class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors group mb-6">
                     <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
                     <span class="text-sm font-medium">Kembali ke Daftar Izin</span>
@@ -38,7 +38,7 @@
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('licenses.store-individual') }}" method="POST" class="p-4 sm:p-8">
+            <form action="{{ route('admin.licenses.store-individual') }}" method="POST" class="p-4 sm:p-8">
                 @csrf
 
                 <div class="grid grid-cols-1 gap-8">
@@ -188,7 +188,7 @@
 
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('licenses.index') }}"
+                    <a href="{{ route('admin.licenses.index') }}"
                         class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                         Batal
                     </a>

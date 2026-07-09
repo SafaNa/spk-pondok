@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6">
         {{-- Back Button --}}
-        <a href="{{ route('departments.index') }}"
+        <a href="{{ route('admin.departments.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">

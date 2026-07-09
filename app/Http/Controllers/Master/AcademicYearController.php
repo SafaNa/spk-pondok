@@ -31,7 +31,7 @@ class AcademicYearController extends Controller
         ]);
 
         AcademicYear::create($validated);
-        return redirect()->route('academic-years.index')->with('success', 'Tahun ajaran berhasil ditambahkan.');
+        return redirect()->route('admin.academic-years.index')->with('success', 'Tahun ajaran berhasil ditambahkan.');
     }
 
     public function edit(AcademicYear $academicYear)
@@ -50,13 +50,13 @@ class AcademicYearController extends Controller
         ]);
 
         $academicYear->update($validated);
-        return redirect()->route('academic-years.index')->with('success', 'Tahun ajaran berhasil diperbarui.');
+        return redirect()->route('admin.academic-years.index')->with('success', 'Tahun ajaran berhasil diperbarui.');
     }
 
     public function destroy(AcademicYear $academicYear)
     {
         $academicYear->delete();
-        return redirect()->route('academic-years.index')->with('success', 'Tahun ajaran berhasil dihapus.');
+        return redirect()->route('admin.academic-years.index')->with('success', 'Tahun ajaran berhasil dihapus.');
     }
 
     public function toggleStatus(AcademicYear $academicYear)

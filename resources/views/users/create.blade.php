@@ -8,7 +8,7 @@
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         {{-- Back Button --}}
-        <a href="{{ route('users.index') }}"
+        <a href="{{ route('admin.users.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -32,14 +32,13 @@
                     <div>
                         <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">Tambah User Khusus
                         </h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">Tambahkan Petugas Perizinan atau
-                            Petugas Keuangan baru ke dalam sistem.</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">Tambahkan Petugas Perizinan baru ke dalam sistem.</p>
                     </div>
                 </div>
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('users.store') }}" method="POST" class="p-6 sm:p-10 flex flex-col gap-10">
+            <form action="{{ route('admin.users.store') }}" method="POST" class="p-6 sm:p-10 flex flex-col gap-10">
                 @csrf
 
                 {{-- Account Info --}}
@@ -109,10 +108,8 @@
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
                                     <option value="" disabled selected>Pilih Role</option>
                                     <option value="licensing_officer" {{ old('role') == 'licensing_officer' ? 'selected' : '' }}>Petugas Perizinan</option>
-                                    <option value="finance_officer" {{ old('role') == 'finance_officer' ? 'selected' : '' }}>
-                                        Petugas Keuangan</option>
-                                    <option value="finance_secretary" {{ old('role') == 'finance_secretary' ? 'selected' : '' }}>
-                                        Sekretaris Petugas Keuangan</option>
+                                    {{-- [HIDDEN] <option value="finance_officer" {{ old('role') == 'finance_officer' ? 'selected' : '' }}>Petugas Keuangan</option> --}}
+                                    {{-- [HIDDEN] <option value="finance_secretary" {{ old('role') == 'finance_secretary' ? 'selected' : '' }}>Sekretaris Petugas Keuangan</option> --}}
                                 </select>
                                 <div
                                     class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
@@ -180,7 +177,7 @@
 
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-4 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('users.index') }}"
+                    <a href="{{ route('admin.users.index') }}"
                         class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                         Batal
                     </a>

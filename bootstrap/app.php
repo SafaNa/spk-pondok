@@ -11,7 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectUsersTo('/dashboard');
+        $middleware->redirectUsersTo('/admin/dashboard');
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->is('guardian/*')) {
+                return route('guardian.login');
+            }
+            return route('admin.login');
+        });
 
         // Register middleware aliases
         $middleware->alias([

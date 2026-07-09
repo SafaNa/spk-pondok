@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ showApproveModal: false, showRejectModal: false }">
         {{-- Back Button --}}
-        <a href="{{ route('licenses.index') }}"
+        <a href="{{ route('admin.licenses.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -167,7 +167,7 @@
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800">
             <div class="px-6 py-4 border-b border-[#e7edf3] dark:border-slate-800 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Detail Perizinan</h3>
-                <a href="{{ route('licenses.edit', $license->id) }}"
+                <a href="{{ route('admin.licenses.edit', $license->id) }}"
                     class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-primary hover:bg-primary/10 transition-colors">
                     <span class="material-symbols-outlined text-[18px]">edit</span>
                     Edit
@@ -323,7 +323,7 @@
                             </div>
                         </div>
                         <div class="bg-gray-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <form action="{{ route('licenses.approve', $license->id) }}" method="POST">
+                            <form action="{{ route('admin.licenses.approve', $license->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 sm:ml-3 sm:w-auto">
@@ -376,7 +376,7 @@
                             </div>
                         </div>
                         <div class="bg-gray-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <form action="{{ route('licenses.reject', $license->id) }}" method="POST">
+                            <form action="{{ route('admin.licenses.reject', $license->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">

@@ -21,7 +21,7 @@ class RayonController extends Controller
         ]);
 
         Rayon::create($validated);
-        return redirect()->route('rayons.index')->with('success', 'Rayon berhasil ditambahkan');
+        return redirect()->route('admin.rayons.index')->with('success', 'Rayon berhasil ditambahkan');
     }
 
     public function update(Request $request, Rayon $rayon)
@@ -31,12 +31,12 @@ class RayonController extends Controller
         ]);
 
         $rayon->update($validated);
-        return redirect()->route('rayons.index')->with('success', 'Rayon berhasil diperbarui');
+        return redirect()->route('admin.rayons.index')->with('success', 'Rayon berhasil diperbarui');
     }
 
     public function destroy(Rayon $rayon)
     {
         $rayon->delete();
-        return redirect()->route('rayons.index')->with('success', 'Rayon berhasil dihapus');
+        return redirect()->route('admin.rayons.index')->with('success', 'Rayon berhasil dihapus');
     }
 }

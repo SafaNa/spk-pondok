@@ -28,7 +28,7 @@ class MemorizationTypeController extends Controller
 
         MemorizationType::create($validated);
 
-        return redirect()->route('memorization-types.index')
+        return redirect()->route('admin.memorization-types.index')
             ->with('success', 'Ketentuan hafalan berhasil ditambahkan.');
     }
 
@@ -45,7 +45,7 @@ class MemorizationTypeController extends Controller
 
         $memorization_type->update($validated);
 
-        return redirect()->route('memorization-types.index')
+        return redirect()->route('admin.memorization-types.index')
             ->with('success', 'Ketentuan hafalan berhasil diperbarui.');
     }
 
@@ -53,7 +53,7 @@ class MemorizationTypeController extends Controller
     {
         $memorization_type->delete();
 
-        return redirect()->route('memorization-types.index')
+        return redirect()->route('admin.memorization-types.index')
             ->with('success', 'Ketentuan hafalan berhasil dihapus.');
     }
 }
