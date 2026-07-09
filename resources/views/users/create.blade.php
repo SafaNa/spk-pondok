@@ -3,7 +3,7 @@
 @section('title', 'Tambah User Khusus')
 @section('breadcrumb', 'Tambah Baru')
 @section('breadcrumb_parent', 'User Khusus')
-@section('breadcrumb_parent_route', 'users.index')
+@section('breadcrumb_parent_route', 'admin.users.index')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
