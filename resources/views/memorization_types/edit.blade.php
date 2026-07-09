@@ -3,7 +3,7 @@
 @section('title', 'Edit Ketentuan Hafalan')
 @section('breadcrumb', 'Edit')
 @section('breadcrumb_parent', 'Ketentuan Hafalan')
-@section('breadcrumb_parent_route', 'memorization-types.index')
+@section('breadcrumb_parent_route', 'admin.memorization-types.index')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto max-w-2xl pb-10">

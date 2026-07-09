@@ -3,7 +3,7 @@
 @section('title', 'Tambah Tahun Ajaran')
 @section('breadcrumb', 'Tambah')
 @section('breadcrumb_parent', 'Tahun Ajaran')
-@section('breadcrumb_parent_route', 'academic-years.index')
+@section('breadcrumb_parent_route', 'admin.academic-years.index')
 @section('mobile_title', 'Tambah Tahun Ajaran')
 
 @section('content')

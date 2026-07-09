@@ -3,7 +3,7 @@
 @section('title', 'Tambah Wali')
 @section('breadcrumb', 'Tambah Baru')
 @section('breadcrumb_parent', 'Data Wali')
-@section('breadcrumb_parent_route', 'guardians.index')
+@section('breadcrumb_parent_route', 'admin.guardians.index')
 @section('mobile_title', 'Tambah Wali')
 
 @section('content')

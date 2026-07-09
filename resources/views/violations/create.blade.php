@@ -3,7 +3,7 @@
 @section('title', 'Catat Pelanggaran')
 @section('breadcrumb', 'Catat')
 @section('breadcrumb_parent', 'Pelanggaran')
-@section('breadcrumb_parent_route', 'violations.index')
+@section('breadcrumb_parent_route', 'admin.violations.index')
 @section('mobile_title', 'Catat Pelanggaran')
 
 @section('content')

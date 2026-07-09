@@ -3,7 +3,7 @@
 @section('title', 'Detail Departemen')
 @section('breadcrumb', 'Detail')
 @section('breadcrumb_parent', 'Departemen')
-@section('breadcrumb_parent_route', 'departments.index')
+@section('breadcrumb_parent_route', 'admin.departments.index')
 @section('mobile_title', 'Detail Departemen')
 
 @section('content')

@@ -3,7 +3,7 @@
 @section('title', 'Edit Izin Individu')
 @section('breadcrumb', 'Edit Izin')
 @section('breadcrumb_parent', 'Perizinan')
-@section('breadcrumb_parent_route', 'licenses.index')
+@section('breadcrumb_parent_route', 'admin.licenses.index')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
