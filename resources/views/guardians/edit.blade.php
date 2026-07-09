@@ -3,7 +3,7 @@
 @section('title', 'Edit Wali')
 @section('breadcrumb', 'Edit Wali')
 @section('breadcrumb_parent', 'Data Wali')
-@section('breadcrumb_parent_route', 'guardians.index')
+@section('breadcrumb_parent_route', 'admin.guardians.index')
 @section('mobile_title', 'Edit Wali')
 
 @section('content')

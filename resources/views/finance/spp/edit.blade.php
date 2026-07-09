@@ -3,7 +3,7 @@
 @section('title', 'Edit Pembayaran SPP')
 @section('breadcrumb', 'Edit Pembayaran')
 @section('breadcrumb_parent', 'Pembayaran SPP')
-@section('breadcrumb_parent_route', 'spp-payments.index')
+@section('breadcrumb_parent_route', 'admin.spp-payments.index')
 @section('mobile_title', 'Edit SPP')
 
 @section('content')

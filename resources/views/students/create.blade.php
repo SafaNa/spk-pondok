@@ -3,7 +3,7 @@
 @section('title', 'Tambah Santri Baru')
 @section('breadcrumb', 'Tambah Baru')
 @section('breadcrumb_parent', 'Santri')
-@section('breadcrumb_parent_route', 'students.index')
+@section('breadcrumb_parent_route', 'admin.students.index')
 @section('mobile_title', 'Tambah Santri Baru')
 
 @section('content')

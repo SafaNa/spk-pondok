@@ -3,7 +3,7 @@
 @section('title', 'Edit Santri')
 @section('breadcrumb', 'Edit')
 @section('breadcrumb_parent', 'Santri')
-@section('breadcrumb_parent_route', 'students.index')
+@section('breadcrumb_parent_route', 'admin.students.index')
 @section('mobile_title', 'Edit Santri')
 
 @section('content')

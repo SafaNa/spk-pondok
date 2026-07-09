@@ -3,7 +3,7 @@
 @section('title', 'Edit Jenis Pelanggaran')
 @section('breadcrumb', 'Edit')
 @section('breadcrumb_parent', 'Jenis Pelanggaran')
-@section('breadcrumb_parent_route', 'violation-types.index')
+@section('breadcrumb_parent_route', 'admin.violation-types.index')
 @section('mobile_title', 'Edit Jenis Pelanggaran')
 
 @section('content')

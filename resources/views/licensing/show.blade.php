@@ -3,7 +3,7 @@
 @section('title', 'Detail Perizinan')
 @section('breadcrumb', 'Detail')
 @section('breadcrumb_parent', 'Perizinan')
-@section('breadcrumb_parent_route', 'licenses.index')
+@section('breadcrumb_parent_route', 'admin.licenses.index')
 @section('mobile_title', 'Detail Perizinan')
 
 @section('content')
