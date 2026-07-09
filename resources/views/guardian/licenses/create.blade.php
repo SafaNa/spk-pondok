@@ -1,6 +1,7 @@
 @extends('layouts.guardian')
 
 @section('title', 'Pengajuan Izin')
+@section('mobile_title', 'Pengajuan Izin')
 
 @section('content')
 

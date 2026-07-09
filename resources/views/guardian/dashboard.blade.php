@@ -1,6 +1,7 @@
 @extends('layouts.guardian')
 
 @section('title', 'Dashboard')
+@section('mobile_title', 'Dashboard')
 
 @section('content')
 
@@ -92,6 +93,7 @@
             <h3 class="text-sm font-bold text-[#0d141b] dark:text-white">Pengajuan Terbaru</h3>
             <a href="{{ route('guardian.licenses.index') }}" class="text-xs font-semibold text-primary hover:underline">Lihat Semua</a>
         </div>
+        <div class="overflow-x-auto">
         <table class="w-full text-left">
             <thead>
                 <tr class="bg-[#f8fafc] dark:bg-slate-800/50 border-b border-[#e7edf3] dark:border-slate-700">
@@ -129,6 +131,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
         @if($recentLicenses->isEmpty())
         <div class="px-5 py-4 border-t border-[#e7edf3] dark:border-slate-700">
             <a href="{{ route('guardian.licenses.create') }}"

@@ -1,6 +1,7 @@
 @extends('layouts.guardian')
 
 @section('title', 'Riwayat Izin')
+@section('mobile_title', 'Riwayat Izin')
 
 @section('content')
 
