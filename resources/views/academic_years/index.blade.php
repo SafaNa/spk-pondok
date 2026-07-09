@@ -13,7 +13,7 @@
                 <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Kelola data tahun ajaran akademik.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ route('academic-years.create') }}"
+                <a href="{{ route('admin.academic-years.create') }}"
                     class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/25">
                     <span class="material-symbols-outlined text-[20px]">add</span>
                     Tambah Tahun Ajaran
@@ -70,7 +70,7 @@
 
                             {{-- Action Buttons --}}
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('academic-years.edit', $year->id) }}"
+                                <a href="{{ route('admin.academic-years.edit', $year->id) }}"
                                     class="group/edit w-9 h-9 p-0 flex items-center justify-center rounded-xl text-slate-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 relative">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
 
@@ -81,7 +81,7 @@
                                     </div>
                                 </a>
 
-                                <form action="{{ route('academic-years.destroy', $year->id) }}" method="POST" class="flex"
+                                <form action="{{ route('admin.academic-years.destroy', $year->id) }}" method="POST" class="flex"
                                     @submit.prevent="$store.deleteModal.open($el, 'Apakah Anda yakin ingin menghapus tahun ajaran {{ $year->name }}?')">
                                     @csrf
                                     @method('DELETE')
@@ -143,7 +143,7 @@
                                         </p>
                                     </div>
 
-                                    <form action="{{ route('academic-years.toggle-status', $year->id) }}" method="POST"
+                                    <form action="{{ route('admin.academic-years.toggle-status', $year->id) }}" method="POST"
                                         x-ref="toggleForm{{ $year->id }}">
                                         @csrf
                                         <div class="flex gap-3">
@@ -174,7 +174,7 @@
                     <p class="text-slate-500 dark:text-slate-400 text-center max-w-sm mb-8 leading-relaxed">
                         Data tahun ajaran masih kosong. Mulailah dengan menambahkan tahun ajaran baru untuk sistem.
                     </p>
-                    <a href="{{ route('academic-years.create') }}"
+                    <a href="{{ route('admin.academic-years.create') }}"
                         class="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transform hover:-translate-y-1">
                         Buat Tahun Ajaran
                     </a>

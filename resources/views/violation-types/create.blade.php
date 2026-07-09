@@ -12,7 +12,7 @@
             <div
                 class="bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/5 px-4 py-6 sm:px-6 sm:py-8 border-b border-primary/10 rounded-t-3xl">
                 {{-- Back Button --}}
-                <a href="{{ route('violation-types.index') }}"
+                <a href="{{ route('admin.violation-types.index') }}"
                     class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors group mb-6">
                     <span
                         class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
@@ -34,7 +34,7 @@
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('violation-types.store') }}" method="POST" class="p-6 sm:p-10">
+            <form action="{{ route('admin.violation-types.store') }}" method="POST" class="p-6 sm:p-10">
                 @csrf
 
                 <div class="grid grid-cols-1 gap-8">
@@ -219,7 +219,7 @@
                     {{-- Actions --}}
                     <div
                         class="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-                        <a href="{{ route('violation-types.index') }}"
+                        <a href="{{ route('admin.violation-types.index') }}"
                             class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                             Batal
                         </a>

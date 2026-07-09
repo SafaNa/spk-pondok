@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         {{-- Back Button --}}
-        <a href="{{ route('students.index') }}"
+        <a href="{{ route('admin.students.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-purple-600 transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-purple-600/10 transition-colors">
@@ -40,7 +40,7 @@
             </div>
 
             {{-- Form --}}
-            <form action="{{ route('students.update', $student->id) }}" method="POST" enctype="multipart/form-data"
+            <form action="{{ route('admin.students.update', $student->id) }}" method="POST" enctype="multipart/form-data"
                 class="p-6 sm:p-10 flex flex-col gap-10">
                 @csrf
                 @method('PUT')
@@ -544,7 +544,7 @@
                     <h3
                         class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-purple-600">family_restroom</span>
-                        Family & Contact
+                        Keluarga & Kontak
                     </h3>
 
                     {{-- Father --}}
@@ -699,7 +699,7 @@
 
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <a href="{{ route('students.index') }}"
+                    <a href="{{ route('admin.students.index') }}"
                         class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
                         Cancel
                     </a>
@@ -710,6 +710,63 @@
                     </button>
                 </div>
             </form>
+        </div>
+
+        {{-- Wali Santri (Read-only) --}}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+            <div class="bg-gradient-to-br from-amber-50 via-orange-50/50 to-yellow-50/30 px-6 py-5 sm:px-8 border-b border-amber-100">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm border border-amber-200 text-amber-600">
+                            <span class="material-symbols-outlined text-[24px]">family_restroom</span>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Wali Santri</h2>
+                            <p class="text-sm text-slate-500">Wali yang terhubung ke santri ini.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.guardians.index') }}"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-700 text-sm font-semibold transition-colors shrink-0">
+                        <span class="material-symbols-outlined text-[16px]">settings</span>
+                        Kelola Data Wali
+                    </a>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8">
+                @if($student->guardians->isNotEmpty())
+                    <div class="flex flex-col gap-3">
+                        @foreach($student->guardians as $guardian)
+                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700 font-bold text-sm shrink-0">
+                                    {{ substr($guardian->name, 0, 1) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-bold text-slate-800 dark:text-white">{{ $guardian->name }}</p>
+                                    <p class="text-xs text-slate-500">
+                                        &#64;{{ $guardian->username }} &middot;
+                                        {{ ['father'=>'Ayah','mother'=>'Ibu','guardian'=>'Wali','sibling'=>'Saudara'][$guardian->relationship] ?? ucfirst($guardian->relationship) }}
+                                        @if($guardian->phone) &middot; {{ $guardian->phone }} @endif
+                                    </p>
+                                </div>
+                                <a href="{{ route('admin.guardians.edit', $guardian) }}"
+                                    class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary border border-primary/20 hover:bg-primary/5 transition-colors shrink-0">
+                                    <span class="material-symbols-outlined text-[15px]">edit</span>
+                                    Edit
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="flex items-center gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                        <span class="material-symbols-outlined text-[18px]">info</span>
+                        <span>Belum ada wali terdaftar.
+                            <a href="{{ route('admin.guardians.create') }}" class="font-semibold underline hover:text-amber-900">Tambah wali</a>
+                            dan pilih santri ini sebagai anaknya.
+                        </span>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endsection
@@ -756,7 +813,7 @@
             // Event Listeners
             provinceSelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.cities') }}?province_code=${this.value}`, citySelect, 'Pilih Kabupaten/Kota');
+                    fetchOptions(`{{ route('admin.regions.cities') }}?province_code=${this.value}`, citySelect, 'Pilih Kabupaten/Kota');
                     districtSelect.innerHTML = '<option value="" disabled selected>Pilih Kecamatan</option>';
                     districtSelect.disabled = true;
                     villageSelect.innerHTML = '<option value="" disabled selected>Pilih Desa/Kelurahan</option>';
@@ -766,7 +823,7 @@
 
             citySelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.districts') }}?city_code=${this.value}`, districtSelect, 'Pilih Kecamatan');
+                    fetchOptions(`{{ route('admin.regions.districts') }}?city_code=${this.value}`, districtSelect, 'Pilih Kecamatan');
                     villageSelect.innerHTML = '<option value="" disabled selected>Pilih Desa/Kelurahan</option>';
                     villageSelect.disabled = true;
                 }
@@ -774,7 +831,7 @@
 
             districtSelect.addEventListener('change', function () {
                 if (this.value) {
-                    fetchOptions(`{{ route('regions.villages') }}?district_code=${this.value}`, villageSelect, 'Pilih Desa/Kelurahan');
+                    fetchOptions(`{{ route('admin.regions.villages') }}?district_code=${this.value}`, villageSelect, 'Pilih Desa/Kelurahan');
                 }
             });
 
@@ -822,13 +879,13 @@
             // Note: Using await loop or Promise chain to ensure correct order
             const initRegions = async () => {
                 if (provinceSelect.value) {
-                    await fetchOptions(`{{ route('regions.cities') }}?province_code=${provinceSelect.value}`, citySelect, 'Pilih Kabupaten/Kota', oldCity);
+                    await fetchOptions(`{{ route('admin.regions.cities') }}?province_code=${provinceSelect.value}`, citySelect, 'Pilih Kabupaten/Kota', oldCity);
 
                     if (oldCity) {
-                        await fetchOptions(`{{ route('regions.districts') }}?city_code=${oldCity}`, districtSelect, 'Pilih Kecamatan', oldDistrict);
+                        await fetchOptions(`{{ route('admin.regions.districts') }}?city_code=${oldCity}`, districtSelect, 'Pilih Kecamatan', oldDistrict);
 
                         if (oldDistrict) {
-                            await fetchOptions(`{{ route('regions.villages') }}?district_code=${oldDistrict}`, villageSelect, 'Pilih Desa/Kelurahan', oldVillage);
+                            await fetchOptions(`{{ route('admin.regions.villages') }}?district_code=${oldDistrict}`, villageSelect, 'Pilih Desa/Kelurahan', oldVillage);
                         }
                     }
                 }

@@ -69,7 +69,7 @@ class ViolationTypeController extends Controller
             'description' => $validated['description']
         ]);
 
-        return redirect()->route('violation-types.index')->with('success', 'Jenis pelanggaran berhasil ditambahkan');
+        return redirect()->route('admin.violation-types.index')->with('success', 'Jenis pelanggaran berhasil ditambahkan');
     }
 
     /**
@@ -77,7 +77,7 @@ class ViolationTypeController extends Controller
      */
     public function show($id)
     {
-        return redirect()->route('violation-types.index');
+        return redirect()->route('admin.violation-types.index');
     }
 
     /**
@@ -135,7 +135,7 @@ class ViolationTypeController extends Controller
             'description' => $validated['description']
         ]);
 
-        return redirect()->route('violation-types.index')->with('success', 'Jenis pelanggaran berhasil diperbarui');
+        return redirect()->route('admin.violation-types.index')->with('success', 'Jenis pelanggaran berhasil diperbarui');
     }
 
     /**
@@ -156,6 +156,6 @@ class ViolationTypeController extends Controller
 
         $violationType->delete();
 
-        return redirect()->route('violation-types.index')->with('success', 'Jenis pelanggaran berhasil dihapus');
+        return redirect()->route('admin.violation-types.index')->with('success', 'Jenis pelanggaran berhasil dihapus');
     }
 }

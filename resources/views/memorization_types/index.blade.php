@@ -24,7 +24,7 @@
                             pulang santri</p>
                     </div>
                 </div>
-                <a href="{{ route('memorization-types.create') }}"
+                <a href="{{ route('admin.memorization-types.create') }}"
                     class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-all hover:shadow-lg shadow-primary/25">
                     <span class="material-symbols-outlined text-[20px]">add</span>
                     <span>Tambah</span>
@@ -137,13 +137,13 @@
                                                 {{-- Actions --}}
                                                 <div
                                                     class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                                                    <a href="{{ route('memorization-types.edit', $item->id) }}"
+                                                    <a href="{{ route('admin.memorization-types.edit', $item->id) }}"
                                                         class="h-7 w-7 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                                                         title="Edit">
                                                         <span class="material-symbols-outlined text-[16px]">edit</span>
                                                     </a>
                                                     <div x-data>
-                                                        <form action="{{ route('memorization-types.destroy', $item->id) }}"
+                                                        <form action="{{ route('admin.memorization-types.destroy', $item->id) }}"
                                                             method="POST" class="inline-block">
                                                             @csrf
                                                             @method('DELETE')

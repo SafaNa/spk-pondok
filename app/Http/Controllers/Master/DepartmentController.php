@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Master\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -57,7 +58,7 @@ class DepartmentController extends Controller
             'department_id' => $department->id,
         ]);
 
-        return redirect()->route('departments.index')
+        return redirect()->route('admin.departments.index')
             ->with('success', 'Departemen berhasil ditambahkan beserta akun penggunanya.');
     }
 
@@ -119,7 +120,7 @@ class DepartmentController extends Controller
             $userAkun->update($userData);
         }
 
-        return redirect()->route('departments.index')
+        return redirect()->route('admin.departments.index')
             ->with('success', 'Departemen berhasil diperbarui');
     }
 
@@ -128,9 +129,15 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        $department->delete();
+        DB::transaction(function () use ($department) {
+            User::where('department_id', $department->id)
+                ->where('role', 'department_officer')
+                ->delete();
 
-        return redirect()->route('departments.index')
+            $department->delete();
+        });
+
+        return redirect()->route('admin.departments.index')
             ->with('success', 'Departemen berhasil dihapus');
     }
 }

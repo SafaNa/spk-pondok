@@ -24,7 +24,7 @@
                         <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                             class="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 overflow-hidden" style="display: none;">
                             @foreach($academicYears as $year)
-                                <a href="{{ route('licenses.index', ['academic_year_id' => $year->id]) }}"
+                                <a href="{{ route('admin.licenses.index', ['academic_year_id' => $year->id]) }}"
                                     class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors {{ $selectedYearId == $year->id ? 'bg-primary/10 text-primary font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700' }}">
                                     @if($selectedYearId == $year->id)
                                         <span class="material-symbols-outlined text-[16px]">check</span>
@@ -36,7 +36,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <a href="{{ route('licenses.create') }}"
+                    <a href="{{ route('admin.licenses.create') }}"
                         class="group flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300 dark:bg-slate-800 dark:text-gray-200 dark:ring-slate-700 dark:hover:ring-slate-600">
                         <span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-110">person_add</span>
                         Izin Individu
@@ -134,7 +134,7 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <a href="{{ route('licenses.show', $license->id) }}" class="font-semibold text-gray-900 dark:text-white hover:text-primary transition-colors">{{ $license->student->name }}</a>
+                                            <a href="{{ route('admin.licenses.show', $license->id) }}" class="font-semibold text-gray-900 dark:text-white hover:text-primary transition-colors">{{ $license->student->name }}</a>
                                             <div class="text-xs text-gray-500">{{ $license->student->room->name ?? '-' }}</div>
                                         </div>
                                     </div>
@@ -182,23 +182,23 @@
                                                 </button>
                                             @else
                                                 <button type="button"
-                                                    @click="approveActionUrl = '{{ route('licenses.approve', $license->id) }}'; showApproveModal = true"
+                                                    @click="approveActionUrl = '{{ route('admin.licenses.approve', $license->id) }}'; showApproveModal = true"
                                                     class="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">
                                                     Approve
                                                 </button>
                                             @endif
                                             <button type="button"
-                                                @click="rejectActionUrl = '{{ route('licenses.reject', $license->id) }}'; showRejectModal = true"
+                                                @click="rejectActionUrl = '{{ route('admin.licenses.reject', $license->id) }}'; showRejectModal = true"
                                                 class="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-500/20 transition-colors">
                                                 Reject
                                             </button>
                                         @endif
-                                        <a href="{{ route('licenses.show', $license->id) }}" 
+                                        <a href="{{ route('admin.licenses.show', $license->id) }}" 
                                             class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary dark:hover:bg-slate-700 dark:hover:text-blue-400 transition-colors"
                                             title="Detail Izin">
                                             <span class="material-symbols-outlined text-[20px]">visibility</span>
                                         </a>
-                                        <a href="{{ route('licenses.edit', $license->id) }}" 
+                                        <a href="{{ route('admin.licenses.edit', $license->id) }}" 
                                             class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary dark:hover:bg-slate-700 dark:hover:text-blue-400 transition-colors"
                                             title="Edit Izin">
                                             <span class="material-symbols-outlined text-[20px]">edit_square</span>

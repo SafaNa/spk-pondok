@@ -135,7 +135,7 @@ class ViolationController extends Controller
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link Violation: " . $e->getMessage());
         }
 
-        return redirect()->route('violations.index')
+        return redirect()->route('admin.violations.index')
             ->with('success', 'Pelanggaran berhasil dicatat')
             ->with('wa_url', $waRedirectUrl);
     }
@@ -289,7 +289,7 @@ class ViolationController extends Controller
 
         $violation->update($data);
 
-        return redirect()->route('violations.index')->with('success', 'Pelanggaran berhasil diperbarui');
+        return redirect()->route('admin.violations.index')->with('success', 'Pelanggaran berhasil diperbarui');
     }
 
     /**
@@ -312,6 +312,6 @@ class ViolationController extends Controller
 
         $violation->delete();
 
-        return redirect()->route('violations.index')->with('success', 'Pelanggaran berhasil dihapus');
+        return redirect()->route('admin.violations.index')->with('success', 'Pelanggaran berhasil dihapus');
     }
 }

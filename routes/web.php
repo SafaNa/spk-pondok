@@ -16,19 +16,46 @@ use App\Http\Controllers\Master\EducationLevelController;
 use App\Http\Controllers\Master\DepartmentController;
 use App\Http\Controllers\Master\MemorizationTypeController;
 use App\Http\Controllers\Master\RegionController;
+use App\Http\Controllers\Master\GuardianController;
 
 // Assessment & Other Imports
 
 
-// Auth Routes
-Route::middleware('guest')->group(function () {
+// Landing page — pilih role (admin / wali santri)
+Route::get('/', function () {
+    if (auth()->check()) return redirect()->route('admin.dashboard');
+    if (auth()->guard('guardian')->check()) return redirect()->route('guardian.dashboard');
+    return view('landing');
+})->name('landing');
+
+// Admin Auth Routes
+Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::middleware(['auth'])->group(function () {
+// Guardian Routes
+Route::prefix('guardian')->name('guardian.')->group(function () {
+    Route::middleware('guest:guardian')->group(function () {
+        Route::get('/login', [\App\Http\Controllers\Guardian\AuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [\App\Http\Controllers\Guardian\AuthController::class, 'login'])->name('login.post');
+    });
+    Route::middleware('auth:guardian')->group(function () {
+        Route::post('/logout', [\App\Http\Controllers\Guardian\AuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [\App\Http\Controllers\Guardian\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/licenses', [\App\Http\Controllers\Guardian\LicenseController::class, 'index'])->name('licenses.index');
+        Route::get('/licenses/create', [\App\Http\Controllers\Guardian\LicenseController::class, 'create'])->name('licenses.create');
+        Route::post('/licenses', [\App\Http\Controllers\Guardian\LicenseController::class, 'store'])->name('licenses.store');
+        Route::get('/profile', [\App\Http\Controllers\Guardian\ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [\App\Http\Controllers\Guardian\ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [\App\Http\Controllers\Guardian\ProfileController::class, 'updatePassword'])->name('profile.password');
+    });
+});
+
+// Protected Admin Routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/password/change', [AuthController::class, 'showChangePasswordForm'])->name('password.change');
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 
@@ -38,10 +65,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/regions/villages', [RegionController::class, 'villages'])->name('regions.villages');
 });
 
-// Protected Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('home');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Master Data: Academic Years & Periods
@@ -62,6 +87,8 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
     // Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
     Route::resource('students', StudentController::class);
+    Route::get('guardians/search-students', [GuardianController::class, 'searchStudents'])->name('guardians.search-students');
+    Route::resource('guardians', GuardianController::class);
 
     // User Management (Licensing & Finance)
     Route::resource('users', \App\Http\Controllers\UserController::class);
@@ -102,6 +129,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/licenses/{license}/approve', [\App\Http\Controllers\Licensing\LicenseController::class, 'approve'])->name('licenses.approve');
     Route::post('/licenses/{license}/reject', [\App\Http\Controllers\Licensing\LicenseController::class, 'reject'])->name('licenses.reject');
 
+
+    // Licensing Officer: Laporan & Notifikasi
+    Route::get('/laporan', [\App\Http\Controllers\Licensing\LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/notifikasi', [\App\Http\Controllers\Licensing\NotifikasiController::class, 'index'])->name('notifikasi.index');
 
     // Memorization Department Routes
     Route::get('/memorization/licenses', [\App\Http\Controllers\Licensing\MemorizationController::class, 'index'])->name('memorization.index');

@@ -127,7 +127,7 @@ class SppPaymentController extends Controller
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP: " . $e->getMessage());
         }
 
-        return redirect()->route('spp-payments.index')
+        return redirect()->route('admin.spp-payments.index')
             ->with('success', 'Pembayaran SPP berhasil ditambahkan')
             ->with('wa_url', $waRedirectUrl);
     }
@@ -205,7 +205,7 @@ class SppPaymentController extends Controller
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP Update: " . $e->getMessage());
         }
 
-        return redirect()->route('spp-payments.index')
+        return redirect()->route('admin.spp-payments.index')
             ->with('success', 'Pembayaran SPP berhasil diperbarui')
             ->with('wa_url', $waRedirectUrl);
     }
@@ -217,7 +217,7 @@ class SppPaymentController extends Controller
     {
         $sppPayment->delete();
 
-        return redirect()->route('spp-payments.index')
+        return redirect()->route('admin.spp-payments.index')
             ->with('success', 'Pembayaran SPP berhasil dihapus');
     }
 }

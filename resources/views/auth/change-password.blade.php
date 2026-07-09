@@ -54,7 +54,7 @@
 
             <div
                 class="bg-white dark:bg-slate-900 shadow-sm border border-[#e7edf3] dark:border-slate-800 rounded-xl overflow-hidden">
-                <form action="{{ route('password.update') }}" method="POST" class="p-6 sm:p-8 space-y-6">
+                <form action="{{ route('admin.password.update') }}" method="POST" class="p-6 sm:p-8 space-y-6">
                     @csrf
 
                     <!-- Current Password -->
@@ -152,7 +152,7 @@
                     <!-- Footer Actions -->
                     <div
                         class="px-6 py-4 bg-[#f6f7f8] dark:bg-slate-800/50 border-t border-[#e7edf3] dark:border-slate-800 flex items-center justify-end gap-3">
-                        <a href="{{ route('dashboard') }}"
+                        <a href="{{ route('admin.dashboard') }}"
                             class="px-4 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-sm transition-colors">
                             Cancel
                         </a>

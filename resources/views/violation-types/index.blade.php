@@ -17,7 +17,7 @@
                     <p class="text-[#4c739a] text-sm sm:text-base font-normal">Manajemen data jenis pelanggaran dan poin
                         sanksi</p>
                 </div>
-                <a href="{{ route('violation-types.create') }}"
+                <a href="{{ route('admin.violation-types.create') }}"
                     class="group flex items-center justify-center gap-2 rounded-xl px-5 h-11 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
                     <span
                         class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
@@ -129,12 +129,12 @@
                                 <td class="px-6 py-4 text-right">
                                     <div
                                         class="flex items-center justify-end gap-2 opacit-0 group-hover:opacity-100 transition-opacity">
-                                        <a href="{{ route('violation-types.edit', $violationType->id) }}"
+                                        <a href="{{ route('admin.violation-types.edit', $violationType->id) }}"
                                             class="p-2 text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
-                                        <form action="{{ route('violation-types.destroy', $violationType->id) }}" method="POST"
+                                        <form action="{{ route('admin.violation-types.destroy', $violationType->id) }}" method="POST"
                                             class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -160,7 +160,7 @@
                                         <p class="font-medium text-lg text-[#0d141b] dark:text-white mb-1">Belum ada data
                                             jenis pelanggaran</p>
                                         <p class="text-sm mb-4">Silakan tambahkan jenis pelanggaran baru</p>
-                                        <a href="{{ route('violation-types.create') }}"
+                                        <a href="{{ route('admin.violation-types.create') }}"
                                             class="text-primary hover:underline text-sm font-medium">Tambah Jenis
                                             Pelanggaran</a>
                                     </div>

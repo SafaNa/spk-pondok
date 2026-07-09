@@ -42,7 +42,7 @@ class PeriodController extends Controller
 
         Period::create($validated);
 
-        return redirect()->route('periods.index')
+        return redirect()->route('admin.periods.index')
             ->with('success', 'Periode berhasil ditambahkan');
     }
 
@@ -61,14 +61,14 @@ class PeriodController extends Controller
 
         $period->update($validated);
 
-        return redirect()->route('periods.index')
+        return redirect()->route('admin.periods.index')
             ->with('success', 'Periode berhasil diperbarui');
     }
 
     public function destroy(Period $period)
     {
         $period->delete();
-        return redirect()->route('periods.index')
+        return redirect()->route('admin.periods.index')
             ->with('success', 'Periode berhasil dihapus');
     }
 

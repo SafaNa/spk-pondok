@@ -14,7 +14,7 @@
                 <h1 class="text-xl font-bold text-slate-900 dark:text-white">Tambah Ketentuan Hafalan</h1>
             </div>
 
-            <form action="{{ route('memorization-types.store') }}" method="POST" class="p-6 sm:p-8 flex flex-col gap-6">
+            <form action="{{ route('admin.memorization-types.store') }}" method="POST" class="p-6 sm:p-8 flex flex-col gap-6">
                 @csrf
 
                 {{-- Education Level --}}
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 mt-4">
-                    <a href="{{ route('memorization-types.index') }}"
+                    <a href="{{ route('admin.memorization-types.index') }}"
                         class="px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Batal</a>
                     <button type="submit"
                         class="px-5 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary-600 transition-colors shadow-lg shadow-primary/25">Simpan</button>

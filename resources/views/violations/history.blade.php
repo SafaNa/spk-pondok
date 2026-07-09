@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         {{-- Back Button --}}
-        <a href="{{ route('violations.index') }}"
+        <a href="{{ route('admin.violations.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -135,7 +135,7 @@
                                         </span>
                                     @endif
                                     
-                                     <a href="{{ route('violations.show', $violation->id) }}" 
+                                     <a href="{{ route('admin.violations.show', $violation->id) }}" 
                                         class="p-2 text-slate-400 hover:text-primary transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
                                         title="Lihat Detail">
                                         <span class="material-symbols-outlined">visibility</span>

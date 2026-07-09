@@ -9,7 +9,7 @@
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ showVerifyModal: false }">
         {{-- Back Button --}}
-        <a href="{{ route('violations.index') }}"
+        <a href="{{ route('admin.violations.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
             <div
                 class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
@@ -219,7 +219,7 @@
                             </div>
                         </div>
                         <div class="bg-gray-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <form action="{{ route('violations.verify-sanction', $violation->id) }}" method="POST">
+                            <form action="{{ route('admin.violations.verify-sanction', $violation->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
                                     class="inline-flex w-full justify-center rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">

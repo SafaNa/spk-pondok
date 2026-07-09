@@ -23,7 +23,7 @@ class EducationLevelController extends Controller
 
         EducationLevel::create($validated);
 
-        return redirect()->route('education-levels.index')->with('success', 'Jenjang pendidikan berhasil ditambahkan');
+        return redirect()->route('admin.education-levels.index')->with('success', 'Jenjang pendidikan berhasil ditambahkan');
     }
 
     public function update(Request $request, EducationLevel $educationLevel)
@@ -35,12 +35,12 @@ class EducationLevelController extends Controller
 
         $educationLevel->update($validated);
 
-        return redirect()->route('education-levels.index')->with('success', 'Jenjang pendidikan berhasil diperbarui');
+        return redirect()->route('admin.education-levels.index')->with('success', 'Jenjang pendidikan berhasil diperbarui');
     }
 
     public function destroy(EducationLevel $educationLevel)
     {
         $educationLevel->delete();
-        return redirect()->route('education-levels.index')->with('success', 'Jenjang pendidikan berhasil dihapus');
+        return redirect()->route('admin.education-levels.index')->with('success', 'Jenjang pendidikan berhasil dihapus');
     }
 }

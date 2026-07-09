@@ -20,12 +20,12 @@
                     <span class="material-symbols-outlined text-[20px]">upload_file</span>
                     <span>Impor</span>
                 </button>
-                <a href="#" {{-- {{ route('students.export') }} --}}
+                <a href="#" {{-- {{ route('admin.students.export') }} --}}
                     class="flex items-center gap-2 h-10 sm:h-11 px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
                     <span class="material-symbols-outlined text-[20px]">file_download</span>
                     <span>Ekspor</span>
                 </a>
-                <a href="{{ route('students.create') }}"
+                <a href="{{ route('admin.students.create') }}"
                     class="group flex items-center gap-2 h-10 sm:h-11 px-5 rounded-xl bg-primary hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 text-white text-sm font-bold shadow-lg transition-all transform hover:-translate-y-0.5 flex-1 sm:flex-none justify-center">
                     <span
                         class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
@@ -37,28 +37,121 @@
 
     <!-- Flash Messages -->
     @if(session('success'))
-        <div
-            class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg flex items-center gap-3">
+        <div class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg flex items-center gap-3">
             <span class="material-symbols-outlined">check_circle</span>
             <span>{{ session('success') }}</span>
         </div>
     @endif
 
     @if(session('error'))
-        <div
-            class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg flex items-center gap-3">
+        <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg flex items-center gap-3">
             <span class="material-symbols-outlined">error</span>
             <span>{{ session('error') }}</span>
         </div>
     @endif
 
     <!-- Filter & Search Bar -->
-    {{-- <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 p-4">
-        <form action="{{ route('students.index') }}" method="GET"
-            class="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <!-- Search logic simplified for now -->
+    <div class="mb-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 p-4">
+        <form action="{{ route('admin.students.index') }}" method="GET">
+            <div class="flex flex-col gap-3">
+                {{-- Baris 1: Search --}}
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="material-symbols-outlined text-[#4c739a] text-[20px]">search</span>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari nama atau NIS santri..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
+                </div>
+
+                {{-- Baris 2: Filter + Tombol sejajar --}}
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    {{-- 4 Select Filter --}}
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
+                        {{-- Pendidikan --}}
+                        <div class="relative">
+                            <select name="education_level" style="background-image:none;"
+                                class="w-full pl-3 pr-9 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none">
+                                <option value="">Semua Pendidikan</option>
+                                @foreach($educationLevels as $level)
+                                    <option value="{{ $level->id }}" {{ request('education_level') == $level->id ? 'selected' : '' }}>
+                                        {{ $level->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <span class="material-symbols-outlined text-[18px] text-[#4c739a]">expand_more</span>
+                            </div>
+                        </div>
+
+                        {{-- Rayon --}}
+                        <div class="relative">
+                            <select name="rayon" style="background-image:none;"
+                                class="w-full pl-3 pr-9 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none">
+                                <option value="">Semua Rayon</option>
+                                @foreach($rayons as $rayon)
+                                    <option value="{{ $rayon->id }}" {{ request('rayon') == $rayon->id ? 'selected' : '' }}>
+                                        {{ $rayon->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <span class="material-symbols-outlined text-[18px] text-[#4c739a]">expand_more</span>
+                            </div>
+                        </div>
+
+                        {{-- Kamar --}}
+                        <div class="relative">
+                            <select name="room" style="background-image:none;"
+                                class="w-full pl-3 pr-9 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none">
+                                <option value="">Semua Kamar</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->id }}" {{ request('room') == $room->id ? 'selected' : '' }}>
+                                        {{ $room->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <span class="material-symbols-outlined text-[18px] text-[#4c739a]">expand_more</span>
+                            </div>
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="relative">
+                            <select name="status" style="background-image:none;"
+                                class="w-full pl-3 pr-9 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none">
+                                <option value="">Semua Status</option>
+                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                                <option value="graduated" {{ request('status') == 'graduated' ? 'selected' : '' }}>Lulus</option>
+                                <option value="dropped_out" {{ request('status') == 'dropped_out' ? 'selected' : '' }}>Keluar</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <span class="material-symbols-outlined text-[18px] text-[#4c739a]">expand_more</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Tombol sejajar dengan selects --}}
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="submit"
+                            class="flex items-center gap-1.5 h-[42px] px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors whitespace-nowrap">
+                            <span class="material-symbols-outlined text-[18px]">filter_alt</span>
+                            Filter
+                        </button>
+                        @if(request()->hasAny(['search','education_level','rayon','room','status']))
+                            <a href="{{ route('admin.students.index') }}"
+                                class="flex items-center gap-1.5 h-[42px] px-4 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#4c739a] hover:text-red-500 hover:border-red-200 text-sm font-medium transition-colors whitespace-nowrap">
+                                <span class="material-symbols-outlined text-[18px]">close</span>
+                                Reset
+                            </a>
+                            <span class="text-xs text-[#4c739a] hidden lg:inline">{{ $students->total() }} santri</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </form>
-    </div> --}}
+    </div>
 
     <!-- Data Table -->
     <div
@@ -78,6 +171,9 @@
                         </th>
                         <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-32 whitespace-nowrap">
                             Rayon
+                        </th>
+                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">
+                            Pendidikan
                         </th>
                         <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-32 whitespace-nowrap">
                             Jenis Kelamin
@@ -134,6 +230,17 @@
                                     {{ $s->room?->name }}
                                 </span>
                             </td>
+                            <td class="p-4 text-sm whitespace-nowrap">
+                                @if($s->formalEducation)
+                                    <span class="whitespace-nowrap text-[#0d141b] dark:text-white">{{ $s->formalEducation->name }}</span><br>
+                                @endif
+                                @if($s->religiousEducation)
+                                    <span class="text-xs text-[#4c739a] whitespace-nowrap">{{ $s->religiousEducation->name }}</span>
+                                @endif
+                                @if(!$s->formalEducation && !$s->religiousEducation)
+                                    <span class="text-xs text-[#4c739a]">-</span>
+                                @endif
+                            </td>
                             <td class="p-4 text-sm text-[#4c739a] whitespace-nowrap">
                                 {{ $s->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}
                             </td>
@@ -158,17 +265,17 @@
                             <td class="p-4 whitespace-nowrap">
                                 <div
                                     class="flex items-center justify-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                    <a href="{{ route('students.show', $s) }}"
+                                    <a href="{{ route('admin.students.show', $s) }}"
                                         class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors"
                                         title="Lihat Detail">
                                         <span class="material-symbols-outlined text-[20px]">visibility</span>
                                     </a>
-                                    <a href="{{ route('students.edit', $s) }}"
+                                    <a href="{{ route('admin.students.edit', $s) }}"
                                         class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors"
                                         title="Ubah">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
-                                    <form action="{{ route('students.destroy', $s) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.students.destroy', $s) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
                                         <button

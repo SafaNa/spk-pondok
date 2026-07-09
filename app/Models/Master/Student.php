@@ -90,6 +90,11 @@ class Student extends Model
         return $this->violationRecords()->where('sanction_status', 'pending');
     }
 
+    public function guardians()
+    {
+        return $this->belongsToMany(\App\Models\Guardian::class, 'student_guardian');
+    }
+
     public function getNotificationPhoneAttribute()
     {
         return $this->phone;

@@ -24,7 +24,7 @@ class RoomController extends Controller
         ]);
 
         Room::create($validated);
-        return redirect()->route('rooms.index')->with('success', 'Kamar berhasil ditambahkan');
+        return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil ditambahkan');
     }
 
     public function update(Request $request, Room $room)
@@ -36,12 +36,12 @@ class RoomController extends Controller
         ]);
 
         $room->update($validated);
-        return redirect()->route('rooms.index')->with('success', 'Kamar berhasil diperbarui');
+        return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil diperbarui');
     }
 
     public function destroy(Room $room)
     {
         $room->delete();
-        return redirect()->route('rooms.index')->with('success', 'Kamar berhasil dihapus');
+        return redirect()->route('admin.rooms.index')->with('success', 'Kamar berhasil dihapus');
     }
 }

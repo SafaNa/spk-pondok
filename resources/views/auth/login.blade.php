@@ -84,6 +84,11 @@
             </div>
 
             <div class="w-full max-w-[480px] flex flex-col gap-6">
+                <!-- Back to landing -->
+                <a href="{{ route('landing') }}" class="flex items-center gap-1.5 text-sm text-[#4c739a] hover:text-primary transition-colors w-fit -mb-2">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </a>
                 <!-- Page Heading -->
                 <div class="flex flex-col gap-2 mb-2">
                     <h2 class="text-[#0d141b] dark:text-white tracking-tight text-[32px] font-bold leading-tight">
@@ -119,7 +124,7 @@
                 @endif
 
                 <!-- Login Form -->
-                <form action="{{ route('login') }}" method="POST" class="flex flex-col gap-5">
+                <form action="{{ route('admin.login') }}" method="POST" class="flex flex-col gap-5">
                     @csrf
 
                     <!-- Email Input Field -->

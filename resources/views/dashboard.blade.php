@@ -34,7 +34,7 @@
                         class="material-symbols-outlined text-[22px] transition-transform group-hover:rotate-90">settings</span>
                     Konfigurasi
                 </a>
-                <a href="{{ route('licenses.index') }}"
+                <a href="{{ route('admin.licenses.index') }}"
                     class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all">
                     <span class="material-symbols-outlined text-[22px]">assignment_turned_in</span>
                     Validasi Pulang
@@ -197,7 +197,7 @@
         {{-- Quick Action Grid --}}
         <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <a class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
-                style="background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);" href="{{ route('students.index') }}">
+                style="background: linear-gradient(135deg, #14b8a6 0%, #0891b2 100%);" href="{{ route('admin.students.index') }}">
                 <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full" style="background: rgba(255, 255, 255, 0.1);">
                 </div>
                 <div class="relative">
