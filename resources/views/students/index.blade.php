@@ -15,6 +15,7 @@
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3">
+                @if(Auth::user()->isAdmin())
                 <button onclick="toggleImportModal()"
                     class="flex items-center gap-2 h-10 sm:h-11 px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
                     <span class="material-symbols-outlined text-[20px]">upload_file</span>
@@ -31,6 +32,7 @@
                         class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
                     <span class="whitespace-nowrap">Tambah Santri Baru</span>
                 </a>
+                @endif
             </div>
         </div>
     </div>
@@ -270,22 +272,24 @@
                                         title="Lihat Detail">
                                         <span class="material-symbols-outlined text-[20px]">visibility</span>
                                     </a>
+                                    @if(Auth::user()->isAdmin())
                                     <a href="{{ route('admin.students.edit', $s) }}"
-                                        class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors"
-                                        title="Ubah">
-                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        class="flex items-center justify-center w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 transition-colors"
+                                        title="Edit">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </a>
-                                    <form action="{{ route('admin.students.destroy', $s) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.students.destroy', $s) }}" method="POST"
+                                        class="inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button
+                                        <button type="button"
                                             @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus santri {{ $s->name }}?')"
-                                            type="button"
-                                            class="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-[#4c739a] hover:text-red-600 transition-colors"
+                                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors"
                                             title="Hapus">
-                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

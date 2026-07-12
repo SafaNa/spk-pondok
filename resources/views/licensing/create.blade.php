@@ -75,36 +75,6 @@
                         </div>
                     </div>
 
-                    {{-- SECTION 1.5: Tahun Ajaran --}}
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                    Tahun Ajaran <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative group">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                        <span class="material-symbols-outlined">calendar_month</span>
-                                    </div>
-                                    <select name="academic_year_id" required style="background-image: none;"
-                                        class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
-                                        @foreach ($academicYears as $year)
-                                            <option value="{{ $year->id }}" {{ old('academic_year_id', $activeYear?->id) == $year->id ? 'selected' : '' }}>
-                                                {{ $year->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('academic_year_id')
-                                    <p class="text-sm text-red-500 flex items-center gap-1 mt-1">
-                                        <span class="material-symbols-outlined text-[16px]">error</span>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
                     {{-- SECTION 2: Detail Waktu --}}
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,36 +123,77 @@
 
                     {{-- SECTION 3: Detail Izin --}}
                     <div class="space-y-6">
-                        {{-- Alasan --}}
+                        {{-- Kategori Kepulangan --}}
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Alasan Izin <span class="text-red-500">*</span>
+                                Filter Kategori
                             </label>
                             <div class="relative group">
-                                <div class="absolute top-3.5 left-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-symbols-outlined">description</span>
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">category</span>
                                 </div>
-                                <textarea name="description" rows="3" required
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 font-normal resize-none focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                    placeholder="Contoh: Sakit demam tinggi, Pulang karena ada acara nikahan kakak">{{ old('description') }}</textarea>
+                                <select id="leaveCategorySelect" style="background-image: none;"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('leave_category_id') == $cat->id ? 'selected' : '' }}>
+                                            {{ $cat->name }}
+                                            @if($cat->is_fixed_duration && $cat->duration_days)
+                                                (maks. {{ $cat->duration_days }} hari)
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
-                        {{-- Konfirmasi Hafalan --}}
-                        <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 dark:border-emerald-900/30 dark:bg-emerald-900/10 transition-colors hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        {{-- Rincian Alasan (diisi via AJAX) --}}
+                        <div id="leaveReasonWrapper" class="space-y-2 hidden">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Rincian Alasan <span class="text-slate-400 font-normal text-xs">(opsional)</span>
+                            </label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">list</span>
+                                </div>
+                                <select name="leave_reason_id" id="leaveReasonSelect" style="background-image: none;"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                    <option value="">-- Pilih Rincian --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Keterangan Tambahan --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Keterangan Tambahan <span class="text-slate-400 font-normal text-xs">(opsional)</span>
+                            </label>
+                            <div class="relative group">
+                                <div class="absolute top-3.5 left-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">notes</span>
+                                </div>
+                                <textarea name="description" rows="2"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 font-normal resize-none focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                                    placeholder="Informasi tambahan jika diperlukan...">{{ old('description') }}</textarea>
+                            </div>
+                        </div>
+
+                        {{-- Kasus Darurat --}}
+                        <div class="rounded-xl border border-red-100 bg-red-50/50 p-4 dark:border-red-900/30 dark:bg-red-900/10 transition-colors hover:bg-red-50 dark:hover:bg-red-900/20">
                             <label class="flex cursor-pointer items-start gap-3">
                                 <div class="flex h-6 items-center">
-                                    <input type="checkbox" name="memorization_check" value="1" id="memorization_check"
-                                        class="h-5 w-5 rounded border-emerald-300 text-emerald-600 transition-all focus:ring-2 focus:ring-emerald-500/20 dark:border-emerald-700 dark:bg-slate-800 dark:checked:bg-emerald-500">
+                                    <input type="checkbox" name="is_emergency" value="1" id="is_emergency"
+                                        class="h-5 w-5 rounded border-red-300 text-red-600 transition-all focus:ring-2 focus:ring-red-500/20 dark:border-red-700 dark:bg-slate-800 dark:checked:bg-red-500">
                                 </div>
                                 <div>
-                                    <span class="block font-bold text-emerald-900 dark:text-emerald-100">Konfirmasi Setoran Hafalan</span>
-                                    <span class="block text-sm text-emerald-700 dark:text-emerald-300">
-                                        Saya menyatakan bahwa santri ini sudah menyetorkan hafalan sesuai target yang ditentukan.
+                                    <span class="block font-bold text-red-900 dark:text-red-100">Tandai sebagai Kasus Darurat</span>
+                                    <span class="block text-sm text-red-700 dark:text-red-300">
+                                        Centang jika izin ini bersifat mendesak (sakit, kecelakaan, keluarga meninggal, dll).
                                     </span>
                                 </div>
                             </label>
                         </div>
+
                     </div>
                 </div>
 
@@ -204,7 +215,50 @@
 
     {{-- Scripts --}}
     <script>
+        var oldReasonId = '{{ old('leave_reason_id') }}';
+
+        function loadReasons(categoryId) {
+            var wrapper = $('#leaveReasonWrapper');
+            var select  = $('#leaveReasonSelect');
+
+            if (!categoryId) {
+                wrapper.addClass('hidden');
+                select.html('<option value="">-- Pilih Rincian --</option>');
+                return;
+            }
+
+            $.ajax({
+                url: '/admin/leave-categories/' + categoryId + '/reasons',
+                success: function(reasons) {
+                    if (!reasons.length) {
+                        wrapper.addClass('hidden');
+                        select.html('<option value="">-- Pilih Rincian --</option>');
+                        return;
+                    }
+                    var html = '<option value="">-- Pilih Rincian --</option>';
+                    reasons.forEach(function(r) {
+                        var sel = (oldReasonId && oldReasonId == r.id) ? ' selected' : '';
+                        html += '<option value="' + r.id + '"' + sel + '>' + r.reason + '</option>';
+                    });
+                    select.html(html);
+                    wrapper.removeClass('hidden');
+                    oldReasonId = '';
+                }
+            });
+        }
+
         $(document).ready(function() {
+            // Load reasons on category change
+            $('#leaveCategorySelect').on('change', function() {
+                loadReasons($(this).val());
+            });
+
+            // Restore old() state on validation error
+            var initialCategory = $('#leaveCategorySelect').val();
+            if (initialCategory) {
+                loadReasons(initialCategory);
+            }
+
             // Initialize Select2
             $('select[name="student_id"]').select2({
                 placeholder: '-- Cari Nama Santri --',

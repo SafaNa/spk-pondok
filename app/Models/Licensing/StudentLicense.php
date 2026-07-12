@@ -17,7 +17,7 @@ class StudentLicense extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'memorization_check' => 'boolean',
+        'is_emergency' => 'boolean',
     ];
 
     public function student()
@@ -28,5 +28,15 @@ class StudentLicense extends Model
     public function academicYear()
     {
         return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function leaveCategory()
+    {
+        return $this->belongsTo(LeaveCategory::class);
+    }
+
+    public function leaveReason()
+    {
+        return $this->belongsTo(LeaveReason::class);
     }
 }

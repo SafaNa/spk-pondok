@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 
 class MemorizationTypeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            abort_if(! (auth()->user()->isAdmin() || auth()->user()->isMemorizationOfficer()), 403);
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $types = MemorizationType::orderByRaw("FIELD(education_level, 'MTS', 'MA', 'PT')")->orderBy('day')->get()->groupBy('education_level');

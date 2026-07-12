@@ -1,337 +1,283 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="pt-1 px-3 pb-3" x-data="{ showApproveModal: false, approveActionUrl: '', showRejectModal: false, rejectActionUrl: '' }">
-        {{-- Header with Gradient --}}
-        <div class="mb-3 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 px-5 py-4 dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-800/50">
-            <div class="flex items-center justify-between">
-                <div>
-                    <div class="mb-1 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-0.5 text-xs font-medium text-primary backdrop-blur-sm dark:bg-slate-700/80">
-                        <span class="material-symbols-outlined text-[14px]">verified_user</span>
-                        Sistem Perizinan Pulang
-                    </div>
-                    <h1 class="font-outfit text-xl font-bold text-gray-900 dark:text-white">Dashboard Perizinan</h1>
-                </div>
-                <div class="flex items-center gap-2">
-                    {{-- Academic Year Filter --}}
-                    <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                        <button type="button" @click="open = !open"
-                            class="group flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300 dark:bg-slate-800 dark:text-gray-200 dark:ring-slate-700 dark:hover:ring-slate-600">
-                            <span class="material-symbols-outlined text-[22px]">calendar_month</span>
-                            {{ $academicYears->firstWhere('id', $selectedYearId)?->name ?? 'Pilih Tahun' }}
-                            <span class="material-symbols-outlined text-[18px] text-gray-400 transition-transform" :class="open && 'rotate-180'">expand_more</span>
-                        </button>
-                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                            class="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 overflow-hidden" style="display: none;">
-                            @foreach($academicYears as $year)
-                                <a href="{{ route('admin.licenses.index', ['academic_year_id' => $year->id]) }}"
-                                    class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors {{ $selectedYearId == $year->id ? 'bg-primary/10 text-primary font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700' }}">
-                                    @if($selectedYearId == $year->id)
-                                        <span class="material-symbols-outlined text-[16px]">check</span>
-                                    @else
-                                        <span class="w-4"></span>
-                                    @endif
-                                    {{ $year->name }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                    <a href="{{ route('admin.licenses.create') }}"
-                        class="group flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300 dark:bg-slate-800 dark:text-gray-200 dark:ring-slate-700 dark:hover:ring-slate-600">
-                        <span class="material-symbols-outlined text-[22px] transition-transform group-hover:scale-110">person_add</span>
-                        Izin Individu
-                    </a>
-                </div>
-            </div>
-        </div>
+@section('title', 'Pengajuan Izin')
+@section('breadcrumb', 'Pengajuan Izin')
 
-        {{-- Stats Cards --}}
-        <div class="mb-3 grid gap-3 md:grid-cols-3">
-            <div class="group relative overflow-hidden rounded-xl px-5 py-5 shadow-md transition-all hover:shadow-lg"
-                style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
-                <div class="absolute -right-3 -top-3 h-16 w-16 rounded-full" style="background: rgba(255, 255, 255, 0.1);"></div>
-                <div class="relative flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg" style="background: rgba(255, 255, 255, 0.2);">
+@section('content')
+<div class="space-y-4">
+
+    @if(session('success'))
+        <div class="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- Header --}}
+    <div class="rounded-2xl border border-blue-100 px-6 py-5" style="background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 55%, #faf5ff 100%);">
+        <div class="flex flex-wrap items-center gap-4">
+
+            {{-- Title --}}
+            <div class="min-w-0 shrink-0">
+                <h1 class="text-lg font-black text-[#0d141b]">Pengajuan Izin Santri</h1>
+                <p class="text-sm text-[#4c739a]">Kelola dan pantau seluruh pengajuan izin santri</p>
+            </div>
+
+            {{-- KPI Cards --}}
+            <div class="flex flex-wrap gap-3 ml-auto">
+                <div class="flex items-center gap-3 rounded-xl border border-[#e7edf3] bg-white px-4 py-3 shadow-sm min-w-[130px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                        <span class="material-symbols-outlined text-[22px]">assignment</span>
+                    </div>
+                    <div>
+                        <p class="text-xl font-black text-[#0d141b] leading-none">{{ number_format($totalAll) }}</p>
+                        <p class="text-xs font-semibold text-[#0d141b] mt-0.5">Total Pengajuan</p>
+                        <p class="text-[10px] text-[#4c739a]">Semua status</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 shadow-sm min-w-[120px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+                        <span class="material-symbols-outlined text-[22px]">schedule</span>
+                    </div>
+                    <div>
+                        <p class="text-xl font-black text-amber-900 leading-none">{{ number_format($totalPending) }}</p>
+                        <p class="text-xs font-semibold text-amber-800 mt-0.5">Menunggu</p>
+                        <p class="text-[10px] text-amber-600">Perlu validasi</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 shadow-sm min-w-[120px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
                         <span class="material-symbols-outlined text-[22px]">check_circle</span>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold leading-none">{{ $recentLicenses->where('status', 'approved')->count() }}</div>
-                        <div class="text-xs mt-0.5" style="color: rgba(255, 255, 255, 0.9);">Disetujui</div>
+                        <p class="text-xl font-black text-emerald-900 leading-none">{{ number_format($totalApproved) }}</p>
+                        <p class="text-xs font-semibold text-emerald-800 mt-0.5">Disetujui</p>
+                        <p class="text-[10px] text-emerald-600">Pengajuan disetujui</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="group relative overflow-hidden rounded-xl px-5 py-5 shadow-md transition-all hover:shadow-lg"
-                style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: white;">
-                <div class="absolute -right-3 -top-3 h-16 w-16 rounded-full" style="background: rgba(255, 255, 255, 0.1);"></div>
-                <div class="relative flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg" style="background: rgba(255, 255, 255, 0.2);">
-                        <span class="material-symbols-outlined text-[22px]">pending</span>
+                <div class="flex items-center gap-3 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 shadow-sm min-w-[110px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600">
+                        <span class="material-symbols-outlined text-[22px]">cancel</span>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold leading-none">{{ $recentLicenses->where('status', 'pending')->count() }}</div>
-                        <div class="text-xs mt-0.5" style="color: rgba(255, 255, 255, 0.9);">Pending</div>
+                        <p class="text-xl font-black text-rose-900 leading-none">{{ number_format($totalRejected) }}</p>
+                        <p class="text-xs font-semibold text-rose-800 mt-0.5">Ditolak</p>
+                        <p class="text-[10px] text-rose-600">Pengajuan ditolak</p>
                     </div>
                 </div>
             </div>
 
-            <div class="group relative overflow-hidden rounded-xl px-5 py-5 shadow-md transition-all hover:shadow-lg"
-                style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); color: white;">
-                <div class="absolute -right-3 -top-3 h-16 w-16 rounded-full" style="background: rgba(255, 255, 255, 0.1);"></div>
-                <div class="relative flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg" style="background: rgba(255, 255, 255, 0.2);">
-                        <span class="material-symbols-outlined text-[22px]">person</span>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold leading-none">{{ $recentLicenses->count() }}</div>
-                        <div class="text-xs mt-0.5" style="color: rgba(255, 255, 255, 0.9);">Total Perizinan</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Recent Licenses --}}
-        <div>
-            <div class="mb-2 flex items-center justify-between">
-                <div>
-                    <h2 class="text-base font-bold text-gray-900 dark:text-white">Daftar Perizinan</h2>
-                </div>
-            </div>
-            
-            <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
-                <table class="w-full text-left text-sm">
-                    <thead class="border-b border-gray-200 bg-gray-50 dark:border-slate-700 dark:bg-slate-700/50">
-                        <tr>
-                            <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Santri</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Keterangan</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Status Hafalan</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Status Izin</th>
-                            <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
-                        @forelse($recentLicenses as $license)
-                            <tr class="group transition-colors hover:bg-gray-50 dark:hover:bg-slate-700/50">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        @php
-                                            $initials = strtoupper(substr($license->student->name, 0, 1) . (str_contains($license->student->name, ' ') ? substr($license->student->name, strpos($license->student->name, ' ') + 1, 1) : substr($license->student->name, 1, 1)));
-                                            $colors = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
-                                            $colorIndex = crc32($license->student->id) % count($colors);
-                                            $color = $colors[$colorIndex];
-                                        @endphp
-                                        @if ($license->student->photo)
-                                            <button type="button"
-                                                @click="$store.imageModal.open('{{ asset('storage/' . $license->student->photo) }}', '{{ $license->student->name }}')"
-                                                class="shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
-                                                <img src="{{ asset('storage/' . $license->student->photo) }}"
-                                                    alt="{{ $license->student->name }}"
-                                                    class="h-10 w-10 rounded-full object-cover ring-2 ring-white transition-all group-hover:ring-primary dark:ring-slate-800">
-                                            </button>
-                                        @else
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-sm ring-1 ring-{{ $color }}-600/20">
-                                                {{ $initials }}
-                                            </div>
-                                        @endif
-                                        <div>
-                                            <a href="{{ route('admin.licenses.show', $license->id) }}" class="font-semibold text-gray-900 dark:text-white hover:text-primary transition-colors">{{ $license->student->name }}</a>
-                                            <div class="text-xs text-gray-500">{{ $license->student->room->name ?? '-' }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="max-w-xs mb-1">
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ Str::limit($license->description ?? '-', 30) }}</span>
-                                    </div>
-                                    <div class="text-xs text-gray-500">
-                                        {{ $license->start_date->format('d M') }} - {{ $license->end_date->format('d M Y') }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $license->memorization_check ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300' }}">
-                                        {{ $license->memorization_check ? 'Sudah Cek' : 'Belum Cek' }}
-                                    </span>
-                                </td>
-
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1">
-                                        <span class="inline-flex items-center w-fit rounded-full px-3 py-1.5 text-xs font-semibold 
-                                            {{ $license->status === 'approved' 
-                                                ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30' 
-                                                : ($license->status === 'rejected' 
-                                                    ? 'bg-red-50 text-red-700 ring-1 ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30' 
-                                                    : 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-500 dark:ring-amber-400/20') }}">
-                                            {{ ucfirst($license->status) }}
-                                        </span>
-                                        @if($license->student->pending_violations_count > 0)
-                                            <span class="inline-flex items-center w-fit gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30" title="Santri memiliki pelanggaran yang belum selesai">
-                                                <span class="material-symbols-outlined text-[12px]">warning</span>
-                                                Ada Pelanggaran
-                                            </span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-2">
-                                        @if($license->status === 'pending')
-                                            @if($license->student->pending_violations_count > 0)
-                                                <button type="button" disabled
-                                                    class="cursor-not-allowed rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-400 transition-colors dark:bg-slate-700 dark:text-slate-500"
-                                                    title="Selesaikan pelanggaran terlebih dahulu">
-                                                    Approve
-                                                </button>
-                                            @else
-                                                <button type="button"
-                                                    @click="approveActionUrl = '{{ route('admin.licenses.approve', $license->id) }}'; showApproveModal = true"
-                                                    class="rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">
-                                                    Approve
-                                                </button>
-                                            @endif
-                                            <button type="button"
-                                                @click="rejectActionUrl = '{{ route('admin.licenses.reject', $license->id) }}'; showRejectModal = true"
-                                                class="rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-500/20 transition-colors">
-                                                Reject
-                                            </button>
-                                        @endif
-                                        <a href="{{ route('admin.licenses.show', $license->id) }}" 
-                                            class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary dark:hover:bg-slate-700 dark:hover:text-blue-400 transition-colors"
-                                            title="Detail Izin">
-                                            <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                        </a>
-                                        <a href="{{ route('admin.licenses.edit', $license->id) }}" 
-                                            class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary dark:hover:bg-slate-700 dark:hover:text-blue-400 transition-colors"
-                                            title="Edit Izin">
-                                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center">
-                                        <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-slate-700">
-                                            <span class="material-symbols-outlined text-[32px] text-gray-400">inbox</span>
-                                        </div>
-                                        <p class="font-medium text-gray-500 dark:text-gray-400">Belum ada data perizinan</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            {{-- Pagination --}}
-            <div class="mt-4">
-                {{ $recentLicenses->links() }}
-            </div>
-        </div>
-
-        {{-- Approve Confirmation Modal (self-contained, same pattern as violations verify modal) --}}
-        <div x-show="showApproveModal" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true"
-            style="display: none;">
-            <div x-show="showApproveModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <div x-show="showApproveModal" x-transition:enter="ease-out duration-300"
-                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave="ease-in duration-200"
-                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                        <div class="p-6">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 sm:mx-0 sm:h-10 sm:w-10">
-                                    <span class="material-symbols-outlined text-[24px]">check_circle</span>
-                                </div>
-                                <div class="text-center sm:ml-4 sm:text-left">
-                                    <h3 class="text-lg font-bold leading-6 text-slate-900 dark:text-white" id="modal-title">
-                                        Setujui Izin
-                                    </h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">
-                                            Apakah Anda yakin ingin menyetujui izin kepulangan santri ini?
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <form :action="approveActionUrl" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 sm:ml-3 sm:w-auto">
-                                    Ya, Setujui
-                                </button>
-                            </form>
-                            <button type="button" @click="showApproveModal = false"
-                                class="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto">
-                                Batal
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Reject Confirmation Modal --}}
-        <div x-show="showRejectModal" class="relative z-50" aria-labelledby="reject-modal-title" role="dialog" aria-modal="true"
-            style="display: none;">
-            <div x-show="showRejectModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <div x-show="showRejectModal" x-transition:enter="ease-out duration-300"
-                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave="ease-in duration-200"
-                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                        <div class="p-6">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 sm:mx-0 sm:h-10 sm:w-10">
-                                    <span class="material-symbols-outlined text-[24px]">cancel</span>
-                                </div>
-                                <div class="text-center sm:ml-4 sm:text-left">
-                                    <h3 class="text-lg font-bold leading-6 text-slate-900 dark:text-white" id="reject-modal-title">
-                                        Tolak Izin
-                                    </h3>
-                                    <div class="mt-2">
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">
-                                            Apakah Anda yakin ingin menolak izin kepulangan santri ini?
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-slate-800/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <form :action="rejectActionUrl" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="inline-flex w-full justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
-                                    Ya, Tolak
-                                </button>
-                            </form>
-                            <button type="button" @click="showRejectModal = false"
-                                class="mt-3 inline-flex w-full justify-center rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto">
-                                Batal
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {{-- Button --}}
+            <a href="{{ route('admin.licenses.create') }}"
+                class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-primary/90 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Ajukan Izin
+            </a>
         </div>
     </div>
+
+    {{-- Filters --}}
+    <form method="GET" action="{{ route('admin.licenses.index') }}"
+        class="rounded-xl border border-[#e7edf3] bg-white px-5 py-4 shadow-sm">
+        <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
+        <div class="flex flex-wrap items-end gap-3">
+
+            {{-- Search --}}
+            <div class="flex-1 min-w-52">
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-slate-400">search</span>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari santri, wali, atau no. hp..."
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                </div>
+            </div>
+
+            {{-- Status --}}
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Status</label>
+                <select name="status"
+                    class="rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    <option value="">Semua Status</option>
+                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+            </div>
+
+
+            {{-- Tanggal Mulai --}}
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tanggal Mulai</label>
+                <input type="date" name="start_date" value="{{ request('start_date') }}"
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+            </div>
+
+            {{-- Tanggal Selesai --}}
+            <div>
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tanggal Selesai</label>
+                <input type="date" name="end_date" value="{{ request('end_date') }}"
+                    class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+            </div>
+
+            {{-- Buttons --}}
+            <div class="flex gap-2">
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">filter_alt</span>
+                    Filter
+                </button>
+                <a href="{{ route('admin.licenses.index', ['academic_year_id' => $selectedYearId]) }}"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">refresh</span>
+                    Reset
+                </a>
+            </div>
+        </div>
+    </form>
+
+    {{-- Table --}}
+    <div class="overflow-hidden rounded-xl border border-[#e7edf3] bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr style="background-color: #1e3a5f;">
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">No</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">Nama Santri</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap">Rayon / Kamar</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">Tujuan</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap">Tanggal Izin</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide text-center">Status</th>
+                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#f1f5f9]">
+                    @forelse($recentLicenses as $license)
+                        @php
+                            $guardian = optional($license->student->guardians->first());
+                            $rowNo    = ($recentLicenses->currentPage() - 1) * $recentLicenses->perPage() + $loop->iteration;
+                            $colors   = ['blue','indigo','violet','emerald','amber','rose','cyan','orange'];
+                            $color    = $colors[crc32($license->student->id) % count($colors)];
+                            $initials = strtoupper(substr($license->student->name, 0, 1));
+                        @endphp
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+
+                            {{-- No --}}
+                            <td class="px-4 py-4 text-sm text-[#4c739a] font-medium">{{ $rowNo }}</td>
+
+                            {{-- Nama Santri --}}
+                            <td class="px-4 py-4">
+                                <div class="flex items-center gap-2.5">
+                                    @if($license->student->photo)
+                                        <img src="{{ asset('storage/' . $license->student->photo) }}"
+                                            alt="{{ $license->student->name }}"
+                                            class="h-9 w-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200">
+                                    @else
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-xs font-bold ring-1 ring-{{ $color }}-200">
+                                            {{ $initials }}
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <a href="{{ route('admin.licenses.show', $license->id) }}"
+                                            class="block font-semibold text-[#0d141b] hover:text-primary transition-colors leading-tight">
+                                            {{ $license->student->name }}
+                                        </a>
+                                        <span class="text-[11px] text-[#4c739a]">NIS. {{ $license->student->nis ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            {{-- Rayon / Kamar --}}
+                            <td class="px-4 py-4">
+                                <span class="block text-sm text-[#0d141b]">{{ $license->student->rayon->name ?? '-' }}</span>
+                                <span class="text-[11px] text-[#4c739a]">{{ $license->student->room->name ?? '-' }}</span>
+                            </td>
+
+
+                            {{-- Tujuan --}}
+                            <td class="px-4 py-4 max-w-[130px]">
+                                <span class="block truncate text-sm text-[#4c739a]" title="{{ $license->description }}">
+                                    {{ $license->description ?? '-' }}
+                                </span>
+                            </td>
+
+                            {{-- Tanggal Izin --}}
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="block text-sm text-[#0d141b]">{{ $license->start_date->format('d M Y') }}</span>
+                                <span class="text-[11px] text-[#4c739a]">s/d {{ $license->end_date->format('d M Y') }}</span>
+                            </td>
+
+                            {{-- Status --}}
+                            <td class="px-4 py-4">
+                                <div class="flex flex-col items-center gap-1">
+                                    @if($license->is_emergency && $license->status === 'pending')
+                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Darurat</span>
+                                    @elseif($license->status === 'pending')
+                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Menunggu</span>
+                                    @elseif($license->status === 'approved')
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Disetujui</span>
+                                    @elseif($license->status === 'rejected')
+                                        <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">Ditolak</span>
+                                    @endif
+                                    @if($license->student->pending_violations_count > 0)
+                                        <span class="inline-flex items-center gap-0.5 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-600">
+                                            <span class="material-symbols-outlined text-[11px]">warning</span> Pelanggaran
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
+
+                            {{-- Aksi --}}
+                            <td class="px-4 py-4">
+                                <div class="flex items-center justify-center gap-1">
+                                    <a href="{{ route('admin.licenses.show', $license->id) }}"
+                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Detail">
+                                        <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                    </a>
+                                    <a href="{{ route('admin.licenses.edit', $license->id) }}"
+                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
+                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                    </a>
+                                    <form action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan izin ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors" title="Hapus">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="px-6 py-14 text-center">
+                                <span class="material-symbols-outlined text-5xl text-slate-300 block mb-2">inbox</span>
+                                <p class="text-sm font-medium text-[#4c739a]">Belum ada data pengajuan izin.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        @if($recentLicenses->hasPages())
+            <div class="flex items-center justify-between border-t border-[#e7edf3] px-5 py-3.5">
+                <p class="text-xs text-[#4c739a]">
+                    Menampilkan {{ $recentLicenses->firstItem() }}–{{ $recentLicenses->lastItem() }} dari {{ number_format($recentLicenses->total()) }} pengajuan
+                </p>
+                {{ $recentLicenses->links() }}
+            </div>
+        @else
+            <div class="border-t border-[#e7edf3] px-5 py-3.5">
+                <p class="text-xs text-[#4c739a]">Menampilkan {{ $recentLicenses->count() }} pengajuan</p>
+            </div>
+        @endif
+    </div>
+</div>
 @endsection

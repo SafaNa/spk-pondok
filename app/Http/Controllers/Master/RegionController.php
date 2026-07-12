@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Province;
@@ -19,7 +19,7 @@ class RegionController extends Controller
 
     public function cities(Request $request)
     {
-        \Log::info('Cities request', ['province_code' => $request->province_code, 'all' => $request->all()]);
+        Log::info('Cities request', ['province_code' => $request->province_code, 'all' => $request->all()]);
 
         if (!$request->province_code) {
             return response()->json(['error' => 'province_code is required'], 400);
@@ -27,7 +27,7 @@ class RegionController extends Controller
 
         $cities = City::where('province_code', $request->province_code)->orderBy('name')->pluck('name', 'code');
 
-        \Log::info('Cities found', ['count' => $cities->count()]);
+        Log::info('Cities found', ['count' => $cities->count()]);
 
         return response()->json($cities);
     }

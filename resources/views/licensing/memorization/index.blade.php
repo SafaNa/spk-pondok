@@ -3,113 +3,163 @@
 @section('content')
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Cek Hafalan Santri Pulang</h1>
-            <p class="text-slate-500 dark:text-slate-400 mt-1">Daftar santri yang memiliki izin pulang dan perlu pengecekan
-                hafalan.</p>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Riwayat Hafalan Santri</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Daftar pencatatan hafalan santri sebagai syarat perizinan pulang.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.memorization.create') }}"
+                class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Catat Hafalan
+            </a>
         </div>
     </div>
 
-    <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+    {{-- Filter and Search Form --}}
+    <form action="{{ route('admin.memorization.index') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full 2xl:w-auto mb-4">
+        <div class="w-full sm:w-auto flex-1 min-w-[200px]">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari NIS/Nama..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" />
+        </div>
+        <div class="w-full sm:w-auto">
+            <select name="education_level" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">
+                <option value="">Semua Jenjang</option>
+                <option value="MTS" {{ request('education_level') == 'MTS' ? 'selected' : '' }}>MTs Sederajat</option>
+                <option value="MA" {{ request('education_level') == 'MA' ? 'selected' : '' }}>MA Sederajat</option>
+                <option value="PT" {{ request('education_level') == 'PT' ? 'selected' : '' }}>PT Sederajat</option>
+            </select>
+        </div>
+        <div class="w-full sm:w-auto">
+            <select name="status" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">
+                <option value="">Semua Status</option>
+                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Belum Selesai</option>
+            </select>
+        </div>
+        <div class="w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+                Cari
+            </button>
+        </div>
+    </form>
+
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr
-                        class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs uppercase font-semibold tracking-wider">
+                    <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 text-xs uppercase font-semibold tracking-wider">
+                        <th class="px-6 py-4">Waktu</th>
                         <th class="px-6 py-4">Santri</th>
-                        <th class="px-6 py-4">Tanggal Izin</th>
-                        <th class="px-6 py-4">Keterangan</th>
-                        <th class="px-6 py-4 text-center">Status Hafalan</th>
+                        <th class="px-6 py-4">Jenjang</th>
+                        <th class="px-6 py-4 text-center">Hari</th>
+                        <th class="px-6 py-4 text-center">Progress</th>
+                        <th class="px-6 py-4 text-center">Status</th>
+                        <th class="px-6 py-4 text-center">Telah Dipakai</th>
+                        <th class="px-6 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                    @forelse($licenses as $license)
+                    @forelse($memorizations as $mem)
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/25 transition-colors">
+                            <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                                {{ $mem->created_at->format('d/m/Y H:i') }}
+                            </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                                        {{ substr($license->student->name, 0, 2) }}
+                                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                                        {{ substr($mem->student->name, 0, 2) }}
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-slate-700 dark:text-slate-200">
-                                            {{ $license->student->name }}</p>
-                                        <p class="text-xs text-slate-500">{{ $license->student->nis }}</p>
+                                        <p class="font-semibold text-slate-700 dark:text-slate-200">{{ $mem->student->name }}</p>
+                                        <p class="text-xs text-slate-500">{{ $mem->student->nis }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-slate-600 dark:text-slate-300">
-                                    <span
-                                        class="font-medium">{{ \Carbon\Carbon::parse($license->start_date)->isoFormat('D MMM Y') }}</span>
-                                    <span class="text-slate-400 mx-1">-</span>
-                                    <span
-                                        class="font-medium">{{ \Carbon\Carbon::parse($license->end_date)->isoFormat('D MMM Y') }}</span>
-                                </div>
+                                @php
+                                    $levelLabel = ['MTS' => 'MTs Sederajat', 'MA' => 'MA Sederajat', 'PT' => 'PT Sederajat'];
+                                    $levelBg = ['MTS' => 'bg-emerald-100 text-emerald-700', 'MA' => 'bg-blue-100 text-blue-700', 'PT' => 'bg-violet-100 text-violet-700'];
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold {{ $levelBg[$mem->education_level] ?? '' }}">
+                                    {{ $levelLabel[$mem->education_level] ?? $mem->education_level }}
+                                </span>
                             </td>
-                            <td class="px-6 py-4">
-                                <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2"
-                                    title="{{ $license->description }}">
-                                    {{ $license->description }}
-                                </p>
+                            <td class="px-6 py-4 text-center text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                {{ $mem->days }} hari
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer memorization-toggle" data-id="{{ $license->id }}"
-                                        {{ $license->memorization_check ? 'checked' : '' }}>
-                                    <div
-                                        class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/30 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
-                                    </div>
-                                    <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300 status-text">
-                                        {{ $license->memorization_check ? 'Sudah Cek' : 'Belum Cek' }}
+                                @php
+                                    $total   = $mem->items->count();
+                                    $checked = $mem->items->where('is_checked', true)->count();
+                                    $pct     = $total > 0 ? round(($checked / $total) * 100) : 0;
+                                @endphp
+                                <div class="text-xs font-medium text-slate-500 mb-1">{{ $checked }}/{{ $total }}</div>
+                                <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-primary rounded-full" style="width:{{ $pct }}%"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                @if($mem->status == 'completed')
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                        Selesai
                                     </span>
-                                </label>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+                                        <span class="material-symbols-outlined text-[14px]">pending</span>
+                                        Belum Selesai
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                @if($mem->is_used)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300" title="Hafalan ini sudah digunakan untuk izin pulang">
+                                        <span class="material-symbols-outlined text-[14px]">lock</span>
+                                        Ya
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400" title="Hafalan ini belum dipakai dan bisa digunakan untuk izin">
+                                        <span class="material-symbols-outlined text-[14px]">lock_open</span>
+                                        Belum
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('admin.memorization.show', $mem->id) }}"
+                                        class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 flex items-center justify-center transition-colors"
+                                        title="Lihat Detail">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </a>
+                                    <form action="{{ route('admin.memorization.destroy', $mem->id) }}" method="POST" class="inline-block"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data hafalan ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/20 flex items-center justify-center transition-colors tooltip"
+                                            title="Hapus">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                                <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">assignment_turned_in</span>
-                                <p>Tidak ada data izin pulang yang perlu dicek.</p>
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">history_edu</span>
+                                <p>Tidak ada data riwayat hafalan.</p>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+        
+        @if($memorizations->hasPages())
+            <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+                {{ $memorizations->links() }}
+            </div>
+        @endif
     </div>
-
-    @push('scripts')
-        <script>
-            $(document).ready(function () {
-                $('.memorization-toggle').on('change', function () {
-                    const licenseId = $(this).data('id');
-                    const isChecked = $(this).is(':checked');
-                    const statusText = $(this).siblings('.status-text');
-
-                    // Optimistic UI update
-                    statusText.text(isChecked ? 'Sudah Cek' : 'Belum Cek');
-
-                    $.ajax({
-                        url: `/memorization/licenses/${licenseId}/update-check`,
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            memorization_check: isChecked ? 1 : 0
-                        },
-                        success: function (response) {
-                            // Success toast or notification could be added here
-                            console.log('Status updated');
-                        },
-                        error: function (xhr) {
-                            // Revert on error
-                            $(this).prop('checked', !isChecked);
-                            statusText.text(!isChecked ? 'Sudah Cek' : 'Belum Cek');
-                            alert('Gagal memperbarui status. Silakan coba lagi.');
-                        }
-                    });
-                });
-            });
-        </script>
-    @endpush
 @endsection

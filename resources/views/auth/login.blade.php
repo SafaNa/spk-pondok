@@ -127,22 +127,22 @@
                 <form action="{{ route('admin.login') }}" method="POST" class="flex flex-col gap-5">
                     @csrf
 
-                    <!-- Email Input Field -->
+                    <!-- Username Input Field -->
                     <div class="flex flex-col gap-2">
                         <label class="text-[#0d141b] dark:text-slate-200 text-base font-medium leading-normal"
-                            for="email">Email Address</label>
+                            for="username">Username</label>
                         <div class="relative">
                             <input
-                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('email') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-14 placeholder:text-[#4c739a] p-[15px] text-base font-normal leading-normal transition-all"
-                                id="email" name="email" placeholder="admin@pesantren.com" required type="email"
-                                value="admin@pondok.test" />
-                            @if($errors->has('email'))
+                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('username') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-14 placeholder:text-[#4c739a] p-[15px] text-base font-normal leading-normal transition-all"
+                                id="username" name="username" placeholder="masukkan username" required type="text"
+                                value="admin" autocomplete="username" />
+                            @if($errors->has('username'))
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
                                     <span class="material-symbols-outlined text-[20px]">warning</span>
                                 </div>
                             @endif
                         </div>
-                        @error('email')
+                        @error('username')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>

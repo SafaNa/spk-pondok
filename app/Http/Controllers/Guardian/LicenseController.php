@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Guardian;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guardian;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Master\AcademicYear;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ class LicenseController extends Controller
 {
     public function index()
     {
+        /** @var Guardian $guardian */
         $guardian   = Auth::guard('guardian')->user();
         $studentIds = $guardian->students()->pluck('students.id');
 
@@ -25,6 +27,7 @@ class LicenseController extends Controller
 
     public function create()
     {
+        /** @var Guardian $guardian */
         $guardian   = Auth::guard('guardian')->user();
         $students   = $guardian->students()->get();
         $activeYear = AcademicYear::where('status', 'active')->first();
@@ -34,6 +37,7 @@ class LicenseController extends Controller
 
     public function store(Request $request)
     {
+        /** @var Guardian $guardian */
         $guardian = Auth::guard('guardian')->user();
 
         $request->validate([
@@ -42,6 +46,7 @@ class LicenseController extends Controller
             'start_date'       => 'required|date',
             'end_date'         => 'required|date|after_or_equal:start_date',
             'description'      => 'required|string|max:500',
+            'is_emergency'     => 'boolean',
         ]);
 
         $studentIds = $guardian->students()->pluck('students.id');
@@ -58,9 +63,10 @@ class LicenseController extends Controller
             'description'        => $request->description,
             'status'             => 'pending',
             'memorization_check' => false,
+            'is_emergency'       => $request->has('is_emergency'),
         ]);
 
         return redirect()->route('guardian.licenses.index')
-            ->with('success', 'License request submitted successfully. Awaiting officer validation.');
+            ->with('success', 'Pengajuan izin berhasil dikirim. Menunggu validasi petugas.');
     }
 }

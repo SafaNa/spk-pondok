@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guardian;
 use App\Models\Master\Student;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Master\Room;
 use App\Models\Master\Rayon;
 use App\Models\Master\EducationLevel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Laravolt\Indonesia\Models\Province;
 
@@ -20,7 +23,17 @@ class StudentController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user()->isAdmin() && !auth()->user()->isLicensingOfficer()) {
+            $user = Auth::user();
+            
+            // Allow Department Officers to view (index, show)
+            if ($user?->isDepartmentOfficer()) {
+                if (in_array(request()->route()->getActionMethod(), ['index', 'show'])) {
+                    return $next($request);
+                }
+            }
+
+            // For other methods, require Admin
+            if (!$user?->isAdmin()) {
                 abort(403, 'Unauthorized action.');
             }
             return $next($request);
@@ -141,6 +154,13 @@ class StudentController extends Controller
             'village_code' => 'required|exists:indonesia_villages,code',
             'address' => 'nullable|string',
             'status' => 'required|in:active,inactive,graduated,dropped_out',
+            // Wali
+            'wali_name'         => 'nullable|string|max:100',
+            'wali_username'     => 'required_with:wali_name|nullable|string|max:50|unique:guardians,username',
+            'wali_password'     => 'required_with:wali_name|nullable|string|min:6',
+            'wali_phone'        => 'nullable|string|max:20',
+            'wali_email'        => 'nullable|email|max:100',
+            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -156,7 +176,19 @@ class StudentController extends Controller
             }
         }
 
-        Student::create($validated);
+        $student = Student::create($validated);
+
+        if ($request->filled('wali_name')) {
+            $guardian = Guardian::create([
+                'name'         => $request->wali_name,
+                'username'     => $request->wali_username,
+                'password'     => Hash::make($request->wali_password),
+                'phone'        => $request->wali_phone,
+                'email'        => $request->wali_email,
+                'relationship' => $request->wali_relationship ?? 'ayah',
+            ]);
+            $student->guardians()->attach($guardian->id);
+        }
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil ditambahkan');
@@ -164,6 +196,8 @@ class StudentController extends Controller
 
     public function update(Request $request, Student $student)
     {
+        $existingWaliId = $request->input('wali_id');
+
         $validated = $request->validate([
             'nis' => [
                 'required',
@@ -194,6 +228,16 @@ class StudentController extends Controller
             'village_code' => 'required|exists:indonesia_villages,code',
             'address' => 'nullable|string',
             'status' => 'required|in:active,inactive,graduated,dropped_out',
+            // Wali
+            'wali_name'         => 'nullable|string|max:100',
+            'wali_username'     => [
+                'required_with:wali_name', 'nullable', 'string', 'max:50',
+                Rule::unique('guardians', 'username')->ignore($existingWaliId),
+            ],
+            'wali_password'     => 'nullable|string|min:6',
+            'wali_phone'        => 'nullable|string|max:20',
+            'wali_email'        => 'nullable|email|max:100',
+            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -208,6 +252,29 @@ class StudentController extends Controller
         }
 
         $student->update($validated);
+
+        if ($request->filled('wali_name')) {
+            $waliData = [
+                'name'         => $request->wali_name,
+                'username'     => $request->wali_username,
+                'phone'        => $request->wali_phone,
+                'email'        => $request->wali_email,
+                'relationship' => $request->wali_relationship ?? 'ayah',
+            ];
+            if ($request->filled('wali_password')) {
+                $waliData['password'] = Hash::make($request->wali_password);
+            }
+
+            if ($existingWaliId) {
+                Guardian::where('id', $existingWaliId)->update($waliData);
+            } else {
+                if (!$request->filled('wali_password')) {
+                    $waliData['password'] = Hash::make('guardian123');
+                }
+                $guardian = Guardian::create($waliData);
+                $student->guardians()->attach($guardian->id);
+            }
+        }
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil diperbarui');

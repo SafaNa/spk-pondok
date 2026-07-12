@@ -12,7 +12,48 @@ class Department extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * Tipe yang tersedia:
+     *   'department' = departemen resmi struktural
+     *   'unit'       = pengurus/unit non-departemen (contoh: Perizinan)
+     */
+    const TYPE_DEPARTMENT = 'department';
+    const TYPE_UNIT        = 'unit';
+
+    // -------------------------------------------------------------------------
+    // Scopes
+    // -------------------------------------------------------------------------
+
+    /** Hanya departemen resmi */
+    public function scopeDepartments($query)
+    {
+        return $query->where('type', self::TYPE_DEPARTMENT);
+    }
+
+    /** Hanya pengurus/unit non-departemen */
+    public function scopeUnits($query)
+    {
+        return $query->where('type', self::TYPE_UNIT);
+    }
+
+    // -------------------------------------------------------------------------
+    // Accessors — helper boolean
+    // -------------------------------------------------------------------------
+
+    public function getIsDepartmentAttribute(): bool
+    {
+        return $this->type === self::TYPE_DEPARTMENT;
+    }
+
+    public function getIsUnitAttribute(): bool
+    {
+        return $this->type === self::TYPE_UNIT;
+    }
+
+    // -------------------------------------------------------------------------
     // Accessors for Indonesian View Compatibility
+    // -------------------------------------------------------------------------
+
     public function getKodeDepartemenAttribute()
     {
         return $this->code;

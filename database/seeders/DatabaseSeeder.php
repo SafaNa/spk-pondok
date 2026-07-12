@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
             MemorizationTypeSeeder::class,
             SantriSeeder::class,
+            LeaveCategorySeeder::class,
+            ViolationSeeder::class,
         ]);
     }
 }

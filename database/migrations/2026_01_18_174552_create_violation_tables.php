@@ -19,6 +19,9 @@ return new class extends Migration {
         Schema::create('violation_types', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('department_id')->constrained('departments')->onDelete('cascade');
+            $table->enum('ruleset', ['pesantren', 'madrasah'])
+                  ->default('pesantren')
+                  ->comment('Sumber tata tertib: pesantren = Pondok P2AL II, madrasah = MADAL II');
             $table->foreignUuid('violation_category_id')->constrained('violation_categories')->onDelete('cascade');
             $table->string('code')->unique();
             $table->string('name');

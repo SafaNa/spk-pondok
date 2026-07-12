@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Master\Student;
 use App\Models\Master\Period;
-use App\Models\Assessment\Assessment;
 use App\Models\Finance\SppPayment;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Violation\ViolationRecord;
@@ -13,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->isLicensingOfficer()) {
+        if (auth()->user()?->isLicensingOfficer()) {
             return $this->licensingDashboard();
         }
 
@@ -73,7 +72,7 @@ class DashboardController extends Controller
         $izinDisetujui   = StudentLicense::where('status', 'approved')->count();
         $izinPending     = StudentLicense::where('status', 'pending')->count();
         $izinDitolak     = StudentLicense::where('status', 'rejected')->count();
-        $kasusDarurat    = StudentLicense::where('type', 'individual')
+        $kasusDarurat    = StudentLicense::where('is_emergency', true)
                             ->where('status', 'pending')
                             ->count();
 
@@ -92,6 +91,26 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Quota warnings: students who used >= (max_leaves - 1) leaves this year
+        $quotaWarnings = collect();
+        $activeYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+        if ($activeYear && $activeYear->max_leaves > 0) {
+            $threshold = max(1, $activeYear->max_leaves - 1);
+            $quotaWarnings = Student::where('status', 'active')
+                ->whereHas('licenses', function ($q) use ($activeYear) {
+                    $q->where('academic_year_id', $activeYear->id)
+                      ->where('status', 'approved');
+                }, '>=', $threshold)
+                ->with(['licenses' => fn($q) => $q->where('academic_year_id', $activeYear->id)->where('status', 'approved')])
+                ->limit(5)
+                ->get()
+                ->map(fn($s) => (object)[
+                    'name'       => $s->name,
+                    'used_count' => $s->licenses->count(),
+                    'max_leaves' => $activeYear->max_leaves,
+                ]);
+        }
+
         return view('licensing.dashboard', compact(
             'totalStudents',
             'kepulangan',
@@ -100,7 +119,8 @@ class DashboardController extends Controller
             'izinDitolak',
             'kasusDarurat',
             'recentLicenses',
-            'violationNotifs'
+            'violationNotifs',
+            'quotaWarnings'
         ));
     }
 }

@@ -1,163 +1,160 @@
+@use('Illuminate\Support\Facades\Storage')
 @extends('layouts.app')
 
-@section('title', 'Edit User Khusus')
+@section('title', 'Edit User')
 @section('breadcrumb', 'Edit User')
-@section('breadcrumb_parent', 'User Khusus')
+@section('breadcrumb_parent', 'Manajemen User')
 @section('breadcrumb_parent_route', 'admin.users.index')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
-        {{-- Back Button --}}
         <a href="{{ route('admin.users.index') }}"
             class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
-            <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
-                <span
-                    class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
+                <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
             </div>
             <span class="text-sm font-semibold">Kembali ke Daftar User</span>
         </a>
 
-        {{-- Main Card --}}
-        <div
-            class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            {{-- Header --}}
-            <div
-                class="bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/5 px-6 py-6 sm:px-8 sm:py-8 border-b border-primary/10">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+            <div class="bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/5 px-6 py-6 sm:px-8 sm:py-8 border-b border-primary/10">
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-                    <div
-                        class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-primary/20 text-primary">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-primary/20 text-primary">
                         <span class="material-symbols-outlined text-[32px]">manage_accounts</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">Edit User Khusus
-                        </h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">Perbarui informasi untuk user
-                            {{ $user->name }}.
-                        </p>
+                        <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">Edit User</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-base max-w-xl">Perbarui informasi untuk user {{ $user->name }}.</p>
                     </div>
                 </div>
             </div>
 
-            {{-- Form --}}
-            <form action="{{ route('admin.users.update', $user) }}" method="POST" class="p-6 sm:p-10 flex flex-col gap-10">
+            <form action="{{ route('admin.users.update', $user) }}" method="POST"
+                enctype="multipart/form-data"
+                class="p-6 sm:p-10 flex flex-col gap-10">
                 @csrf
                 @method('PUT')
 
-                {{-- Account Info --}}
+                {{-- Informasi Akun --}}
                 <div class="space-y-6">
-                    <h3
-                        class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-primary">badge</span>
                         Informasi Akun
                     </h3>
 
-                    {{-- Name --}}
+                    {{-- Foto --}}
+                    <div class="space-y-2" x-data="photoPreview('{{ $user->photo ? Storage::url($user->photo) : '' }}')">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Foto <span class="text-slate-400 font-normal text-xs">(opsional, maks 2MB)</span></label>
+                        <div class="flex items-center gap-5">
+                            <div class="w-20 h-20 rounded-2xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
+                                <img x-show="preview" :src="preview" class="w-full h-full object-cover" x-cloak>
+                                <span x-show="!preview" class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600">person</span>
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary">
+                                    <span class="material-symbols-outlined text-[18px]">upload</span>
+                                    Ganti Foto
+                                    <input type="file" name="photo" accept="image/*" class="hidden" @change="onFileChange">
+                                </label>
+                                <p class="text-xs text-slate-400">JPG, PNG, WebP — kosongkan jika tidak ingin mengganti</p>
+                            </div>
+                        </div>
+                        @error('photo')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                    </div>
+
+                    {{-- Nama --}}
                     <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                            Nama Lengkap <span class="text-red-500">*</span>
-                        </label>
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Nama Lengkap <span class="text-red-500">*</span></label>
                         <div class="relative group">
-                            <div
-                                class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                 <span class="material-symbols-outlined">person</span>
                             </div>
                             <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                 class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                                 placeholder="Masukkan Nama Lengkap">
                         </div>
-                        @error('name')
-                            <p class="text-sm text-red-500 flex items-center gap-1 mt-1">
-                                <span class="material-symbols-outlined text-[16px]">error</span>
-                                {{ $message }}
-                            </p>
-                        @enderror
+                        @error('name')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Email --}}
+                        {{-- Username --}}
                         <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Email Address <span class="text-red-500">*</span>
-                            </label>
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Username <span class="text-red-500">*</span></label>
                             <div class="relative group">
-                                <div
-                                    class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">account_circle</span>
+                                </div>
+                                <input type="text" name="username" value="{{ old('username', $user->username) }}" required
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="contoh: petugas_perizinan">
+                            </div>
+                            @error('username')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                        </div>
+
+                        {{-- Email (opsional) --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Email <span class="text-slate-400 font-normal text-xs">(opsional)</span></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                     <span class="material-symbols-outlined">email</span>
                                 </div>
-                                <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                                     placeholder="alamat@email.com">
                             </div>
-                            @error('email')
-                                <p class="text-sm text-red-500 flex items-center gap-1 mt-1">
-                                    <span class="material-symbols-outlined text-[16px]">error</span>
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
-
-                        {{-- Role / Departemen (read-only info, tidak dikirim) --}}
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Role / Jabatan
-                            </label>
-                            <div class="flex items-center gap-3 pl-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-sm font-medium">
-                                <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
-                                @if($user->role === 'licensing_officer')
-                                    Petugas Perizinan
-                                @elseif($user->role === 'department_officer')
-                                    Pengurus Departemen
-                                    @if($user->department)
-                                        <span class="ml-1 text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">{{ $user->department->name }}</span>
-                                    @endif
-                                @else
-                                    {{ $user->role }}
-                                @endif
-                            </div>
+                            @error('email')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
                         </div>
                     </div>
+
+                    {{-- Departemen (hanya untuk pengurus departemen, bukan admin) --}}
+                    @if(!$user->isAdmin())
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Departemen <span class="text-red-500">*</span></label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <span class="material-symbols-outlined">apartment</span>
+                            </div>
+                            <select name="department_id" style="background-image: none;"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
+                                <option value="">-- Pilih Departemen --</option>
+                                @foreach($departments as $dept)
+                                    <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id) == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }} ({{ $dept->acronym }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                                <span class="material-symbols-outlined">expand_more</span>
+                            </div>
+                        </div>
+                        @error('department_id')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                    </div>
+                    @endif
                 </div>
 
-                {{-- Password Section --}}
+                {{-- Password --}}
                 <div class="space-y-6">
-                    <h3
-                        class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-primary">lock_reset</span>
                         Ubah Password (Opsional)
                     </h3>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Password --}}
                         <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Password Baru
-                            </label>
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Password Baru</label>
                             <div class="relative group">
-                                <div
-                                    class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                     <span class="material-symbols-outlined">key</span>
                                 </div>
                                 <input type="password" name="password"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                                     placeholder="Kosongkan jika tidak ingin mengganti">
                             </div>
-                            @error('password')
-                                <p class="text-sm text-red-500 flex items-center gap-1 mt-1">
-                                    <span class="material-symbols-outlined text-[16px]">error</span>
-                                    {{ $message }}
-                                </p>
-                            @enderror
+                            @error('password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
                         </div>
-
-                        {{-- Confirm Password --}}
                         <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Konfirmasi Password Baru
-                            </label>
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Konfirmasi Password Baru</label>
                             <div class="relative group">
-                                <div
-                                    class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                     <span class="material-symbols-outlined">lock_reset</span>
                                 </div>
                                 <input type="password" name="password_confirmation"
@@ -171,7 +168,7 @@
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-4 pt-8 border-t border-slate-200 dark:border-slate-800">
                     <a href="{{ route('admin.users.index') }}"
-                        class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200">
+                        class="order-2 sm:order-1 flex-1 px-8 py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 transition-all duration-200">
                         Batal
                     </a>
                     <button type="submit"
@@ -184,3 +181,20 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function photoPreview(initial = '') {
+    return {
+        preview: initial,
+        onFileChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => this.preview = ev.target.result;
+            reader.readAsDataURL(file);
+        }
+    }
+}
+</script>
+@endpush

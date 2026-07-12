@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Licensing;
 
 use App\Http\Controllers\Controller;
+use App\Models\Licensing\LeaveCategory;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Master\AcademicYear;
-use App\Models\Master\MemorizationType;
 use App\Models\Master\Student;
-use App\Models\Master\Rayon;
-use App\Models\Master\Room;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -16,57 +14,83 @@ class LicenseController extends Controller
 {
     public function index(Request $request)
     {
-        $academicYears = AcademicYear::orderBy('created_at', 'desc')->get();
-        $activeYear = AcademicYear::where('status', 'active')->first();
-
-        // Filter by selected academic year or active year
+        $academicYears  = AcademicYear::orderBy('created_at', 'desc')->get();
+        $activeYear     = AcademicYear::where('status', 'active')->first();
         $selectedYearId = $request->get('academic_year_id', $activeYear?->id);
 
-        $recentLicenses = StudentLicense::with([
-            'student' => function ($query) {
-                $query->withCount('pendingViolations');
-            },
-            'student.room',
-            'academicYear'
-        ])
-            ->when($selectedYearId, function ($query) use ($selectedYearId) {
-                $query->where('academic_year_id', $selectedYearId);
-            })
-            ->latest()->paginate(10);
+        // KPI counts (year-scoped, before user filters)
+        $kpiBase       = StudentLicense::when($selectedYearId, fn($q) => $q->where('academic_year_id', $selectedYearId));
+        $totalAll      = (clone $kpiBase)->count();
+        $totalPending  = (clone $kpiBase)->where('status', 'pending')->count();
+        $totalApproved = (clone $kpiBase)->where('status', 'approved')->count();
+        $totalRejected = (clone $kpiBase)->where('status', 'rejected')->count();
 
-        return view('licensing.index', compact('recentLicenses', 'academicYears', 'selectedYearId'));
+        $query = StudentLicense::with([
+                'student'      => fn($q) => $q->withCount('pendingViolations'),
+                'student.room',
+                'student.rayon',
+                'academicYear',
+            ])
+            ->when($selectedYearId,            fn($q) => $q->where('academic_year_id', $selectedYearId))
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('type'),   fn($q) => $q->where('type',   $request->type))
+            ->when($request->filled('start_date'), fn($q) => $q->whereDate('start_date', '>=', $request->start_date))
+            ->when($request->filled('end_date'),   fn($q) => $q->whereDate('end_date',   '<=', $request->end_date))
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $s = $request->search;
+                $q->whereHas('student', fn($sq) => $sq->where('name', 'like', "%$s%")->orWhere('nis', 'like', "%$s%"));
+            });
+
+        $recentLicenses = $query->latest()->paginate(10)->withQueryString();
+
+        return view('licensing.index', compact(
+            'recentLicenses', 'academicYears', 'selectedYearId',
+            'totalAll', 'totalPending', 'totalApproved', 'totalRejected'
+        ));
     }
 
     // Individual License Form
     public function create()
     {
-        $students = Student::orderBy('name')->limit(50)->get();
-        $activeYear = AcademicYear::where('status', 'active')->first();
-        $academicYears = AcademicYear::orderBy('created_at', 'desc')->get();
-        return view('licensing.create', compact('students', 'activeYear', 'academicYears'));
+        $students   = Student::orderBy('name')->limit(50)->get();
+        $categories = LeaveCategory::orderBy('order')->get();
+        return view('licensing.create', compact('students', 'categories'));
     }
 
     // Store Individual License
     public function storeIndividual(Request $request)
     {
+        $activeYear = AcademicYear::where('status', 'active')->first();
+        if (!$activeYear) {
+            return back()->with('error', 'Tidak ada tahun ajaran aktif. Aktifkan tahun ajaran terlebih dahulu.');
+        }
+
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'description' => 'required|string',
-            'memorization_check' => 'boolean',
+            'student_id'         => 'required|exists:students,id',
+            'leave_reason_id'    => 'nullable|exists:leave_reasons,id',
+            'description'        => 'nullable|string|max:500',
+            'start_date'         => 'required|date',
+            'end_date'           => 'required|date|after_or_equal:start_date',
+            'is_emergency'       => 'boolean',
         ]);
 
+        $leaveCategoryId = null;
+        if (!empty($validated['leave_reason_id'])) {
+            $reason = \App\Models\Licensing\LeaveReason::find($validated['leave_reason_id']);
+            $leaveCategoryId = $reason?->leave_category_id;
+        }
+
         StudentLicense::create([
-            'student_id' => $validated['student_id'],
-            'academic_year_id' => $validated['academic_year_id'],
+            'student_id'        => $validated['student_id'],
+            'academic_year_id'  => $activeYear->id,
+            'leave_category_id' => $leaveCategoryId,
+            'leave_reason_id'   => $validated['leave_reason_id'] ?? null,
             'type' => 'individual',
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'status' => 'pending',
-            'memorization_check' => $request->has('memorization_check'),
-            'description' => $validated['description'],
+            'is_emergency' => $request->has('is_emergency'),
+            'description' => $validated['description'] ?? null,
         ]);
 
         // WhatsApp Notification Link
@@ -97,86 +121,155 @@ class LicenseController extends Controller
     public function show(StudentLicense $license)
     {
         $license->load([
-            'student' => function ($query) {
-                $query->withCount('pendingViolations');
-            },
+            'student'      => fn($q) => $q->withCount('pendingViolations'),
             'student.room',
             'student.rayon',
-            'academicYear'
+            'academicYear',
+            'leaveCategory',
+            'leaveReason',
         ]);
 
-        // Count approved leaves for this student in this academic year
         $approvedCount = StudentLicense::where('student_id', $license->student_id)
             ->where('academic_year_id', $license->academic_year_id)
             ->where('status', 'approved')
             ->count();
 
-        $maxLeaves = $license->academicYear->max_leaves;
+        $maxLeaves         = $license->academicYear?->max_leaves;
+        $canSkip           = $license->leaveReason?->can_skip_validation ?? false;
+        $violationCount    = $license->student->pending_violations_count;
 
-        return view('licensing.show', compact('license', 'approvedCount', 'maxLeaves'));
+        $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
+            ->where('academic_year_id', $license->academic_year_id)
+            ->where('is_used', false)
+            ->first();
+
+        $hafalanPass = $memorization && $memorization->status === 'completed';
+        $hafalanDetail = 'Belum ada data hafalan';
+        if ($memorization) {
+            $hafalanDetail = $memorization->status === 'completed' ? 'Selesai' : 'Belum selesai';
+        }
+
+        $validation = [
+            'poin' => [
+                'label'   => 'Poin Kepulangan',
+                'pass'    => $maxLeaves === null || $approvedCount < $maxLeaves,
+                'detail'  => $maxLeaves ? "Kuota: {$approvedCount}/{$maxLeaves}" : 'Tidak ada batas kuota',
+                'pending' => false,
+            ],
+            'pelanggaran' => [
+                'label'   => 'Status Pelanggaran',
+                'pass'    => $violationCount === 0,
+                'detail'  => $violationCount > 0 ? "{$violationCount} pelanggaran aktif" : 'Bersih',
+                'pending' => false,
+            ],
+            'alasan' => [
+                'label'   => 'Alasan Kepulangan',
+                'pass'    => $license->leave_reason_id !== null,
+                'detail'  => $license->leaveReason?->reason ?? 'Belum dipilih',
+                'pending' => false,
+            ],
+            'hafalan' => [
+                'label'   => 'Setoran Hafalan',
+                'pass'    => $hafalanPass,
+                'detail'  => $hafalanDetail,
+                'pending' => false,
+            ],
+        ];
+
+        $allPass = collect($validation)->filter(fn($v) => !$v['pending'])->every(fn($v) => $v['pass']);
+
+        return view('licensing.show', compact(
+            'license', 'approvedCount', 'maxLeaves',
+            'validation', 'allPass', 'canSkip'
+        ));
     }
 
     // Edit Form
     public function edit(StudentLicense $license)
     {
-        $students = Student::orderBy('name')->limit(100)->get();
-        $academicYears = AcademicYear::orderBy('created_at', 'desc')->get();
-        return view('licensing.edit', compact('license', 'students', 'academicYears'));
+        $students   = Student::orderBy('name')->limit(100)->get();
+        $categories = \App\Models\Licensing\LeaveCategory::orderBy('order')->get();
+        return view('licensing.edit', compact('license', 'students', 'categories'));
     }
 
     // Update License
     public function update(Request $request, StudentLicense $license)
     {
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'description' => 'required|string',
-            'memorization_check' => 'boolean',
+            'student_id'      => 'required|exists:students,id',
+            'start_date'      => 'required|date',
+            'end_date'        => 'required|date|after_or_equal:start_date',
+            'leave_reason_id' => 'nullable|exists:leave_reasons,id',
+            'description'     => 'nullable|string|max:500',
+            'is_emergency'    => 'boolean',
         ]);
 
+        $leaveCategoryId = null;
+        if (!empty($validated['leave_reason_id'])) {
+            $leaveCategoryId = \App\Models\Licensing\LeaveReason::find($validated['leave_reason_id'])?->leave_category_id;
+        }
+
         $license->update([
-            'student_id' => $validated['student_id'],
-            'academic_year_id' => $validated['academic_year_id'],
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
-            'memorization_check' => $request->has('memorization_check'),
-            'description' => $validated['description'],
+            'student_id'        => $validated['student_id'],
+            'start_date'        => $validated['start_date'],
+            'end_date'          => $validated['end_date'],
+            'leave_category_id' => $leaveCategoryId,
+            'leave_reason_id'   => $validated['leave_reason_id'] ?? null,
+            'is_emergency'      => $request->has('is_emergency'),
+            'description'       => $validated['description'] ?? null,
         ]);
 
         return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil diperbarui.');
     }
 
-    public function approve($id)
+    public function approve(Request $request, StudentLicense $license)
     {
-        $license = StudentLicense::findOrFail($id);
-
-        // Check max_leaves limit
-        $academicYear = AcademicYear::find($license->academic_year_id);
-        if ($academicYear && $academicYear->max_leaves !== null) {
-            $approvedCount = StudentLicense::where('student_id', $license->student_id)
-                ->where('academic_year_id', $license->academic_year_id)
-                ->where('status', 'approved')
-                ->count();
-
-            if ($approvedCount >= $academicYear->max_leaves) {
-                return back()->with('error', 'Kuota izin pulang santri ini sudah penuh (' . $academicYear->max_leaves . 'x) untuk tahun ajaran ini.');
-            }
+        $data = ['status' => 'approved'];
+        if ($request->has('override_validation') && $request->override_validation == '1') {
+            $data['is_emergency'] = true;
+            $data['notes'] = 'Diloloskan paksa: ' . $request->override_reason;
         }
-
-        $license->status = 'approved';
-        $license->save();
-
+        $license->update($data);
+        
+        $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
+            ->where('academic_year_id', $license->academic_year_id)
+            ->where('status', 'completed')
+            ->where('is_used', false)
+            ->first();
+            
+        if ($memorization) {
+            $memorization->update(['is_used' => true]);
+        }
+        
         return back()->with('success', 'Izin berhasil disetujui.');
     }
 
-    public function reject($id)
+    public function forceApprove(StudentLicense $license)
     {
-        $license = StudentLicense::findOrFail($id);
-        $license->status = 'rejected';
-        $license->save();
+        $license->update(['status' => 'approved', 'is_emergency' => true]);
+        
+        $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
+            ->where('academic_year_id', $license->academic_year_id)
+            ->where('status', 'completed')
+            ->where('is_used', false)
+            ->first();
+            
+        if ($memorization) {
+            $memorization->update(['is_used' => true]);
+        }
+        
+        return back()->with('success', 'Izin disetujui sebagai kasus darurat.');
+    }
 
+    public function reject(StudentLicense $license)
+    {
+        $license->update(['status' => 'rejected']);
         return back()->with('success', 'Izin berhasil ditolak.');
+    }
+
+    public function destroy(StudentLicense $license)
+    {
+        $license->delete();
+        return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil dihapus.');
     }
 }

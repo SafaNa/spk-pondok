@@ -7,10 +7,11 @@ use App\Models\Master\Department;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         Schema::disableForeignKeyConstraints();
         User::truncate();
@@ -18,54 +19,32 @@ class UserSeeder extends Seeder
 
         $password = Hash::make('password');
 
-        // Admin
+        // Admin (type=0)
         User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@pondok.test',
+            'name'     => 'Administrator',
+            'username' => 'admin',
+            'email'    => 'admin@pondok.test',
             'password' => $password,
-            'role' => 'admin',
+            'type'     => 0,
         ]);
 
-        // Licensing Officer
-        User::create([
-            'name' => 'Petugas Perizinan',
-            'email' => 'perizinan@pondok.test',
-            'password' => $password,
-            'role' => 'licensing_officer',
-        ]);
-
-        // [HIDDEN] Finance Officer
-        // User::create([
-        //     'name' => 'Petugas Keuangan',
-        //     'email' => 'keuangan@pondok.test',
-        //     'password' => $password,
-        //     'role' => 'finance_officer',
-        // ]);
-
-        // [HIDDEN] Finance Secretary
-        // User::create([
-        //     'name' => 'Sekretaris Keuangan',
-        //     'email' => 'sekretaris@pondok.test',
-        //     'password' => $password,
-        //     'role' => 'finance_secretary',
-        // ]);
-
-        // Department Officers
+        // Department officers (type=1), satu per departemen
         $departments = Department::all();
         foreach ($departments as $dept) {
-            // Generate email from department name (e.g. perizinan@pondok.test)
-            // Use str_word_count to ignore symbols like '&' (e.g. "Sarana & Prasarana" -> ["Sarana", "Prasarana"])
-            $words = str_word_count($dept->name, 1);
-            $emailName = strtolower($words[0]);
-            $check = User::where('email', $emailName . '@pondok.test')->first();
-            if ($check) {
-                $emailName = strtolower($words[1]);
+            $username = strtolower(Str::slug($dept->acronym, '_'));
+
+            // pastikan username unik
+            $base = $username;
+            $i = 2;
+            while (User::where('username', $username)->exists()) {
+                $username = $base . '_' . $i++;
             }
+
             User::create([
-                'name' => 'Petugas ' . $dept->name,
-                'email' => $emailName . '@pondok.test',
-                'password' => $password,
-                'role' => 'department_officer',
+                'name'          => 'Petugas ' . $dept->name,
+                'username'      => $username,
+                'password'      => $password,
+                'type'          => 1,
                 'department_id' => $dept->id,
             ]);
         }
