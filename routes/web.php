@@ -129,6 +129,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     })->name('theme.set');
 
     // Violation Routes
+    Route::get('/violations/search-students', [ViolationController::class, 'searchStudents'])->name('violations.search-students');
     Route::get('/violations/history/{student}', [ViolationController::class, 'history'])->name('violations.history');
     Route::post('/violations/{id}/verify-sanction', [ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
     Route::resource('violations', ViolationController::class);

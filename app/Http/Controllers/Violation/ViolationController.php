@@ -70,8 +70,14 @@ class ViolationController extends Controller
             return redirect()->back()->with('error', 'Tidak ada periode aktif. Silakan aktifkan periode terlebih dahulu.');
         }
 
-        // Get active students
-        $students = Student::where('status', 'active')->orderBy('name')->get();
+        // Hanya memuat siswa jika ada data old() (misal validasi gagal)
+        $students = collect();
+        if (old('student_id')) {
+            $student = Student::find(old('student_id'));
+            if ($student) {
+                $students->push($student);
+            }
+        }
 
         // Get violation types (filtered by department for departemen staff)
         $query = ViolationType::where('is_active', true)
@@ -239,7 +245,8 @@ class ViolationController extends Controller
             return redirect()->back()->with('error', 'Tidak ada periode aktif.');
         }
 
-        $students = Student::where('status', 'active')->orderBy('name')->get();
+        // Hanya memuat siswa terkait
+        $students = collect([$violation->student]);
 
         // Get violation types
         $query = ViolationType::where('is_active', true)
@@ -331,5 +338,30 @@ class ViolationController extends Controller
         $violation->delete();
 
         return redirect()->route('admin.violations.index')->with('success', 'Pelanggaran berhasil dihapus');
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $q = $request->input('q', '');
+        $qLower = strtolower($q);
+
+        $students = Student::with('room')
+            ->where('status', 'active')
+            ->where(function ($query) use ($qLower) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . $qLower . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?', ['%' . $qLower . '%']);
+            })
+            ->orderBy('name')
+            ->limit(30)
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'id'   => $s->id,
+                    'text' => $s->name,
+                    'info' => ($s->nis ?? '-') . ' - ' . ($s->room?->name ?? 'Belum ada kamar')
+                ];
+            });
+
+        return response()->json(['results' => $students]);
     }
 }
