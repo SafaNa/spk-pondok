@@ -234,24 +234,7 @@
         </div>
     </div>
 
-            function formatCategory(category) {
-                if (!category.id) {
-                    return category.text;
-                }
-                var points = $(category.element).data('points');
-                 var $category = $(
-                    '<span>' + category.text + ' <span class="text-slate-400 text-xs font-normal ml-1">(' + (points || '') + ')</span></span>'
-                );
-                return $category;
-            }
-            */
-            // Native select doesn't need JS formatting. We just use CSS.
-            // Removing Select2 initialization for department and category completely.
-        });
-    </script>
-        });
-    </script>
-    
+
     <style>
         /* Base Container */
         .select2-container--default .select2-selection--single {

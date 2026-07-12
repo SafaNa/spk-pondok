@@ -51,10 +51,10 @@ class DepartmentController extends Controller
         ]);
 
         User::create([
-            'name' => $request->nama_departemen,
-            'email' => $request->user_email,
-            'password' => Hash::make($request->user_password),
-            'role' => 'department_officer',
+            'name'          => $request->nama_departemen,
+            'email'         => $request->user_email,
+            'password'      => Hash::make($request->user_password),
+            'type'          => 1,
             'department_id' => $department->id,
         ]);
 
@@ -80,7 +80,7 @@ class DepartmentController extends Controller
     {
         $departemen = $department;
         $userAkun = User::where('department_id', $department->id)
-            ->where('role', 'department_officer')
+            ->where('type', 1)
             ->first();
         return view('departemen.edit', compact('departemen', 'userAkun'));
     }
@@ -91,7 +91,7 @@ class DepartmentController extends Controller
     public function update(Request $request, Department $department)
     {
         $userAkun = User::where('department_id', $department->id)
-            ->where('role', 'department_officer')
+            ->where('type', 1)
             ->first();
 
         $rules = [
@@ -131,7 +131,7 @@ class DepartmentController extends Controller
     {
         DB::transaction(function () use ($department) {
             User::where('department_id', $department->id)
-                ->where('role', 'department_officer')
+                ->where('type', 1)
                 ->delete();
 
             $department->delete();

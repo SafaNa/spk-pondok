@@ -14,12 +14,14 @@ class AcademicYearSeeder extends Seeder
             'name' => '2023/2024',
             'status' => 'inactive',
             'spp_amount' => 150000,
+            'max_leaves' => 7,
         ]);
 
         AcademicYear::create([
             'name' => '2024/2025',
             'status' => 'active',
             'spp_amount' => 200000,
+            'max_leaves' => 7,
         ]);
 
         // Also create periods for the active academic year

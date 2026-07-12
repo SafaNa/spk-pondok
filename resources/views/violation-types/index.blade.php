@@ -74,14 +74,56 @@
         @endif
 
         {{-- Table Card --}}
-        <div
-            class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-700 overflow-hidden">
-            <div
-                class="px-6 py-4 border-b border-[#e7edf3] dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-                <h3 class="font-semibold text-[#0d141b] dark:text-white">Daftar Jenis Pelanggaran</h3>
-                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-[#4c739a]">
-                    {{ $violationTypes->count() }} Data
-                </span>
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-700 overflow-hidden">
+            <div class="px-4 py-4 border-b border-[#e7edf3] dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col 2xl:flex-row justify-between items-start 2xl:items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <h3 class="font-semibold text-[#0d141b] dark:text-white whitespace-nowrap">Daftar Jenis Pelanggaran</h3>
+                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-[#4c739a]">
+                        {{ $violationTypes->total() }} Data
+                    </span>
+                </div>
+                
+                {{-- Filter and Search Form --}}
+                <form action="{{ route('admin.violation-types.index') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full 2xl:w-auto">
+                    <div class="w-full sm:w-auto">
+                        <select name="ruleset" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">
+                            <option value="">Semua Tata Tertib</option>
+                            <option value="pesantren" {{ request('ruleset') == 'pesantren' ? 'selected' : '' }}>Pesantren</option>
+                            <option value="madrasah" {{ request('ruleset') == 'madrasah' ? 'selected' : '' }}>Madrasah</option>
+                        </select>
+                    </div>
+                    <div class="w-full sm:w-auto">
+                        <select name="category_id" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">
+                            <option value="">Semua Kategori</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if(Auth::user()->isAdmin())
+                    <div class="w-full sm:w-auto">
+                        <select name="department_id" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">
+                            <option value="">Semua Departemen</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->acronym }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+                    <div class="w-full sm:w-auto flex-1 min-w-[200px]">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode/nama..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm" />
+                    </div>
+                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors text-sm">
+                        <span class="material-symbols-outlined text-[18px]">search</span>
+                        <span class="sm:hidden">Cari</span>
+                    </button>
+                    @if(request()->anyFilled(['search', 'category_id', 'ruleset', 'department_id']))
+                        <a href="{{ route('admin.violation-types.index') }}" class="w-full sm:w-auto flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors text-sm" title="Reset Filter">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                            <span class="sm:hidden">Reset</span>
+                        </a>
+                    @endif
+                </form>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

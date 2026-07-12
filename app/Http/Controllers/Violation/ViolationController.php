@@ -17,7 +17,9 @@ class ViolationController extends Controller
      */
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
+        if (!$user->canManageViolations()) abort(403, 'Anda tidak memiliki akses ke halaman ini.');
 
         $query = ViolationRecord::with([
             'student',
@@ -58,6 +60,9 @@ class ViolationController extends Controller
      */
     public function create()
     {
+        if (!Auth::user()->canManageViolations()) abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $activePeriod = Period::where('is_active', true)->first();
 
@@ -87,6 +92,8 @@ class ViolationController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::user()->canManageViolations()) abort(403, 'Anda tidak memiliki akses.');
+
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'violation_type_id' => 'required|exists:violation_types,id',
@@ -102,6 +109,7 @@ class ViolationController extends Controller
         }
 
         // Check permission
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user->isDepartmentOfficer() && $violationType->department_id != $user->department_id) {
             abort(403, 'Anda tidak memiliki akses untuk mencatat pelanggaran departemen ini');
@@ -164,6 +172,7 @@ class ViolationController extends Controller
         $violation = ViolationRecord::findOrFail($id);
 
         // Check if user has permission
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         if ($user->isDepartmentOfficer()) {
             $violation->load('violationType');
@@ -210,7 +219,10 @@ class ViolationController extends Controller
      */
     public function edit($id)
     {
+        if (!Auth::user()->canManageViolations()) abort(403, 'Anda tidak memiliki akses.');
+
         $violation = ViolationRecord::with('violationType')->findOrFail($id);
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         // Check permission
@@ -248,7 +260,10 @@ class ViolationController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!Auth::user()->canManageViolations()) abort(403, 'Anda tidak memiliki akses.');
+
         $violation = ViolationRecord::findOrFail($id);
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->isDepartmentOfficer()) {
@@ -297,7 +312,10 @@ class ViolationController extends Controller
      */
     public function destroy($id)
     {
+        if (!Auth::user()->canManageViolations()) abort(403, 'Anda tidak memiliki akses.');
+
         $violation = ViolationRecord::findOrFail($id);
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user->isDepartmentOfficer()) {

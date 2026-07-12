@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Guardian;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guardian;
 use App\Models\Licensing\StudentLicense;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,6 +11,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        /** @var Guardian $guardian */
         $guardian   = Auth::guard('guardian')->user();
         $students   = $guardian->students()->with(['rayon', 'room', 'formalEducation', 'religiousEducation'])->get();
         $studentIds = $students->pluck('id');

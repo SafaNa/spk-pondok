@@ -12,6 +12,9 @@ return new class extends Migration {
             $table->string('code')->unique();
             $table->string('name');
             $table->string('acronym')->nullable(); // singkatan
+            $table->enum('type', ['department', 'unit'])
+                  ->default('department')
+                  ->comment('Jenis entitas: department = departemen resmi, unit = pengurus/unit non-departemen');
             $table->text('description')->nullable(); // keterangan
             $table->timestamps();
         });

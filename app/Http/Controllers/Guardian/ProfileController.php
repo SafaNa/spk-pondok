@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Guardian;
 
 use App\Http\Controllers\Controller;
+use App\Models\Guardian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,12 +13,14 @@ class ProfileController extends Controller
 {
     public function show()
     {
+        /** @var Guardian $guardian */
         $guardian = Auth::guard('guardian')->user();
         return view('guardian.profile', compact('guardian'));
     }
 
     public function update(Request $request)
     {
+        /** @var Guardian $guardian */
         $guardian = Auth::guard('guardian')->user();
 
         $request->validate([
@@ -37,6 +40,7 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
+        /** @var Guardian $guardian */
         $guardian = Auth::guard('guardian')->user();
 
         $request->validate([

@@ -8,16 +8,42 @@
 
 @section('content')
     <div class="flex flex-col gap-6" x-data="{ showVerifyModal: false }">
-        {{-- Back Button --}}
-        <a href="{{ route('admin.violations.index') }}"
-            class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group mb-2">
-            <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
-                <span
-                    class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
-            </div>
-            <span class="text-sm font-semibold">Kembali ke Daftar</span>
-        </a>
+        {{-- Top Toolbar --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+            {{-- Back Button --}}
+            <a href="{{ route('admin.violations.index') }}"
+                class="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors w-fit group">
+                <div
+                    class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-primary/10 transition-colors">
+                    <span
+                        class="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+                </div>
+                <span class="text-sm font-semibold">Kembali ke Daftar</span>
+            </a>
+
+            {{-- Action Buttons --}}
+            @if(Auth::user()->isAdmin() || (Auth::user()->isDepartmentOfficer() && $violation->violationType->department_id == Auth::user()->department_id))
+                @if(Route::has('admin.violations.edit') && $violation->sanction_status !== 'completed')
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.violations.edit', $violation->id) }}"
+                            class="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded-lg transition-colors font-medium">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                            Edit
+                        </a>
+                        <form action="{{ route('admin.violations.destroy', $violation->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button"
+                                @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus data pelanggaran ini?')"
+                                class="flex items-center gap-2 px-4 py-2 text-sm bg-red-500/10 text-red-600 hover:bg-red-500/20 rounded-lg transition-colors font-medium">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                @endif
+            @endif
+        </div>
 
         {{-- Status Banner --}}
         @if($violation->sanction_status === 'completed')
@@ -67,14 +93,75 @@
                 <h3 class="text-lg font-bold text-[#0d141b] dark:text-white">Informasi Santri</h3>
             </div>
             <div class="p-6">
-                <div class="flex items-center gap-4">
-                    <div
-                        class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl">
-                        {{ strtoupper(substr($violation->student->name, 0, 2)) }}
+                <div class="flex flex-col md:flex-row gap-6 items-start">
+                    <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary font-bold text-2xl border border-primary/20">
+                        @if($violation->student->photo)
+                            <img src="{{ Storage::url($violation->student->photo) }}" class="w-full h-full object-cover rounded-2xl" alt="{{ $violation->student->name }}">
+                        @else
+                            {{ strtoupper(substr($violation->student->name, 0, 2)) }}
+                        @endif
                     </div>
-                    <div>
-                        <p class="text-xl font-bold text-[#0d141b] dark:text-white">{{ $violation->student->name }}</p>
-                        <p class="text-sm text-[#4c739a] mt-1">NIS: {{ $violation->student->nis }}</p>
+                    <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Nama Lengkap</p>
+                            <p class="font-bold text-[#0d141b] dark:text-white">{{ $violation->student->name }}</p>
+                            <p class="text-sm text-[#4c739a] mt-0.5">NIS: {{ $violation->student->nis }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Pendidikan</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm line-clamp-1">
+                                Formal: {{ $violation->student->formalEducation?->name ?? '-' }}
+                            </p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm line-clamp-1 mt-0.5">
+                                Diniyah: {{ $violation->student->religiousEducation?->name ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Asrama</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm">
+                                Rayon: {{ $violation->student->rayon?->name ?? '-' }}
+                            </p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm mt-0.5">
+                                Kamar: {{ $violation->student->room?->name ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Jenis Kelamin</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white">
+                                {{ $violation->student->gender === 'male' ? 'Laki-laki' : 'Perempuan' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Asal Daerah</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm line-clamp-2">
+                                {{ $violation->student->city?->name ?? '-' }}
+                                @if($violation->student->province)
+                                    , {{ $violation->student->province->name }}
+                                @endif
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Status</p>
+                            @php
+                                $statusColors = [
+                                    'active' => 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800',
+                                    'inactive' => 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+                                    'graduated' => 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
+                                    'dropped_out' => 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800',
+                                ];
+                                $statusLabels = [
+                                    'active' => 'Aktif',
+                                    'inactive' => 'Nonaktif',
+                                    'graduated' => 'Lulus',
+                                    'dropped_out' => 'Keluar',
+                                ];
+                                $statusColor = $statusColors[$violation->student->status ?? 'active'] ?? $statusColors['active'];
+                                $statusLabel = $statusLabels[$violation->student->status ?? 'active'] ?? 'Aktif';
+                            @endphp
+                            <span class="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium border {{ $statusColor }}">
+                                {{ $statusLabel }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

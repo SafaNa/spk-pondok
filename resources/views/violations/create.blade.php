@@ -107,6 +107,59 @@
                     {{-- SECTION 2: Detail Pelanggaran --}}
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- FILTER BAR --}}
+                            <div class="md:col-span-2">
+                                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Filter Jenis Pelanggaran</p>
+                                <div class="flex flex-wrap gap-2">
+                                    {{-- Filter Ruleset --}}
+                                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2">
+                                        <span class="material-symbols-outlined text-[18px] text-slate-400">menu_book</span>
+                                        <span class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">Tata Tertib:</span>
+                                        <div class="flex gap-1">
+                                            <button type="button" data-filter-ruleset="all"
+                                                class="filter-ruleset-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 bg-primary text-white">
+                                                Semua
+                                            </button>
+                                            <button type="button" data-filter-ruleset="pesantren"
+                                                class="filter-ruleset-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                Pondok
+                                            </button>
+                                            <button type="button" data-filter-ruleset="madrasah"
+                                                class="filter-ruleset-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                Madrasah
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Filter Section --}}
+                                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2">
+                                        <span class="material-symbols-outlined text-[18px] text-slate-400">rule</span>
+                                        <span class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">Jenis:</span>
+                                        <div class="flex gap-1">
+                                            <button type="button" data-filter-section="all"
+                                                class="filter-section-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 bg-primary text-white">
+                                                Semua
+                                            </button>
+                                            <button type="button" data-filter-section="kewajiban"
+                                                class="filter-section-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                Kewajiban
+                                            </button>
+                                            <button type="button" data-filter-section="larangan"
+                                                class="filter-section-btn px-2.5 py-1 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                Larangan
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Counter --}}
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-xs text-slate-400 dark:text-slate-500">Tampil:</span>
+                                        <span id="violation-count" class="text-sm font-bold text-primary">{{ $violationTypes->count() }}</span>
+                                        <span class="text-xs text-slate-400 dark:text-slate-500">/ {{ $violationTypes->count() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             {{-- Jenis Pelanggaran --}}
                             <div class="space-y-2 md:col-span-2">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -121,10 +174,16 @@
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
                                         <option value="">-- Pilih Jenis Pelanggaran --</option>
                                         @foreach ($violationTypes as $type)
+                                            @php
+                                                $code = $type->code; // e.g. PP-KW-01, MDL-LR-02
+                                                $section = str_contains($code, '-KW-') ? 'kewajiban' : 'larangan';
+                                            @endphp
                                             <option value="{{ $type->id }}"
                                                 data-sanction="{{ $type->default_sanction }}"
+                                                data-ruleset="{{ $type->ruleset }}"
+                                                data-section="{{ $section }}"
                                                 {{ old('violation_type_id') == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }} [{{ $type->category->name }}]
+                                                {{ $type->name }} — {{ $type->category->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -200,7 +259,87 @@
 
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for Student (Search Enabled)
+            // ─── State filter aktif ───────────────────────────────────────────
+            let activeRuleset = 'all';
+            let activeSection = 'all';
+            const totalCount = {{ $violationTypes->count() }};
+
+            // ─── Simpan semua option asli ─────────────────────────────────────
+            const $select   = $('#violation_type_id');
+            const allOptions = $select.find('option').clone(); // snapshot semua option
+
+            // ─── Fungsi filter utama ──────────────────────────────────────────
+            function applyFilters() {
+                const currentVal = $select.val();
+
+                $select.find('option:not(:first-child)').remove();
+
+                let visible = 0;
+                allOptions.filter(':not(:first-child)').each(function() {
+                    const ruleset = $(this).data('ruleset');
+                    const section = $(this).data('section');
+
+                    const rulesetMatch = activeRuleset === 'all' || ruleset === activeRuleset;
+                    const sectionMatch = activeSection === 'all' || section === activeSection;
+
+                    if (rulesetMatch && sectionMatch) {
+                        $select.append($(this).clone());
+                        visible++;
+                    }
+                });
+
+                // Kembalikan nilai sebelumnya jika masih tersedia
+                if ($select.find('option[value="' + currentVal + '"]').length) {
+                    $select.val(currentVal);
+                } else {
+                    $select.val('');
+                    $('#sanction').val('');
+                }
+
+                // Update counter
+                $('#violation-count').text(visible);
+            }
+
+            // ─── Tombol filter Ruleset ────────────────────────────────────────
+            $('.filter-ruleset-btn').on('click', function() {
+                activeRuleset = $(this).data('filter-ruleset');
+
+                $('.filter-ruleset-btn')
+                    .removeClass('bg-primary text-white')
+                    .addClass('text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700');
+                $(this)
+                    .addClass('bg-primary text-white')
+                    .removeClass('text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700');
+
+                applyFilters();
+            });
+
+            // ─── Tombol filter Section ────────────────────────────────────────
+            $('.filter-section-btn').on('click', function() {
+                activeSection = $(this).data('filter-section');
+
+                $('.filter-section-btn')
+                    .removeClass('bg-primary text-white')
+                    .addClass('text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700');
+                $(this)
+                    .addClass('bg-primary text-white')
+                    .removeClass('text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700');
+
+                applyFilters();
+            });
+
+            // ─── Auto-isi sanksi saat jenis pelanggaran dipilih ──────────────
+            $select.on('change', function() {
+                var sanction = $(this).find(':selected').data('sanction');
+                $('#sanction').val(sanction || '');
+            });
+
+            // Trigger jika ada nilai lama (validation error)
+            if ($select.val() && !$('#sanction').val()) {
+                $select.trigger('change');
+            }
+
+            // ─── Select2 untuk Santri ─────────────────────────────────────────
             $('#student_id').select2({
                 placeholder: '-- Pilih Santri --',
                 allowClear: true,
@@ -212,34 +351,12 @@
             });
 
             function formatStudent(student) {
-                if (!student.id) {
-                    return student.text;
-                }
-                
-                var $student = $(
-                    '<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + ($(student.element).data('info') || '') + '</span></span>'
-                );
-                return $student;
-            }
-
-            // Update Sanction when Violation Type is selected
-            $('#violation_type_id').on('change', function() {
-                var selectedOption = $(this).find(':selected');
-                var sanction = selectedOption.data('sanction');
-                
-                if (sanction) {
-                    $('#sanction').val(sanction);
-                } else {
-                    $('#sanction').val('');
-                }
-            });
-
-            // Trigger change if value exists (e.g. on validation error)
-            if ($('#violation_type_id').val() && !$('#sanction').val()) {
-                $('#violation_type_id').trigger('change');
+                if (!student.id) return student.text;
+                return $('<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + ($(student.element).data('info') || '') + '</span></span>');
             }
         });
     </script>
+
 
     <style>
         /* Base Container */

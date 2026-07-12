@@ -29,37 +29,37 @@
         </div>
 
         {{-- Stats Grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-blue-500/20">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl p-4 sm:p-6 border border-blue-500/20">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[#4c739a] text-sm font-medium">Total Pelanggaran</p>
-                        <p class="text-3xl font-bold text-[#0d141b] dark:text-white mt-1">{{ $stats['total'] }}</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-[#0d141b] dark:text-white mt-1">{{ $stats['total'] }}</p>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-500/20 text-blue-600">
-                        <span class="material-symbols-outlined text-[32px] fill-1">assignment_late</span>
+                    <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-blue-500/20 text-blue-600">
+                        <span class="material-symbols-outlined text-[28px] sm:text-[32px] fill-1">assignment_late</span>
                     </div>
                 </div>
             </div>
-            <div class="bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-xl p-6 border border-red-500/20">
+            <div class="bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-xl p-4 sm:p-6 border border-red-500/20">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[#4c739a] text-sm font-medium">Belum Selesai</p>
-                        <p class="text-3xl font-bold text-red-600 mt-1">{{ $stats['pending'] }}</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-red-600 mt-1">{{ $stats['pending'] }}</p>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-red-500/20 text-red-600">
-                        <span class="material-symbols-outlined text-[32px] fill-1">warning</span>
+                    <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-red-500/20 text-red-600">
+                        <span class="material-symbols-outlined text-[28px] sm:text-[32px] fill-1">warning</span>
                     </div>
                 </div>
             </div>
-            <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-6 border border-green-500/20">
+            <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl p-4 sm:p-6 border border-green-500/20">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[#4c739a] text-sm font-medium">Selesai</p>
-                        <p class="text-3xl font-bold text-green-600 mt-1">{{ $stats['completed'] }}</p>
+                        <p class="text-2xl sm:text-3xl font-bold text-green-600 mt-1">{{ $stats['completed'] }}</p>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20 text-green-600">
-                        <span class="material-symbols-outlined text-[32px] fill-1">check_circle</span>
+                    <div class="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-green-500/20 text-green-600">
+                        <span class="material-symbols-outlined text-[28px] sm:text-[32px] fill-1">check_circle</span>
                     </div>
                 </div>
             </div>
@@ -78,8 +78,8 @@
                         $colorIndex = crc32($violation->student->id) % count($colors);
                         $color = $colors[$colorIndex];
                     @endphp
-                    <div class="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                        <div class="flex items-start justify-between gap-4">
+                    <div class="p-4 sm:p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
                                     <div class="flex h-10 w-10 items-center justify-center">
@@ -105,7 +105,7 @@
                                     </div>
                                 </div>
 
-                                <div class="ml-13 space-y-2">
+                                <div class="ml-[52px] space-y-2">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span
                                             class="text-sm font-medium text-[#0d141b] dark:text-white">{{ $violation->violationType->name }}</span>
@@ -150,35 +150,33 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-col gap-2">
+                            <div class="flex flex-row sm:flex-col gap-1.5 flex-shrink-0">
                                 <a href="{{ route('admin.violations.show', $violation->id) }}"
-                                    class="px-4 py-2 text-sm text-primary hover:bg-primary/10 rounded transition-colors text-center">
+                                    class="px-3 py-1.5 text-xs sm:text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
                                     Detail
                                 </a>
 
                                 @if(Auth::user()->isAdmin() || (Auth::user()->isDepartmentOfficer() && $violation->violationType->department_id == Auth::user()->department_id))
-                                    @if(Route::has('violations.edit') && $violation->sanction_status !== 'completed')
-                                        <div class="flex gap-2">
-                                            <a href="{{ route('admin.violations.edit', $violation->id) }}"
-                                                class="w-full px-4 py-2 text-sm bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded transition-colors text-center">
-                                                Edit
-                                            </a>
-                                            <form action="{{ route('admin.violations.destroy', $violation->id) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus pelanggaran {{ $violation->student->name }}?')"
-                                                    class="w-full px-4 py-2 text-sm bg-red-500/10 text-red-600 hover:bg-red-500/20 rounded transition-colors">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
+                                    @if(Route::has('admin.violations.edit') && $violation->sanction_status !== 'completed')
+                                        <a href="{{ route('admin.violations.edit', $violation->id) }}"
+                                            class="px-3 py-1.5 text-xs sm:text-sm bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
+                                            Edit
+                                        </a>
+                                        <form action="{{ route('admin.violations.destroy', $violation->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button"
+                                                @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus pelanggaran {{ $violation->student->name }}?')"
+                                                class="w-full px-3 py-1.5 text-xs sm:text-sm bg-red-500/10 text-red-600 hover:bg-red-500/20 rounded-lg transition-colors font-medium">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     @endif
 
                                     @if($violation->sanction_status === 'pending')
                                         <button type="button"
                                             @click="verifyActionUrl = '{{ route('admin.violations.verify-sanction', $violation->id) }}'; showVerifyModal = true"
-                                            class="w-full px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                                            class="px-3 py-1.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium whitespace-nowrap">
                                             Verifikasi
                                         </button>
                                     @endif

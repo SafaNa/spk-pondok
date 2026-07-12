@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,79 +12,67 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
+        'username',
         'email',
+        'photo',
         'password',
-        'role',
+        'type',
         'department_id',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password'          => 'hashed',
+            'type'              => 'integer',
+        ];
+    }
 
     public function department()
     {
         return $this->belongsTo(Department::class);
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-    /**
-     * Check if user is an administrator.
-     */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->type === 0;
     }
 
-    /**
-     * Check if user is a licensing officer.
-     */
-    public function isLicensingOfficer(): bool
-    {
-        return $this->role === 'licensing_officer';
-    }
-
-    /**
-     * Check if user is a department officer.
-     */
     public function isDepartmentOfficer(): bool
     {
-        return $this->role === 'department_officer';
+        return $this->type === 1;
     }
 
-    // [HIDDEN] finance_officer & finance_secretary roles — hidden, not deleted
-    // public function isFinanceOfficer(): bool { return $this->role === 'finance_officer'; }
-    // public function isFinanceSecretary(): bool { return $this->role === 'finance_secretary'; }
+    public function isLicensingOfficer(): bool
+    {
+        return $this->type === 1 && $this->department?->acronym === 'PERIZINAN';
+    }
 
-    /**
-     * Check if user is a memorization department officer.
-     */
     public function isMemorizationOfficer(): bool
     {
-        return $this->role === 'department_officer' && $this->department?->acronym === 'PENGAJIAN';
+        return $this->type === 1 && $this->department?->acronym === 'KAMTIB';
+    }
+
+    public function isSecurityOfficer(): bool
+    {
+        return $this->type === 1 && $this->department?->acronym === 'KAMTIB';
+    }
+
+    public function canManageViolations(): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Departemen selain Perizinan bisa menginput pelanggaran
+        return $this->isDepartmentOfficer() && !in_array($this->department?->acronym, ['PERIZINAN']);
     }
 }

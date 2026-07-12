@@ -12,6 +12,9 @@ return new class extends Migration {
             $table->string('name');
             $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->bigInteger('spp_amount')->default(0);
+            $table->unsignedInteger('max_leaves')->nullable();
+            $table->date('stage1_deadline')->nullable()->comment('Batas Waktu Pembayaran Tahap 1');
+            $table->date('stage2_deadline')->nullable()->comment('Batas Waktu Pembayaran Tahap 2');
             $table->timestamps();
         });
     }

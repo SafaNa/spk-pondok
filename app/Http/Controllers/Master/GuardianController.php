@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Guardian;
 use App\Models\Master\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -14,7 +15,7 @@ class GuardianController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user()->isAdmin()) {
+            if (!Auth::user()?->isAdmin()) {
                 abort(403);
             }
             return $next($request);

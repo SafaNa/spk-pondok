@@ -12,6 +12,34 @@ class ViolationType extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * Sumber tata tertib:
+     *   'pesantren' = Tata Tertib Pondok Pesantren P2AL II
+     *   'madrasah'  = Tata Tertib Madrasah Diniah Annuqayah Latee II (MADAL)
+     */
+    const RULESET_PESANTREN = 'pesantren';
+    const RULESET_MADRASAH  = 'madrasah';
+
+    // -------------------------------------------------------------------------
+    // Scopes
+    // -------------------------------------------------------------------------
+
+    /** Hanya pelanggaran tata tertib Pondok Pesantren */
+    public function scopePesantren($query)
+    {
+        return $query->where('ruleset', self::RULESET_PESANTREN);
+    }
+
+    /** Hanya pelanggaran tata tertib Madrasah Diniah (MADAL) */
+    public function scopeMadrasah($query)
+    {
+        return $query->where('ruleset', self::RULESET_MADRASAH);
+    }
+
+    // -------------------------------------------------------------------------
+    // Relationships
+    // -------------------------------------------------------------------------
+
     public function department()
     {
         return $this->belongsTo(Department::class);

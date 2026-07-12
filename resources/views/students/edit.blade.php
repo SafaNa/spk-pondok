@@ -697,6 +697,117 @@
                     </div>
                 </div>
 
+                {{-- SECTION 6: Wali Santri --}}
+                @php $existingWali = $student->guardians->first(); @endphp
+                @if($existingWali)
+                    <input type="hidden" name="wali_id" value="{{ $existingWali->id }}">
+                @endif
+                <div class="space-y-6">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+                        <span class="material-symbols-outlined text-primary">family_restroom</span>
+                        Data Wali Santri
+                        <span class="ml-1 text-sm font-normal text-slate-400">(opsional — untuk akses portal wali)</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 -mt-2">Isi untuk memberikan akses portal wali. Kosongkan semua jika tidak diperlukan.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        {{-- Nama Wali --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Nama Wali</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">person</span>
+                                </div>
+                                <input type="text" name="wali_name" value="{{ old('wali_name', $existingWali?->name) }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="Nama lengkap wali">
+                            </div>
+                            @error('wali_name')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                        </div>
+
+                        {{-- Hubungan --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Hubungan dengan Santri</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">group</span>
+                                </div>
+                                <select name="wali_relationship" style="background-image: none;"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
+                                    @php $selRel = old('wali_relationship', $existingWali?->relationship ?? 'ayah'); @endphp
+                                    <option value="ayah"    {{ $selRel === 'ayah'    ? 'selected' : '' }}>Ayah</option>
+                                    <option value="ibu"     {{ $selRel === 'ibu'     ? 'selected' : '' }}>Ibu</option>
+                                    <option value="wali"    {{ $selRel === 'wali'    ? 'selected' : '' }}>Wali</option>
+                                    <option value="saudara" {{ $selRel === 'saudara' ? 'selected' : '' }}>Saudara</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Username --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Username <span class="font-normal text-slate-400">(untuk login portal)</span></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">account_circle</span>
+                                </div>
+                                <input type="text" name="wali_username" value="{{ old('wali_username', $existingWali?->username) }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="Username unik untuk login">
+                            </div>
+                            @error('wali_username')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                        </div>
+
+                        {{-- Password --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Password
+                                @if($existingWali)<span class="font-normal text-slate-400">(kosongkan jika tidak ingin mengubah)</span>@endif
+                            </label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">lock</span>
+                                </div>
+                                <input type="password" name="wali_password"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="{{ $existingWali ? '••••••••' : 'Min. 6 karakter' }}">
+                            </div>
+                            @error('wali_password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                        </div>
+
+                        {{-- No HP --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">No. HP / WhatsApp</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">phone</span>
+                                </div>
+                                <input type="text" name="wali_phone" value="{{ old('wali_phone', $existingWali?->phone) }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="08xxxxxxxxxx">
+                            </div>
+                        </div>
+
+                        {{-- Email --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Email <span class="font-normal text-slate-400">(opsional)</span></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">email</span>
+                                </div>
+                                <input type="email" name="wali_email" value="{{ old('wali_email', $existingWali?->email) }}"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                    placeholder="email@example.com">
+                            </div>
+                            @error('wali_email')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
+                        </div>
+
+                    </div>
+                </div>
+
                 {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4 mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
                     <a href="{{ route('admin.students.index') }}"
@@ -710,63 +821,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-
-        {{-- Wali Santri (Read-only) --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            <div class="bg-gradient-to-br from-amber-50 via-orange-50/50 to-yellow-50/30 px-6 py-5 sm:px-8 border-b border-amber-100">
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm border border-amber-200 text-amber-600">
-                            <span class="material-symbols-outlined text-[24px]">family_restroom</span>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Wali Santri</h2>
-                            <p class="text-sm text-slate-500">Wali yang terhubung ke santri ini.</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('admin.guardians.index') }}"
-                        class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-700 text-sm font-semibold transition-colors shrink-0">
-                        <span class="material-symbols-outlined text-[16px]">settings</span>
-                        Kelola Data Wali
-                    </a>
-                </div>
-            </div>
-
-            <div class="p-6 sm:p-8">
-                @if($student->guardians->isNotEmpty())
-                    <div class="flex flex-col gap-3">
-                        @foreach($student->guardians as $guardian)
-                            <div class="flex items-center gap-4 px-4 py-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-700 font-bold text-sm shrink-0">
-                                    {{ substr($guardian->name, 0, 1) }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-slate-800 dark:text-white">{{ $guardian->name }}</p>
-                                    <p class="text-xs text-slate-500">
-                                        &#64;{{ $guardian->username }} &middot;
-                                        {{ ['father'=>'Ayah','mother'=>'Ibu','guardian'=>'Wali','sibling'=>'Saudara'][$guardian->relationship] ?? ucfirst($guardian->relationship) }}
-                                        @if($guardian->phone) &middot; {{ $guardian->phone }} @endif
-                                    </p>
-                                </div>
-                                <a href="{{ route('admin.guardians.edit', $guardian) }}"
-                                    class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary border border-primary/20 hover:bg-primary/5 transition-colors shrink-0">
-                                    <span class="material-symbols-outlined text-[15px]">edit</span>
-                                    Edit
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="flex items-center gap-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                        <span class="material-symbols-outlined text-[18px]">info</span>
-                        <span>Belum ada wali terdaftar.
-                            <a href="{{ route('admin.guardians.create') }}" class="font-semibold underline hover:text-amber-900">Tambah wali</a>
-                            dan pilih santri ini sebagai anaknya.
-                        </span>
-                    </div>
-                @endif
-            </div>
         </div>
     </div>
 @endsection

@@ -1,3 +1,4 @@
+@use('Illuminate\Support\Facades\Storage')
 <!DOCTYPE html>
 <html class="light" lang="en">
 
@@ -336,7 +337,7 @@
                             </a>
                         @endif
 
-                        @if(Auth::user()->isAdmin() || Auth::user()->isLicensingOfficer() {{-- [HIDDEN] || Auth::user()->isFinanceSecretary() --}})
+                        @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.students.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.students.index') }}">
                                 <span
@@ -358,7 +359,7 @@
                     @if(Auth::user()->isAdmin())
 
                         <!-- Data Master Group -->
-                        <div x-data="{ open: {{ (request()->is('admin/academic-years*', 'admin/periods*', 'admin/education-levels*', 'admin/rayons*', 'admin/rooms*', 'admin/departments*', 'admin/memorization-types*')) ? 'true' : 'false' }} }"
+                        <div x-data="{ open: {{ (request()->is('admin/academic-years*', 'admin/periods*', 'admin/education-levels*', 'admin/rayons*', 'admin/rooms*', 'admin/departments*', 'admin/leave-categories*')) ? 'true' : 'false' }} }"
                             class="mb-2">
                             <button @click="open = !open"
                                 class="flex items-center justify-between w-full gap-3 px-3 py-2.5 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors group">
@@ -402,10 +403,11 @@
                                     <span class="material-symbols-outlined text-[20px]">meeting_room</span>
                                     <span class="text-sm font-medium">Kamar</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.memorization-types.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
-                                    href="{{ route('admin.memorization-types.index') }}">
-                                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
-                                    <span class="text-sm font-medium">Ketentuan Hafalan</span>
+
+                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.leave-categories.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                    href="{{ route('admin.leave-categories.index') }}">
+                                    <span class="material-symbols-outlined text-[20px]">category</span>
+                                    <span class="text-sm font-medium">Kategori Kepulangan</span>
                                 </a>
                             </div>
                         </div>
@@ -428,33 +430,41 @@
                     @endif
                     --}}
 
-                    @if(Auth::user()->isAdmin() || Auth::user()->isDepartmentOfficer())
-                        <div class="mb-2">
+                    {{-- Menu Pelanggaran (Khusus Admin & Departemen Tertentu) --}}
+                    @if(auth()->user()->canManageViolations())
+                        <div class="mb-4">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
                             </p>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.violations.index') }}">
-                                <span
-                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.violations.*') ? 'fill-1' : '' }}">gavel</span>
-                                <span class="text-sm font-medium">Catat Pelanggaran</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.violation-types.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.violation-types.index') }}">
-                                <span
-                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.violation-types.*') ? 'fill-1' : '' }}">category</span>
-                                <span class="text-sm font-medium">Jenis Pelanggaran</span>
-                            </a>
+                            <div class="space-y-1">
+                                <a href="{{ route('admin.violations.index') }}"
+                                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                                    <span class="material-symbols-outlined text-[20px]">gavel</span>
+                                    <span class="text-sm font-medium">Catat Pelanggaran</span>
+                                </a>
+
+                                <a href="{{ route('admin.violation-types.index') }}"
+                                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                                    <span class="material-symbols-outlined text-[20px]">list_alt</span>
+                                    <span class="text-sm font-medium">Jenis Pelanggaran</span>
+                                </a>
+                            </div>
                         </div>
                     @endif
 
                     @if(Auth::user()->isAdmin() || Auth::user()->isMemorizationOfficer())
                         <div class="mb-2">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hafalan</p>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.memorization-types.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors mb-1"
+                                href="{{ route('admin.memorization-types.index') }}">
+                                <span
+                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.memorization-types.*') ? 'fill-1' : '' }}">menu_book</span>
+                                <span class="text-sm font-medium">Ketentuan Hafalan</span>
+                            </a>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.memorization.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.memorization.index') }}">
                                 <span
                                     class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.memorization.*') ? 'fill-1' : '' }}">auto_stories</span>
-                                <span class="text-sm font-medium">Cek Hafalan Santri</span>
+                                <span class="text-sm font-medium">Hafalan Santri</span>
                             </a>
                         </div>
                     @endif
@@ -462,31 +472,14 @@
 
 
 
-                    {{-- Licensing Menu - Admin --}}
-                    @if(Auth::user()->isAdmin())
+                    {{-- Licensing Menu --}}
+                    @if(Auth::user()->isAdmin() || Auth::user()->isLicensingOfficer())
                         <div class="mb-2">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perizinan</p>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.licenses.index') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') ? 'fill-1' : '' }}">assignment_turned_in</span>
-                                <span class="text-sm font-medium">Validasi Pulang</span>
-                            </a>
-                        </div>
-                    @endif
-
-                    {{-- Licensing Menu - Petugas Perizinan --}}
-                    @if(Auth::user()->isLicensingOfficer())
-                        <div class="mb-2">
-                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perizinan</p>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.create') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.licenses.create') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.create') ? 'fill-1' : '' }}">edit_note</span>
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') ? 'fill-1' : '' }}">assignment</span>
                                 <span class="text-sm font-medium">Pengajuan Izin</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.index') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.licenses.index') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.index') ? 'fill-1' : '' }}">assignment_turned_in</span>
-                                <span class="text-sm font-medium">Validasi</span>
                             </a>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.laporan.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.laporan.index') }}">
@@ -505,23 +498,26 @@
 
             <!-- User Profile (MOBILE ONLY) -->
             <div class="p-4 border-t border-[#e7edf3] dark:border-slate-800 shrink-0 lg:hidden user-profile-mobile">
-                <div class="flex items-center gap-3 p-2 rounded-lg transition-colors">
-                    <div
-                        class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
-                        {{ substr(Auth::user()->name, 0, 1) }}
-                    </div>
+                <a href="{{ route('admin.profile.edit') }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    @if(Auth::user()->photo)
+                        <img src="{{ Storage::url(Auth::user()->photo) }}" alt="{{ Auth::user()->name }}"
+                            class="h-9 w-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                    @else
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm flex-shrink-0">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <div class="flex flex-col overflow-hidden">
-                        <p class="text-[#0d141b] dark:text-white text-sm font-medium truncate">{{ Auth::user()->name }}
-                        </p>
-                        <p class="text-[#4c739a] text-xs truncate">{{ Auth::user()->email }}</p>
+                        <p class="text-[#0d141b] dark:text-white text-sm font-medium truncate">{{ Auth::user()->name }}</p>
+                        <p class="text-[#4c739a] text-xs truncate">{{ Auth::user()->username }}</p>
                     </div>
-                </div>
+                </a>
                 <!-- Mobile Actions -->
                 <div class="mt-2 grid grid-cols-1 gap-1">
-                    <a href="{{ route('admin.password.change') }}"
+                    <a href="{{ route('admin.profile.edit') }}"
                         class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors text-sm font-medium">
-                        <span class="material-symbols-outlined text-[20px]">key</span>
-                        <span>Ganti Password</span>
+                        <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+                        <span>Profil Saya</span>
                     </a>
                     <form method="POST" action="{{ route('admin.logout') }}">
                         @csrf
@@ -564,6 +560,17 @@
                     <span class="text-[#0d141b] dark:text-white text-sm font-medium">@yield('breadcrumb', 'Page')</span>
                 </div>
                 <div class="flex flex-1 justify-end gap-3 items-center">
+                    {{-- Info Tahun Ajaran Aktif --}}
+                    @php
+                        $globalActiveYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+                    @endphp
+                    @if($globalActiveYear)
+                        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 rounded-full border border-primary/20 mr-2" title="Tahun Ajaran Aktif">
+                            <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            <span class="text-xs font-bold">{{ $globalActiveYear->name }}</span>
+                        </div>
+                    @endif
+
                     <button
                         class="hidden sm:flex items-center justify-center rounded-full size-10 hover:bg-[#e7edf3] dark:hover:bg-slate-800 text-[#4c739a]">
                         <span class="material-symbols-outlined">notifications</span>
@@ -574,12 +581,16 @@
                         x-data="{ open: false }">
                         <div class="text-right hidden xl:block">
                             <p class="text-sm font-bold text-[#0d141b] dark:text-white">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-[#4c739a]">{{ Auth::user()->email }}</p>
+                            <p class="text-xs text-[#4c739a]">{{ Auth::user()->username }}</p>
                         </div>
                         <div class="relative">
                             <button @click="open = !open" @click.away="open = false"
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm hover:ring-2 hover:ring-primary/20 transition-all">
-                                {{ substr(Auth::user()->name, 0, 1) }}
+                                class="flex h-10 w-10 items-center justify-center rounded-full overflow-hidden bg-primary/10 text-primary font-bold text-sm hover:ring-2 hover:ring-primary/20 transition-all">
+                                @if(Auth::user()->photo)
+                                    <img src="{{ Storage::url(Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                                @else
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                @endif
                             </button>
 
                             <!-- Dropdown Menu -->
@@ -592,10 +603,10 @@
                                 class="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-slate-900 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border border-[#e7edf3] dark:border-slate-800"
                                 style="display: none;">
                                 <div class="p-1">
-                                    <a href="{{ route('admin.password.change') }}"
+                                    <a href="{{ route('admin.profile.edit') }}"
                                         class="flex w-full items-center gap-2 px-4 py-2 text-sm text-[#0d141b] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                                        <span class="material-symbols-outlined text-[18px]">key</span>
-                                        Ganti Password
+                                        <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+                                        Profil Saya
                                     </a>
                                     <form method="POST" action="{{ route('admin.logout') }}">
                                         @csrf
@@ -613,8 +624,8 @@
             </header>
 
             <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto p-6 scroll-smooth">
-                <div class="max-w-[1200px] mx-auto flex flex-col gap-6">
+            <div class="flex-1 overflow-y-auto p-3 sm:p-6 scroll-smooth">
+                <div class="max-w-[1200px] mx-auto flex flex-col gap-4 sm:gap-6">
                     @yield('content')
                 </div>
             </div>

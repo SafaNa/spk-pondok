@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 
 // Master Data Controllers
-// Master Data Imports
-// Master Data Imports
 use App\Http\Controllers\Master\StudentController;
 use App\Http\Controllers\Master\AcademicYearController;
 use App\Http\Controllers\Master\PeriodController;
@@ -18,13 +19,30 @@ use App\Http\Controllers\Master\MemorizationTypeController;
 use App\Http\Controllers\Master\RegionController;
 use App\Http\Controllers\Master\GuardianController;
 
-// Assessment & Other Imports
+// Guardian Controllers
+use App\Http\Controllers\Guardian\AuthController as GuardianAuthController;
+use App\Http\Controllers\Guardian\DashboardController as GuardianDashboardController;
+use App\Http\Controllers\Guardian\LicenseController as GuardianLicenseController;
+use App\Http\Controllers\Guardian\ProfileController as GuardianProfileController;
 
+// Finance & Violation Controllers
+use App\Http\Controllers\Finance\SppPaymentController;
+use App\Http\Controllers\Violation\ViolationController;
+use App\Http\Controllers\Violation\ViolationTypeController;
+use App\Http\Controllers\Violation\ViolationCategoryController;
+
+// Licensing Controllers
+use App\Http\Controllers\Licensing\LicenseController;
+use App\Http\Controllers\Licensing\LaporanController;
+use App\Http\Controllers\Licensing\NotifikasiController;
+use App\Http\Controllers\Licensing\MemorizationController;
+use App\Http\Controllers\Licensing\LeaveCategoryController;
+use App\Models\Licensing\StudentMemorizationItem;
 
 // Landing page — pilih role (admin / wali santri)
 Route::get('/', function () {
-    if (auth()->check()) return redirect()->route('admin.dashboard');
-    if (auth()->guard('guardian')->check()) return redirect()->route('guardian.dashboard');
+    if (Auth::check()) return redirect()->route('admin.dashboard');
+    if (Auth::guard('guardian')->check()) return redirect()->route('guardian.dashboard');
     return view('landing');
 })->name('landing');
 
@@ -39,18 +57,18 @@ Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.log
 // Guardian Routes
 Route::prefix('guardian')->name('guardian.')->group(function () {
     Route::middleware('guest:guardian')->group(function () {
-        Route::get('/login', [\App\Http\Controllers\Guardian\AuthController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [\App\Http\Controllers\Guardian\AuthController::class, 'login'])->name('login.post');
+        Route::get('/login', [GuardianAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [GuardianAuthController::class, 'login'])->name('login.post');
     });
     Route::middleware('auth:guardian')->group(function () {
-        Route::post('/logout', [\App\Http\Controllers\Guardian\AuthController::class, 'logout'])->name('logout');
-        Route::get('/dashboard', [\App\Http\Controllers\Guardian\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/licenses', [\App\Http\Controllers\Guardian\LicenseController::class, 'index'])->name('licenses.index');
-        Route::get('/licenses/create', [\App\Http\Controllers\Guardian\LicenseController::class, 'create'])->name('licenses.create');
-        Route::post('/licenses', [\App\Http\Controllers\Guardian\LicenseController::class, 'store'])->name('licenses.store');
-        Route::get('/profile', [\App\Http\Controllers\Guardian\ProfileController::class, 'show'])->name('profile');
-        Route::put('/profile', [\App\Http\Controllers\Guardian\ProfileController::class, 'update'])->name('profile.update');
-        Route::put('/profile/password', [\App\Http\Controllers\Guardian\ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::post('/logout', [GuardianAuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [GuardianDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/licenses', [GuardianLicenseController::class, 'index'])->name('licenses.index');
+        Route::get('/licenses/create', [GuardianLicenseController::class, 'create'])->name('licenses.create');
+        Route::post('/licenses', [GuardianLicenseController::class, 'store'])->name('licenses.store');
+        Route::get('/profile', [GuardianProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [GuardianProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [GuardianProfileController::class, 'updatePassword'])->name('profile.password');
     });
 });
 
@@ -67,7 +85,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Master Data: Academic Years & Periods
     Route::post('/academic-years/{academic_year}/toggle-status', [AcademicYearController::class, 'toggleStatus'])->name('academic-years.toggle-status');
@@ -90,16 +114,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('guardians/search-students', [GuardianController::class, 'searchStudents'])->name('guardians.search-students');
     Route::resource('guardians', GuardianController::class);
 
-    // User Management (Licensing & Finance)
-    Route::resource('users', \App\Http\Controllers\UserController::class);
-    // Legacy mapping for views if they still point to 'santri' (Optional, but better to fix views)
-    // Route::resource('santri', StudentController::class);
-
-    // Assessments / Penilaian
-    // Route::resource('assessments', AssessmentController::class);
+    // User Management
+    Route::resource('users', UserController::class);
 
     // Finance / Keuangan
-    Route::resource('spp-payments', \App\Http\Controllers\Finance\SppPaymentController::class);
+    Route::resource('spp-payments', SppPaymentController::class);
 
     // Theme
     Route::get('/set-theme/{theme}', function ($theme) {
@@ -110,32 +129,37 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     })->name('theme.set');
 
     // Violation Routes
-    Route::get('/violations/history/{student}', [\App\Http\Controllers\Violation\ViolationController::class, 'history'])->name('violations.history');
-    Route::post('/violations/{id}/verify-sanction', [\App\Http\Controllers\Violation\ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
-    Route::resource('violations', \App\Http\Controllers\Violation\ViolationController::class);
+    Route::get('/violations/history/{student}', [ViolationController::class, 'history'])->name('violations.history');
+    Route::post('/violations/{id}/verify-sanction', [ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
+    Route::resource('violations', ViolationController::class);
 
-    Route::resource('violation-types', \App\Http\Controllers\Violation\ViolationTypeController::class);
-    Route::resource('violation-categories', \App\Http\Controllers\Violation\ViolationCategoryController::class);
+    Route::resource('violation-types', ViolationTypeController::class);
+    Route::resource('violation-categories', ViolationCategoryController::class);
 
     // Licensing Routes
-    Route::get('/licenses', [\App\Http\Controllers\Licensing\LicenseController::class, 'index'])->name('licenses.index');
+    Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
 
     // Individual License
-    Route::get('/licenses/create', [\App\Http\Controllers\Licensing\LicenseController::class, 'create'])->name('licenses.create');
-    Route::post('/licenses/store-individual', [\App\Http\Controllers\Licensing\LicenseController::class, 'storeIndividual'])->name('licenses.store-individual');
-    Route::get('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'show'])->name('licenses.show');
-    Route::get('/licenses/{license}/edit', [\App\Http\Controllers\Licensing\LicenseController::class, 'edit'])->name('licenses.edit');
-    Route::put('/licenses/{license}', [\App\Http\Controllers\Licensing\LicenseController::class, 'update'])->name('licenses.update');
-    Route::post('/licenses/{license}/approve', [\App\Http\Controllers\Licensing\LicenseController::class, 'approve'])->name('licenses.approve');
-    Route::post('/licenses/{license}/reject', [\App\Http\Controllers\Licensing\LicenseController::class, 'reject'])->name('licenses.reject');
+    Route::get('/licenses/create', [LicenseController::class, 'create'])->name('licenses.create');
+    Route::post('/licenses/store-individual', [LicenseController::class, 'storeIndividual'])->name('licenses.store-individual');
+    Route::get('/licenses/{license}', [LicenseController::class, 'show'])->name('licenses.show');
+    Route::get('/licenses/{license}/edit', [LicenseController::class, 'edit'])->name('licenses.edit');
+    Route::put('/licenses/{license}', [LicenseController::class, 'update'])->name('licenses.update');
+    Route::post('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');
+    Route::post('/licenses/{license}/force-approve', [LicenseController::class, 'forceApprove'])->name('licenses.force-approve');
+    Route::post('/licenses/{license}/reject', [LicenseController::class, 'reject'])->name('licenses.reject');
+    Route::delete('/licenses/{license}', [LicenseController::class, 'destroy'])->name('licenses.destroy');
 
+    // Leave Categories (Master Data)
+    Route::get('/leave-categories/{leaveCategory}/reasons', [LeaveCategoryController::class, 'reasons'])->name('leave-categories.reasons');
+    Route::resource('leave-categories', LeaveCategoryController::class);
 
     // Licensing Officer: Laporan & Notifikasi
-    Route::get('/laporan', [\App\Http\Controllers\Licensing\LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/notifikasi', [\App\Http\Controllers\Licensing\NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
 
     // Memorization Department Routes
-    Route::get('/memorization/licenses', [\App\Http\Controllers\Licensing\MemorizationController::class, 'index'])->name('memorization.index');
-    Route::post('/memorization/licenses/{license}/update-check', [\App\Http\Controllers\Licensing\MemorizationController::class, 'update'])->name('memorization.update');
+    Route::resource('memorization', MemorizationController::class);
+    Route::post('memorization-items/{item}/toggle', [MemorizationController::class, 'toggleItem'])->name('memorization-items.toggle');
 
 });

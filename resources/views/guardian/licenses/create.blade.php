@@ -76,6 +76,19 @@
                     @error('description')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
+                {{-- Kasus Darurat --}}
+                <div class="rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900 p-4">
+                    <label class="flex cursor-pointer items-start gap-3">
+                        <input type="checkbox" name="is_emergency" value="1" id="is_emergency"
+                            {{ old('is_emergency') ? 'checked' : '' }}
+                            class="mt-0.5 h-4 w-4 shrink-0 rounded border-red-300 text-red-600 focus:ring-red-500">
+                        <div>
+                            <span class="block text-sm font-bold text-red-900 dark:text-red-200">Tandai sebagai Kasus Darurat</span>
+                            <span class="block text-xs text-red-700 dark:text-red-400 mt-0.5">Centang jika izin ini bersifat mendesak (sakit keras, musibah keluarga, dll). Pengajuan darurat akan mendapat prioritas validasi.</span>
+                        </div>
+                    </label>
+                </div>
+
                 <div class="flex gap-3 pt-2">
                     <a href="{{ route('guardian.dashboard') }}"
                         class="flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 text-sm font-semibold text-center hover:bg-slate-50 transition-all">
