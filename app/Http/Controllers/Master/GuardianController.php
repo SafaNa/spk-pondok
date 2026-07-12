@@ -113,8 +113,9 @@ class GuardianController extends Controller
         $q = $request->input('q', '');
         $students = Student::with('room')
             ->where(function ($query) use ($q) {
-                $query->where('name', 'like', '%' . $q . '%')
-                      ->orWhere('nis', 'like', '%' . $q . '%');
+                $qLower = strtolower($q);
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . $qLower . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?', ['%' . $qLower . '%']);
             })
             ->orderBy('name')
             ->limit(30)
