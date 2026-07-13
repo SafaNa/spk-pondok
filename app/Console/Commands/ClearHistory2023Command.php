@@ -28,7 +28,14 @@ class ClearHistory2023Command extends Command
     public function handle()
     {
         $this->info("Starting cleanup of 2023/2024 historical dummy data...");
-        $academicYearId2023 = '019f5564-f146-723b-be17-63ffb2cb2b35';
+        $academicYear2023 = \App\Models\Master\AcademicYear::where('name', '2023/2024')->first();
+        
+        if (!$academicYear2023) {
+            $this->warn("Academic year 2023/2024 not found. Nothing to clear.");
+            return;
+        }
+
+        $academicYearId2023 = $academicYear2023->id;
 
         // 1. Delete Licenses
         $deletedLicenses = DB::table('student_licenses')
