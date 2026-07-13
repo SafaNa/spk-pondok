@@ -75,8 +75,48 @@
                         </div>
                     </div>
 
-                    {{-- SECTION 2: Detail Waktu --}}
+                    {{-- SECTION 2: Detail Izin & Waktu --}}
                     <div class="space-y-6">
+                        {{-- Kategori Kepulangan --}}
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Filter Kategori
+                            </label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">category</span>
+                                </div>
+                                <select id="leaveCategorySelect" style="background-image: none;"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('leave_category_id') == $cat->id ? 'selected' : '' }}>
+                                            {{ $cat->name }}
+                                            @if($cat->is_fixed_duration && $cat->duration_days)
+                                                (maks. {{ $cat->duration_days }} hari)
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Rincian Alasan (diisi via AJAX) --}}
+                        <div id="leaveReasonWrapper" class="space-y-2 hidden">
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                Rincian Alasan <span class="text-slate-400 font-normal text-xs">(opsional)</span>
+                            </label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">list</span>
+                                </div>
+                                <select name="leave_reason_id" id="leaveReasonSelect" style="background-image: none;"
+                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
+                                    <option value="">-- Pilih Rincian --</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {{-- Tanggal Mulai --}}
                             <div class="space-y-2">
@@ -117,49 +157,6 @@
                                     <h4 class="font-bold text-blue-900 dark:text-blue-100">Estimasi Durasi & Target</h4>
                                     <p id="targetToken" class="text-sm text-blue-700 dark:text-blue-300 mt-1"></p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- SECTION 3: Detail Izin --}}
-                    <div class="space-y-6">
-                        {{-- Kategori Kepulangan --}}
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Filter Kategori
-                            </label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-symbols-outlined">category</span>
-                                </div>
-                                <select id="leaveCategorySelect" style="background-image: none;"
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}" {{ old('leave_category_id') == $cat->id ? 'selected' : '' }}>
-                                            {{ $cat->name }}
-                                            @if($cat->is_fixed_duration && $cat->duration_days)
-                                                (maks. {{ $cat->duration_days }} hari)
-                                            @endif
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- Rincian Alasan (diisi via AJAX) --}}
-                        <div id="leaveReasonWrapper" class="space-y-2 hidden">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                Rincian Alasan <span class="text-slate-400 font-normal text-xs">(opsional)</span>
-                            </label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-symbols-outlined">list</span>
-                                </div>
-                                <select name="leave_reason_id" id="leaveReasonSelect" style="background-image: none;"
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
-                                    <option value="">-- Pilih Rincian --</option>
-                                </select>
                             </div>
                         </div>
 
@@ -247,16 +244,75 @@
             });
         }
 
+        var categoriesData = @json($categories->keyBy('id')->map(function($c) {
+            return [
+                'is_fixed_duration' => $c->is_fixed_duration,
+                'duration_days' => $c->duration_days
+            ];
+        }));
+
+        function applyDateLogic() {
+            var catId = document.getElementById('leaveCategorySelect').value;
+            var startDateInput = document.getElementById('start_date');
+            var endDateInput = document.getElementById('end_date');
+            
+            if (!catId) {
+                // Default to editable if no category
+                startDateInput.readOnly = false;
+                startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                endDateInput.readOnly = false;
+                endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                return;
+            }
+            
+            var cat = categoriesData[catId];
+            if (!cat) return;
+            
+            if (cat.is_fixed_duration) {
+                startDateInput.readOnly = true;
+                startDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                
+                // Reset start date to today when locked
+                var today = new Date();
+                var ty = today.getFullYear();
+                var tm = String(today.getMonth() + 1).padStart(2, '0');
+                var td = String(today.getDate()).padStart(2, '0');
+                startDateInput.value = ty + '-' + tm + '-' + td;
+                
+                var duration = cat.duration_days ? cat.duration_days : 1;
+                var startDate = new Date(startDateInput.value);
+                startDate.setDate(startDate.getDate() + (duration - 1));
+                
+                var y = startDate.getFullYear();
+                var m = String(startDate.getMonth() + 1).padStart(2, '0');
+                var d = String(startDate.getDate()).padStart(2, '0');
+                
+                endDateInput.value = y + '-' + m + '-' + d;
+                endDateInput.readOnly = true;
+                endDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+            } else {
+                startDateInput.readOnly = false;
+                startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                endDateInput.readOnly = false;
+                endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+            }
+            calculateDuration();
+        }
+
+        document.getElementById('start_date').addEventListener('change', applyDateLogic);
+
         $(document).ready(function() {
             // Load reasons on category change
             $('#leaveCategorySelect').on('change', function() {
                 loadReasons($(this).val());
+                applyDateLogic();
             });
 
             // Restore old() state on validation error
             var initialCategory = $('#leaveCategorySelect').val();
             if (initialCategory) {
                 loadReasons(initialCategory);
+                applyDateLogic();
             }
 
             // Initialize Select2
@@ -279,7 +335,9 @@
             }
 
             // Initial calculation
-            calculateDuration();
+            if (!initialCategory) {
+                calculateDuration();
+            }
         });
 
         // Duration Calculation Logic

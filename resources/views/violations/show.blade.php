@@ -162,6 +162,25 @@
                                 {{ $statusLabel }}
                             </span>
                         </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Alamat Lengkap</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm">
+                                {{ $violation->student->address ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Orang Tua</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm">
+                                Ayah: {{ $violation->student->father_name ?? '-' }}<br>
+                                Ibu: {{ $violation->student->mother_name ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-[#4c739a] mb-1">Wali</p>
+                            <p class="font-medium text-[#0d141b] dark:text-white text-sm">
+                                {{ $violation->student->guardians->pluck('name')->implode(', ') ?: '-' }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

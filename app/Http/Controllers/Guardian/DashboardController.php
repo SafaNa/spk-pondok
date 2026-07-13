@@ -16,13 +16,17 @@ class DashboardController extends Controller
         $students   = $guardian->students()->with(['rayon', 'room', 'formalEducation', 'religiousEducation'])->get();
         $studentIds = $students->pluck('id');
 
-        $totalLicenses  = StudentLicense::whereIn('student_id', $studentIds)->count();
-        $approvedCount  = StudentLicense::whereIn('student_id', $studentIds)->where('status', 'approved')->count();
-        $pendingCount   = StudentLicense::whereIn('student_id', $studentIds)->where('status', 'pending')->count();
-        $rejectedCount  = StudentLicense::whereIn('student_id', $studentIds)->where('status', 'rejected')->count();
+        $activeYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+        $activeYearId = $activeYear ? $activeYear->id : null;
+
+        $totalLicenses  = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->count();
+        $approvedCount  = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->where('status', 'approved')->count();
+        $pendingCount   = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->where('status', 'pending')->count();
+        $rejectedCount  = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->where('status', 'rejected')->count();
 
         $recentLicenses = StudentLicense::with('student')
             ->whereIn('student_id', $studentIds)
+            ->where('academic_year_id', $activeYearId)
             ->latest()
             ->limit(5)
             ->get();

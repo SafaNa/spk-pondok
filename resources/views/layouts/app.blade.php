@@ -171,11 +171,17 @@
             Alpine.store('deleteModal', {
                 show: false,
                 message: '',
+                title: 'Konfirmasi Hapus',
+                confirmText: 'Hapus',
+                confirmClass: 'bg-red-600 hover:bg-red-700',
                 form: null,
 
-                open(form, message = 'Apakah Anda yakin ingin menghapus data ini?') {
+                open(form, message = 'Apakah Anda yakin ingin menghapus data ini?', title = 'Konfirmasi Hapus', confirmText = 'Hapus', confirmClass = 'bg-red-600 hover:bg-red-700') {
                     this.form = form;
                     this.message = message;
+                    this.title = title;
+                    this.confirmText = confirmText;
+                    this.confirmClass = confirmClass;
                     this.show = true;
                 },
 
@@ -477,14 +483,19 @@
                     @if(Auth::user()->isAdmin() || Auth::user()->isLicensingOfficer())
                         <div class="mb-2">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perizinan</p>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.*') && !request()->routeIs('admin.licenses.reports*') && !request()->routeIs('admin.licenses.active*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.licenses.index') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') ? 'fill-1' : '' }}">assignment</span>
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') && !request()->routeIs('admin.licenses.reports*') && !request()->routeIs('admin.licenses.active*') ? 'fill-1' : '' }}">assignment</span>
                                 <span class="text-sm font-medium">Pengajuan Izin</span>
                             </a>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.laporan.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.laporan.index') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.laporan.*') ? 'fill-1' : '' }}">summarize</span>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.active*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('admin.licenses.active') }}">
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.active*') ? 'fill-1' : '' }}">directions_run</span>
+                                <span class="text-sm font-medium">Santri Izin (Aktif)</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.reports*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('admin.licenses.reports') }}">
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.reports*') ? 'fill-1' : '' }}">summarize</span>
                                 <span class="text-sm font-medium">Laporan</span>
                             </a>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.notifikasi.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
@@ -684,8 +695,8 @@
                 </div>
 
                 {{-- Title --}}
-                <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2">
-                    Konfirmasi Hapus
+                <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
+                    x-text="$store.deleteModal.title">
                 </h3>
 
                 {{-- Message --}}
@@ -699,8 +710,9 @@
                         Batal
                     </button>
                     <button @click="$store.deleteModal.confirm()" type="button"
-                        class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all">
-                        Hapus
+                        class="flex-1 px-4 py-2.5 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+                        :class="$store.deleteModal.confirmClass"
+                        x-text="$store.deleteModal.confirmText">
                     </button>
                 </div>
             </div>
@@ -851,12 +863,8 @@
                 </div>
             </div>
         @endif
-</body>
 
-</html>
-
-<script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</body>
-
+        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    </body>
 </html>

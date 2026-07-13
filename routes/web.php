@@ -66,6 +66,7 @@ Route::prefix('guardian')->name('guardian.')->group(function () {
         Route::get('/licenses', [GuardianLicenseController::class, 'index'])->name('licenses.index');
         Route::get('/licenses/create', [GuardianLicenseController::class, 'create'])->name('licenses.create');
         Route::post('/licenses', [GuardianLicenseController::class, 'store'])->name('licenses.store');
+        Route::get('/leave-categories/{leaveCategory}/reasons', [GuardianLicenseController::class, 'categoryReasons'])->name('leave-categories.reasons');
         Route::get('/profile', [GuardianProfileController::class, 'show'])->name('profile');
         Route::put('/profile', [GuardianProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [GuardianProfileController::class, 'updatePassword'])->name('profile.password');
@@ -138,6 +139,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('violation-categories', ViolationCategoryController::class);
 
     // Licensing Routes
+    Route::get('/licenses/reports', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'index'])->name('licenses.reports');
+    Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
+    Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
 
     // Individual License
@@ -149,6 +153,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');
     Route::post('/licenses/{license}/force-approve', [LicenseController::class, 'forceApprove'])->name('licenses.force-approve');
     Route::post('/licenses/{license}/reject', [LicenseController::class, 'reject'])->name('licenses.reject');
+    Route::post('/licenses/{license}/return', [LicenseController::class, 'recordReturn'])->name('licenses.return');
     Route::delete('/licenses/{license}', [LicenseController::class, 'destroy'])->name('licenses.destroy');
 
     // Leave Categories (Master Data)

@@ -85,12 +85,16 @@ class LicenseController extends Controller
             'academic_year_id'  => $activeYear->id,
             'leave_category_id' => $leaveCategoryId,
             'leave_reason_id'   => $validated['leave_reason_id'] ?? null,
+            'submitted_at'      => now(),
             'type' => 'individual',
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'status' => 'pending',
             'is_emergency' => $request->has('is_emergency'),
             'description' => $validated['description'] ?? null,
+            'source' => 'admin',
+            'creator_id' => auth()->id(),
+            'creator_type' => \App\Models\User::class,
         ]);
 
         // WhatsApp Notification Link
@@ -222,9 +226,19 @@ class LicenseController extends Controller
         return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil diperbarui.');
     }
 
+    private function waUrl(StudentLicense $license, string $message): ?string
+    {
+        $student = $license->student;
+        $phone   = $student->guardians()->whereNotNull('phone')->value('phone')
+                ?? $student->phone
+                ?? null;
+        if (!$phone) return null;
+        return (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+    }
+
     public function approve(Request $request, StudentLicense $license)
     {
-        $data = ['status' => 'approved'];
+        $data = ['status' => 'approved', 'approved_at' => now()];
         if ($request->has('override_validation') && $request->override_validation == '1') {
             $data['is_emergency'] = true;
             $data['notes'] = 'Diloloskan paksa: ' . $request->override_reason;
@@ -240,36 +254,128 @@ class LicenseController extends Controller
         if ($memorization) {
             $memorization->update(['is_used' => true]);
         }
-        
-        return back()->with('success', 'Izin berhasil disetujui.');
+
+        $license->load('student.guardians');
+        $start = $license->start_date->format('d-m-Y');
+        $end   = $license->end_date->format('d-m-Y');
+        $waUrl = $this->waUrl($license,
+            "IZIN PULANG DISETUJUI\n" .
+            "Ananda {$license->student->name} telah mendapat izin pulang.\n" .
+            "Tanggal: {$start} s.d {$end}.\n" .
+            "Harap jaga dan awasi kepulangan ananda. Terima kasih."
+        );
+
+        return back()->with('success', 'Izin berhasil disetujui.')->with('wa_url', $waUrl);
     }
 
     public function forceApprove(StudentLicense $license)
     {
-        $license->update(['status' => 'approved', 'is_emergency' => true]);
-        
+        $license->update(['status' => 'approved', 'is_emergency' => true, 'approved_at' => now()]);
+
         $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
             ->where('academic_year_id', $license->academic_year_id)
             ->where('status', 'completed')
             ->where('is_used', false)
             ->first();
-            
+
         if ($memorization) {
             $memorization->update(['is_used' => true]);
         }
-        
-        return back()->with('success', 'Izin disetujui sebagai kasus darurat.');
+
+        $license->load('student.guardians');
+        $start = $license->start_date->format('d-m-Y');
+        $end   = $license->end_date->format('d-m-Y');
+        $waUrl = $this->waUrl($license,
+            "IZIN PULANG DISETUJUI (DARURAT)\n" .
+            "Ananda {$license->student->name} mendapat izin pulang atas pertimbangan darurat.\n" .
+            "Tanggal: {$start} s.d {$end}.\n" .
+            "Harap jaga dan awasi kepulangan ananda. Terima kasih."
+        );
+
+        return back()->with('success', 'Izin disetujui sebagai kasus darurat.')->with('wa_url', $waUrl);
     }
 
     public function reject(StudentLicense $license)
     {
-        $license->update(['status' => 'rejected']);
-        return back()->with('success', 'Izin berhasil ditolak.');
+        $license->update(['status' => 'rejected', 'rejected_at' => now()]);
+
+        $license->load('student.guardians');
+        $waUrl = $this->waUrl($license,
+            "IZIN PULANG DITOLAK\n" .
+            "Pengajuan izin pulang Ananda {$license->student->name} tidak dapat disetujui saat ini.\n" .
+            "Silakan hubungi pihak pesantren untuk informasi lebih lanjut. Terima kasih."
+        );
+
+        return back()->with('success', 'Izin berhasil ditolak.')->with('wa_url', $waUrl);
     }
 
     public function destroy(StudentLicense $license)
     {
         $license->delete();
         return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil dihapus.');
+    }
+
+    public function recordReturn(Request $request, StudentLicense $license)
+    {
+        $request->validate([
+            'actual_return_date' => 'required|date',
+            'return_notes'       => 'nullable|string',
+        ]);
+
+        $license->update([
+            'actual_return_date' => $request->actual_return_date,
+            'return_notes'       => $request->return_notes,
+        ]);
+
+        $status = $license->is_late
+            ? 'Terlambat ' . $license->late_days . ' hari'
+            : 'Tepat waktu';
+
+        $license->load('student.guardians');
+        $returnDate = \Carbon\Carbon::parse($request->actual_return_date)->format('d-m-Y');
+        $waUrl = $this->waUrl($license,
+            "SANTRI KEMBALI KE PESANTREN\n" .
+            "Ananda {$license->student->name} telah kembali ke pesantren.\n" .
+            "Tanggal kembali: {$returnDate}. Status: {$status}.\n" .
+            "Terima kasih atas kerjasamanya."
+        );
+
+        return back()
+            ->with('success', "Kepulangan santri berhasil dicatat. Status: {$status}.")
+            ->with('wa_url', $waUrl);
+    }
+
+    public function active(Request $request)
+    {
+        $search = $request->input('search');
+        
+        $query = StudentLicense::with(['student.rayon', 'student.room', 'leaveCategory'])
+            ->where('status', 'approved')
+            ->whereNull('actual_return_date');
+            
+        if ($search) {
+            $query->whereHas('student', function($q) use ($search) {
+                $q->whereRaw('LOWER(name) like ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(nis) like ?', ['%' . strtolower($search) . '%']);
+            });
+        }
+        
+        $licenses = $query->orderBy('start_date', 'desc')->paginate(15);
+        
+        return view('licensing.active', compact('licenses', 'search'));
+    }
+
+    public function activeShow(StudentLicense $license)
+    {
+        $license->load([
+            'student.rayon',
+            'student.room',
+            'student.guardians',
+            'leaveCategory',
+            'leaveReason',
+            'academicYear',
+        ]);
+
+        return view('licensing.active-show', compact('license'));
     }
 }

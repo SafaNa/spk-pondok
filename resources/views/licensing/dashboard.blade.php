@@ -217,5 +217,152 @@
         </div>
 
     </div>
+    </div>
+
+    {{-- Chart Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-6">
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Izin</h3>
+            <div id="chartTopLicenses" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Melanggar</h3>
+            <div id="chartTopStudentViolations" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pengajuan Izin (Tahun Ajaran Aktif)</h3>
+            <div id="chartLicenseTrend" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pelanggaran (Tahun Ajaran Aktif)</h3>
+            <div id="chartViolationTrend" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Kategori Pelanggaran</h3>
+            <div id="chartViolationCat" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 5 Rayon Pelanggaran Terbanyak</h3>
+            <div id="chartTopRayons" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5 lg:col-span-2">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Sebaran Santri per Rayon</h3>
+            <div id="chartDemographics" class="min-h-[300px]"></div>
+        </div>
+    </div>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chartData = @json($chartData ?? []);
+        if (Object.keys(chartData).length === 0) return;
+        
+        // Common Options
+        const commonOptions = {
+            chart: {
+                toolbar: { show: false },
+                fontFamily: 'Inter, sans-serif'
+            },
+            colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#64748b'],
+            dataLabels: { enabled: false },
+            tooltip: { theme: 'light' }
+        };
+
+
+
+        // 2. Tren Pengajuan Izin (Area)
+        if (document.querySelector("#chartLicenseTrend")) {
+            new ApexCharts(document.querySelector("#chartLicenseTrend"), {
+                ...commonOptions,
+                chart: { type: 'area', height: 320 },
+                series: [{ name: 'Jumlah Izin', data: chartData.licenseTrend.series }],
+                xaxis: { categories: chartData.licenseTrend.labels },
+                stroke: { curve: 'smooth', width: 3 },
+                colors: ['#0ea5e9'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] } }
+            }).render();
+        }
+
+        // 3. Top Santri Izin (Bar)
+        if (document.querySelector("#chartTopLicenses")) {
+            new ApexCharts(document.querySelector("#chartTopLicenses"), {
+                ...commonOptions,
+                chart: { type: 'bar', height: 320 },
+                series: [{ name: 'Total Izin', data: chartData.topStudentLicenses.series }],
+                xaxis: { categories: chartData.topStudentLicenses.labels },
+                colors: ['#0ea5e9'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true } }
+            }).render();
+        }
+        
+        // Top Santri Melanggar (Bar)
+        if (document.querySelector("#chartTopStudentViolations")) {
+            new ApexCharts(document.querySelector("#chartTopStudentViolations"), {
+                ...commonOptions,
+                chart: { type: 'bar', height: 320 },
+                series: [{ name: 'Total Pelanggaran', data: chartData.topStudentViolations.series }],
+                xaxis: { categories: chartData.topStudentViolations.labels },
+                colors: ['#ef4444'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true } }
+            }).render();
+        }
+
+        // 4. Kategori Pelanggaran (Doughnut)
+        if (document.querySelector("#chartViolationCat")) {
+            new ApexCharts(document.querySelector("#chartViolationCat"), {
+                ...commonOptions,
+                chart: { type: 'donut', height: 320 },
+                series: chartData.violationCat.series,
+                labels: chartData.violationCat.labels,
+                colors: ['#3b82f6', '#f59e0b', '#ef4444'],
+            }).render();
+        }
+
+        // 5. Tren Pelanggaran (Area)
+        if (document.querySelector("#chartViolationTrend")) {
+            new ApexCharts(document.querySelector("#chartViolationTrend"), {
+                ...commonOptions,
+                chart: { type: 'area', height: 320 },
+                series: [{ name: 'Pelanggaran', data: chartData.violationTrend.series }],
+                xaxis: { categories: chartData.violationTrend.labels },
+                stroke: { curve: 'smooth', width: 3 },
+                colors: ['#ef4444'],
+                fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] } }
+            }).render();
+        }
+
+        // 6. Top 5 Rayon Pelanggaran (Horizontal Bar)
+        if (document.querySelector("#chartTopRayons")) {
+            new ApexCharts(document.querySelector("#chartTopRayons"), {
+                ...commonOptions,
+                chart: { type: 'bar', height: 320 },
+                series: [{ name: 'Pelanggaran', data: chartData.topRayons.series }],
+                xaxis: { categories: chartData.topRayons.labels },
+                colors: ['#f43f5e'],
+                plotOptions: { bar: { borderRadius: 4, horizontal: true } }
+            }).render();
+        }
+
+
+
+        // 8. Sebaran Santri per Rayon (Bar)
+        if (document.querySelector("#chartDemographics")) {
+            new ApexCharts(document.querySelector("#chartDemographics"), {
+                ...commonOptions,
+                chart: { type: 'bar', height: 320 },
+                series: [{ name: 'Santri Aktif', data: chartData.demographics.series }],
+                xaxis: { categories: chartData.demographics.labels },
+                colors: ['#0ea5e9'],
+                plotOptions: { bar: { borderRadius: 4, columnWidth: '50%' } }
+            }).render();
+        }
+    });
+</script>
+@endpush

@@ -238,6 +238,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        {{-- Wali --}}
+                        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Data Wali</p>
+                            @forelse($student->guardians as $guardian)
+                                <div class="space-y-1 mb-2">
+                                    <div class="text-slate-500 text-xs font-semibold">Nama Wali</div>
+                                    <div class="text-slate-900 dark:text-white font-medium text-sm">{{ $guardian->name }} ({{ $guardian->phone }})</div>
+                                </div>
+                            @empty
+                                <div class="text-slate-500 text-xs italic">Belum ada data wali</div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
 
                 <hr class="border-slate-100 dark:border-slate-800">

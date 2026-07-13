@@ -135,15 +135,20 @@ class ViolationController extends Controller
         // WhatsApp Notification Link
         $waRedirectUrl = null;
         try {
-            $student = Student::find($validated['student_id']);
-            if ($student && $student->notification_phone) {
-                $service = new \App\Services\WhatsAppService();
-                $message = "PEMBERITAHUAN PELANGGARAN: \n" .
-                    "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}. \n" .
-                    "Sanksi: {$violationType->default_sanction}. \n" .
-                    "Tanggal: " . \Carbon\Carbon::parse($validated['date'])->format('d-m-Y') . ". \n" .
-                    "Mohon kerjasamanya dari Bapak/Ibu. Terima kasih.";
-                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+            $student = Student::with('guardians')->find($validated['student_id']);
+            if ($student) {
+                $phone = $student->guardians->whereNotNull('phone')->first()?->phone
+                      ?? $student->phone
+                      ?? null;
+                if ($phone) {
+                    $tanggal = \Carbon\Carbon::parse($validated['date'])->format('d-m-Y');
+                    $message = "PEMBERITAHUAN PELANGGARAN\n" .
+                        "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}.\n" .
+                        "Sanksi: {$violationType->default_sanction}.\n" .
+                        "Tanggal: {$tanggal}.\n" .
+                        "Mohon kerjasamanya. Terima kasih.";
+                    $waRedirectUrl = (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+                }
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link Violation: " . $e->getMessage());

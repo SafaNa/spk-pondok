@@ -243,13 +243,18 @@
                                         class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
-                                    <form action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan izin ini?');">
+                                    <form id="form-delete-license-{{ $license->id }}" action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors" title="Hapus">
-                                            <span class="material-symbols-outlined text-[20px]">delete</span>
-                                        </button>
                                     </form>
+                                    <button type="button" title="Hapus"
+                                        @click="$store.deleteModal.open(
+                                            document.getElementById('form-delete-license-{{ $license->id }}'),
+                                            'Yakin ingin menghapus pengajuan izin {{ addslashes($license->student->name ?? '') }}?'
+                                        )"
+                                        class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
