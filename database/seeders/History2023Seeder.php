@@ -18,7 +18,7 @@ class History2023Seeder extends Seeder
 
         $academicYear2023 = \App\Models\Master\AcademicYear::firstOrCreate(
             ['name' => '2023/2024'],
-            ['id' => (string) Str::uuid(), 'start_date' => '2023-07-01', 'end_date' => '2024-06-30', 'status' => 'inactive']
+            ['id' => (string) Str::uuid(), 'status' => 'inactive']
         );
         $academicYearId2023 = $academicYear2023->id;
 

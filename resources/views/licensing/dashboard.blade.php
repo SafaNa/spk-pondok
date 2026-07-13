@@ -7,11 +7,22 @@
 @section('content')
 
     {{-- Page Header --}}
-    <div class="rounded-2xl p-5 sm:p-6 mb-3" style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 60%, #ede9fe 100%); border: 1px solid #bfdbfe;">
-        <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus Perizinan</h1>
-        <p class="text-[#3b5f8a] text-sm font-normal max-w-2xl">
-            Kelola seluruh sistem validasi izin dan kepulangan santri secara terpusat, monitor proses persetujuan lintas departemen, serta atur hak akses pengguna.
-        </p>
+    <div class="rounded-2xl p-5 sm:p-6 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 60%, #ede9fe 100%); border: 1px solid #bfdbfe;">
+        <div>
+            <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus Perizinan</h1>
+            <p class="text-[#3b5f8a] text-sm font-normal max-w-2xl">
+                Kelola seluruh sistem validasi izin dan kepulangan santri secara terpusat, monitor proses persetujuan lintas departemen, serta atur hak akses pengguna.
+            </p>
+        </div>
+        <form method="GET" action="{{ route('admin.dashboard') }}" class="shrink-0">
+            <select name="academic_year_id" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2 text-sm font-semibold text-[#0d141b] bg-white border border-[#bfdbfe] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm">
+                @foreach($allAcademicYears as $year)
+                    <option value="{{ $year->id }}" {{ $activeYear->id === $year->id ? 'selected' : '' }}>
+                        Tahun Ajaran {{ $year->name }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
     </div>
 
     {{-- KPI Cards --}}
@@ -89,6 +100,42 @@
             </div>
         </div>
 
+    </div>
+
+    {{-- Chart Section --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-6">
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Izin</h3>
+            <div id="chartTopLicenses" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Melanggar</h3>
+            <div id="chartTopStudentViolations" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pengajuan Izin ({{ $activeYear->name }})</h3>
+            <div id="chartLicenseTrend" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pelanggaran ({{ $activeYear->name }})</h3>
+            <div id="chartViolationTrend" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Kategori Pelanggaran</h3>
+            <div id="chartViolationCat" class="min-h-[300px]"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 5 Rayon Pelanggaran Terbanyak</h3>
+            <div id="chartTopRayons" class="min-h-[300px]"></div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5 lg:col-span-2">
+            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Sebaran Santri per Rayon</h3>
+            <div id="chartDemographics" class="min-h-[300px]"></div>
+        </div>
     </div>
 
     {{-- Bottom Section --}}
@@ -216,44 +263,7 @@
             @endif
         </div>
 
-    </div>
-    </div>
 
-    {{-- Chart Section --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-6">
-
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Izin</h3>
-            <div id="chartTopLicenses" class="min-h-[300px]"></div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Melanggar</h3>
-            <div id="chartTopStudentViolations" class="min-h-[300px]"></div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pengajuan Izin (Tahun Ajaran Aktif)</h3>
-            <div id="chartLicenseTrend" class="min-h-[300px]"></div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Tren Pelanggaran (Tahun Ajaran Aktif)</h3>
-            <div id="chartViolationTrend" class="min-h-[300px]"></div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Kategori Pelanggaran</h3>
-            <div id="chartViolationCat" class="min-h-[300px]"></div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 5 Rayon Pelanggaran Terbanyak</h3>
-            <div id="chartTopRayons" class="min-h-[300px]"></div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5 lg:col-span-2">
-            <h3 class="text-sm font-bold text-[#0d141b] mb-4">Sebaran Santri per Rayon</h3>
-            <div id="chartDemographics" class="min-h-[300px]"></div>
-        </div>
-    </div>
 
 @endsection
 

@@ -8,18 +8,30 @@ use App\Models\Finance\SppPayment;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Violation\ViolationRecord;
 
+use App\Models\Master\AcademicYear;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return $this->licensingDashboard();
+        return $this->licensingDashboard($request);
     }
 
-    private function licensingDashboard()
+    private function licensingDashboard(Request $request)
     {
-        $activeYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+        $allAcademicYears = AcademicYear::orderByDesc('name')->get();
+        
+        $selectedYearId = $request->input('academic_year_id');
+        if ($selectedYearId) {
+            $activeYear = AcademicYear::find($selectedYearId);
+        } else {
+            $activeYear = AcademicYear::where('status', 'active')->first();
+        }
+        
         $activeYearId = $activeYear ? $activeYear->id : null;
-        $activePeriods = \App\Models\Master\Period::where('academic_year_id', $activeYearId)->pluck('id')->toArray();
+        $activePeriods = Period::where('academic_year_id', $activeYearId)->pluck('id')->toArray();
 
         $totalStudents   = Student::where('status', 'active')->count();
         $kepulangan      = StudentLicense::where('academic_year_id', $activeYearId)
@@ -76,7 +88,7 @@ class DashboardController extends Controller
         // 2. Top Alasan Izin (Bar)
         $topReasons = StudentLicense::join('leave_reasons', 'student_licenses.leave_reason_id', '=', 'leave_reasons.id')
             ->where('student_licenses.academic_year_id', $activeYearId)
-            ->select('leave_reasons.reason', \Illuminate\Support\Facades\DB::raw('count(student_licenses.id) as total'))
+            ->select('leave_reasons.reason', DB::raw('count(student_licenses.id) as total'))
             ->groupBy('leave_reasons.id', 'leave_reasons.reason')
             ->orderByDesc('total')
             ->limit(5)
@@ -85,30 +97,30 @@ class DashboardController extends Controller
         // 3. Tren Pengajuan Izin Bulanan (Area/Line)
         $licenseTrend = StudentLicense::selectRaw('DATE_FORMAT(start_date, "%b %Y") as month_name, count(*) as total')
             ->where('academic_year_id', $activeYearId)
-            ->groupBy('month_name', \Illuminate\Support\Facades\DB::raw('YEAR(start_date)'), \Illuminate\Support\Facades\DB::raw('MONTH(start_date)'))
+            ->groupBy('month_name', DB::raw('YEAR(start_date)'), DB::raw('MONTH(start_date)'))
             ->orderByRaw('YEAR(start_date), MONTH(start_date)')
             ->get();
 
         // 4. Kategori Pelanggaran (Doughnut)
-        $violationCategories = \App\Models\Violation\ViolationRecord::join('violation_types', 'violation_records.violation_type_id', '=', 'violation_types.id')
+        $violationCategories = ViolationRecord::join('violation_types', 'violation_records.violation_type_id', '=', 'violation_types.id')
             ->join('violation_categories', 'violation_types.violation_category_id', '=', 'violation_categories.id')
             ->whereIn('violation_records.period_id', $activePeriods)
-            ->select('violation_categories.name', \Illuminate\Support\Facades\DB::raw('count(violation_records.id) as total'))
+            ->select('violation_categories.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('violation_categories.id', 'violation_categories.name')
             ->get();
 
         // 5. Tren Pelanggaran Bulanan (Area)
-        $violationTrend = \App\Models\Violation\ViolationRecord::selectRaw('DATE_FORMAT(date, "%b %Y") as month_name, count(*) as total')
+        $violationTrend = ViolationRecord::selectRaw('DATE_FORMAT(date, "%b %Y") as month_name, count(*) as total')
             ->whereIn('period_id', $activePeriods)
-            ->groupBy('month_name', \Illuminate\Support\Facades\DB::raw('YEAR(date)'), \Illuminate\Support\Facades\DB::raw('MONTH(date)'))
+            ->groupBy('month_name', DB::raw('YEAR(date)'), DB::raw('MONTH(date)'))
             ->orderByRaw('YEAR(date), MONTH(date)')
             ->get();
 
         // 6. Top 5 Rayon Pelanggaran (Horizontal Bar)
-        $topRayons = \App\Models\Violation\ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
+        $topRayons = ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
             ->join('rayons', 'students.rayon_id', '=', 'rayons.id')
             ->whereIn('violation_records.period_id', $activePeriods)
-            ->select('rayons.name', \Illuminate\Support\Facades\DB::raw('count(violation_records.id) as total'))
+            ->select('rayons.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('rayons.id', 'rayons.name')
             ->orderByDesc('total')
             ->limit(5)
@@ -117,26 +129,26 @@ class DashboardController extends Controller
         // 8. Sebaran Santri per Rayon (Bar/Doughnut)
         $studentDemographics = Student::join('rayons', 'students.rayon_id', '=', 'rayons.id')
             ->where('students.status', 'active')
-            ->select('rayons.name', \Illuminate\Support\Facades\DB::raw('count(students.id) as total'))
+            ->select('rayons.name', DB::raw('count(students.id) as total'))
             ->groupBy('rayons.id', 'rayons.name')
             ->orderByDesc('total')
             ->limit(8)
             ->get();
 
         // 9. Top 10 Santri Paling Banyak Izin
-        $topStudentLicenses = \App\Models\Licensing\StudentLicense::join('students', 'student_licenses.student_id', '=', 'students.id')
+        $topStudentLicenses = StudentLicense::join('students', 'student_licenses.student_id', '=', 'students.id')
             ->where('student_licenses.academic_year_id', $activeYearId)
             ->where('student_licenses.status', 'approved')
-            ->select('students.name', \Illuminate\Support\Facades\DB::raw('count(student_licenses.id) as total'))
+            ->select('students.name', DB::raw('count(student_licenses.id) as total'))
             ->groupBy('students.id', 'students.name')
             ->orderByDesc('total')
             ->limit(10)
             ->get();
 
         // 10. Top 10 Santri Paling Banyak Melanggar
-        $topStudentViolations = \App\Models\Violation\ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
+        $topStudentViolations = ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
             ->whereIn('violation_records.period_id', $activePeriods)
-            ->select('students.name', \Illuminate\Support\Facades\DB::raw('count(violation_records.id) as total'))
+            ->select('students.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('students.id', 'students.name')
             ->orderByDesc('total')
             ->limit(10)
@@ -179,16 +191,10 @@ class DashboardController extends Controller
         ];
 
         return view('licensing.dashboard', compact(
-            'totalStudents',
-            'kepulangan',
-            'izinDisetujui',
-            'izinPending',
-            'izinDitolak',
-            'kasusDarurat',
-            'recentLicenses',
-            'violationNotifs',
-            'quotaWarnings',
-            'chartData'
+            'totalStudents', 'kepulangan', 'izinDisetujui', 
+            'izinPending', 'izinDitolak', 'kasusDarurat',
+            'recentLicenses', 'quotaWarnings', 'violationNotifs',
+            'chartData', 'activeYear', 'allAcademicYears'
         ));
     }
 }
