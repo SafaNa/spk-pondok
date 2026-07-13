@@ -26,6 +26,7 @@ class DashboardController extends Controller
                             ->where('status', 'approved')
                             ->whereDate('start_date', '<=', today())
                             ->whereDate('end_date', '>=', today())
+                            ->whereNull('actual_return_date')
                             ->count();
         $izinDisetujui   = StudentLicense::where('academic_year_id', $activeYearId)->where('status', 'approved')->count();
         $izinPending     = StudentLicense::where('academic_year_id', $activeYearId)->where('status', 'pending')->count();

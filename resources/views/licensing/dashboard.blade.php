@@ -36,8 +36,8 @@
             </div>
             <div class="min-w-0">
                 <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($kepulangan) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Kepulangan</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Santri pulang</p>
+                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Izin Sedang Berjalan</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight">Hari ini</p>
             </div>
         </div>
 
