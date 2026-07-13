@@ -161,9 +161,9 @@
                         @php
                             $guardian = optional($license->student->guardians->first());
                             $rowNo    = ($recentLicenses->currentPage() - 1) * $recentLicenses->perPage() + $loop->iteration;
-                            $colors   = ['blue','indigo','violet','emerald','amber','rose','cyan','orange'];
+                            $colors   = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
                             $color    = $colors[crc32($license->student->id) % count($colors)];
-                            $initials = strtoupper(substr($license->student->name, 0, 1));
+                            $initials = strtoupper(substr($license->student->name, 0, 1) . (str_contains($license->student->name, ' ') ? substr($license->student->name, strpos($license->student->name, ' ') + 1, 1) : substr($license->student->name, 1, 1)));
                         @endphp
                         <tr class="hover:bg-slate-50/70 transition-colors">
 

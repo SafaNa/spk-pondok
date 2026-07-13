@@ -637,7 +637,7 @@
 
             <!-- Scrollable Content -->
             <div class="flex-1 overflow-y-auto p-3 sm:p-6 scroll-smooth">
-                <div class="max-w-[1200px] mx-auto flex flex-col gap-4 sm:gap-6">
+                <div class="w-full flex flex-col gap-4 sm:gap-6">
                     @yield('content')
                 </div>
             </div>

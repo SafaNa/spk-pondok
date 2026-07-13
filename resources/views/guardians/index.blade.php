@@ -46,8 +46,13 @@
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="px-5 py-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
-                                        {{ substr($guardian->name, 0, 1) }}
+                                    @php
+                                        $initials = strtoupper(substr($guardian->name, 0, 1) . (str_contains($guardian->name, ' ') ? substr($guardian->name, strpos($guardian->name, ' ') + 1, 1) : substr($guardian->name, 1, 1)));
+                                        $colors = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
+                                        $color = $colors[crc32($guardian->id) % count($colors)];
+                                    @endphp
+                                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-xs shrink-0 ring-1 ring-{{ $color }}-600/20">
+                                        {{ $initials }}
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-[#0d141b] dark:text-white">{{ $guardian->name }}</p>
