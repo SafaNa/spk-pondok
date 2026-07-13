@@ -103,7 +103,7 @@
     </div>
 
     {{-- Chart Section --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
         <div class="bg-white rounded-xl shadow-sm border border-[#e7edf3] p-5">
             <h3 class="text-sm font-bold text-[#0d141b] mb-4">Top 10 Santri Paling Banyak Izin</h3>
