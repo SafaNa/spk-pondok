@@ -55,7 +55,7 @@ class DummyStudentSeeder extends Seeder
             $guardian = Guardian::create([
                 'id' => (string) Str::uuid(),
                 'name' => $fatherName,
-                'username' => 'wali' . uniqid() . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
+                'username' => strtolower(explode(' ', $fatherName)[0]) . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
                 'password' => $defaultPassword,
                 'phone' => $guardianPhone,
                 'email' => $faker->unique()->safeEmail(),

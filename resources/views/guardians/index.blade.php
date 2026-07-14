@@ -62,7 +62,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-5 py-3 text-sm text-[#4c739a] font-mono">&#64;{{ $guardian->username }}</td>
+                            <td class="px-5 py-3 text-sm text-[#4c739a] font-mono">{{ $guardian->username }}</td>
                             <td class="px-5 py-3">
                                 @php
                                     $relMap = ['father'=>['label'=>'Ayah','color'=>'blue'], 'mother'=>['label'=>'Ibu','color'=>'pink'], 'guardian'=>['label'=>'Wali','color'=>'amber'], 'sibling'=>['label'=>'Saudara','color'=>'green']];

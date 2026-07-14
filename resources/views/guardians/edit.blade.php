@@ -307,7 +307,7 @@
                 this.debounceTimer = setTimeout(async () => {
                     this.loading = true;
                     try {
-                        const res = await fetch(_guardianSearchUrl + '?q=' + encodeURIComponent(q));
+                        const res = await fetch(_guardianSearchUrl + '?q=' + encodeURIComponent(q) + '&guardian_id={{ $guardian->id }}');
                         this.results = await res.json();
                     } finally {
                         this.loading = false;

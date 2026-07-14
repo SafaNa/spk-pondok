@@ -111,11 +111,18 @@ class GuardianController extends Controller
     public function searchStudents(Request $request)
     {
         $q = $request->input('q', '');
+        $guardianId = $request->input('guardian_id');
+
         $students = Student::with('room')
             ->where(function ($query) use ($q) {
                 $qLower = strtolower($q);
                 $query->whereRaw('LOWER(name) LIKE ?', ['%' . $qLower . '%'])
                       ->orWhereRaw('LOWER(nis) LIKE ?', ['%' . $qLower . '%']);
+            })
+            ->whereDoesntHave('guardians', function ($q) use ($guardianId) {
+                if ($guardianId) {
+                    $q->where('guardians.id', '!=', $guardianId);
+                }
             })
             ->orderBy('name')
             ->limit(30)
