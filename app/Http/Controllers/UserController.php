@@ -12,11 +12,27 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeAdmin();
 
-        $users = User::with('department')->orderBy('type')->orderBy('name')->get();
+        $query = User::with('department')->orderBy('type')->orderBy('name');
+
+        if ($request->filled('role')) {
+            if ($request->role === 'perizinan') {
+                $query->whereHas('department', function ($q) {
+                    $q->where('acronym', 'PERIZINAN');
+                })->where('type', 1);
+            } elseif ($request->role === 'departemen') {
+                $query->where('type', 1)->where(function ($q) {
+                    $q->whereDoesntHave('department', function ($sq) {
+                        $sq->where('acronym', 'PERIZINAN');
+                    })->orWhereNull('department_id');
+                });
+            }
+        }
+
+        $users = $query->get();
 
         return view('users.index', compact('users'));
     }

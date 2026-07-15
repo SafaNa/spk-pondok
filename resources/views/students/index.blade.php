@@ -156,137 +156,124 @@
     </div>
 
     <!-- Data Table -->
-    <div
-        class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 overflow-hidden flex flex-col">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-sm border-collapse border-hidden">
                 <thead>
-                    <tr class="bg-[#f8fafc] dark:bg-slate-800/50 border-b border-[#e7edf3] dark:border-slate-700">
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-16 whitespace-nowrap">
-                            No
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-24 whitespace-nowrap">
-                            NIS
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">
-                            Nama Lengkap
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-32 whitespace-nowrap">
-                            Rayon
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">
-                            Pendidikan
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-32 whitespace-nowrap">
-                            Jenis Kelamin
-                        </th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-32 whitespace-nowrap">
-                            Status
-                        </th>
-                        <th
-                            class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase w-40 text-center whitespace-nowrap">
-                            Aksi
-                        </th>
+                    <tr class="bg-gray-50 text-gray-700">
+                        <th class="border border-gray-200 p-3 text-center font-bold w-12">No</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Foto</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Nama Lengkap</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">NIS</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Rayon & Kamar</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Pendidikan</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Status</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold w-36">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-[#e7edf3] dark:divide-slate-700">
+                <tbody class="divide-y divide-gray-200">
+                    @php
+                        $avatarColors = [
+                            ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'border' => 'border-red-200'],
+                            ['bg' => 'bg-orange-100', 'text' => 'text-orange-700', 'border' => 'border-orange-200'],
+                            ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'border' => 'border-amber-200'],
+                            ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'border' => 'border-green-200'],
+                            ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200'],
+                            ['bg' => 'bg-teal-100', 'text' => 'text-teal-700', 'border' => 'border-teal-200'],
+                            ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-700', 'border' => 'border-cyan-200'],
+                            ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'border' => 'border-blue-200'],
+                            ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-700', 'border' => 'border-indigo-200'],
+                            ['bg' => 'bg-violet-100', 'text' => 'text-violet-700', 'border' => 'border-violet-200'],
+                            ['bg' => 'bg-fuchsia-100', 'text' => 'text-fuchsia-700', 'border' => 'border-fuchsia-200'],
+                            ['bg' => 'bg-pink-100', 'text' => 'text-pink-700', 'border' => 'border-pink-200'],
+                            ['bg' => 'bg-rose-100', 'text' => 'text-rose-700', 'border' => 'border-rose-200'],
+                        ];
+                    @endphp
                     @forelse($students as $s)
-                        @php
-                            $initials = strtoupper(substr($s->name, 0, 1) . (str_contains($s->name, ' ') ? substr($s->name, strpos($s->name, ' ') + 1, 1) : substr($s->name, 1, 1)));
-                            $colors = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
-                            $colorIndex = crc32($s->id) % count($colors);
-                            $color = $colors[$colorIndex];
-                        @endphp
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                            <td class="p-4 text-sm font-medium text-[#0d141b] dark:text-white whitespace-nowrap">
+                        <tr class="bg-white hover:bg-gray-50">
+                            <td class="border border-gray-200 p-3 text-center font-bold text-gray-800">
                                 @if(method_exists($students, 'firstItem'))
                                     {{ $students->firstItem() + $loop->index }}
                                 @else
                                     {{ $loop->iteration }}
                                 @endif
                             </td>
-                            <td class="p-4 text-sm font-medium text-[#0d141b] dark:text-white whitespace-nowrap">
+                            <td class="border border-gray-200 p-3 text-center">
+                                <div class="flex justify-center">
+                                    @if ($s->photo)
+                                        <button
+                                            @click="$store.imageModal.open('{{ asset('storage/' . $s->photo) }}', '{{ $s->name }}')"
+                                            class="shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-full">
+                                            <img src="{{ asset('storage/' . $s->photo) }}" alt="{{ $s->name }}"
+                                                class="w-10 h-10 rounded-full object-cover border border-gray-200 hover:scale-110 transition-transform cursor-zoom-in">
+                                        </button>
+                                    @else
+                                        @php
+                                            $colorIndex = abs(crc32($s->name)) % count($avatarColors);
+                                            $color = $avatarColors[$colorIndex];
+                                        @endphp
+                                        <div
+                                            class="w-10 h-10 rounded-full {{ $color['bg'] }} flex items-center justify-center {{ $color['text'] }} font-bold text-sm border {{ $color['border'] }}">
+                                            {{ strtoupper(substr($s->name, 0, 1) . (str_contains($s->name, ' ') ? substr($s->name, strpos($s->name, ' ') + 1, 1) : substr($s->name, 1, 1))) }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="border border-gray-200 p-3 text-left font-medium text-gray-800 whitespace-nowrap">
+                                {{ $s->name }}
+                            </td>
+                            <td class="border border-gray-200 p-3 text-center font-medium text-gray-800 whitespace-nowrap">
                                 {{ $s->nis }}
                             </td>
-                            <td class="p-4 text-sm font-medium text-[#0d141b] dark:text-white flex items-center gap-3">
-                                @if ($s->photo)
-                                    <button
-                                        @click="$store.imageModal.open('{{ asset('storage/' . $s->photo) }}', '{{ $s->name }}')"
-                                        class="shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-full">
-                                        <img src="{{ asset('storage/' . $s->photo) }}" alt="{{ $s->name }}"
-                                            class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-slate-800 hover:scale-110 transition-transform cursor-zoom-in">
-                                    </button>
-                                @else
-                                    <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-xs ring-1 ring-{{ $color }}-600/20">
-                                        {{ $initials }}
-                                    </div>
-                                @endif
-                                <span class="whitespace-nowrap">{{ $s->name }}</span>
+                            <td class="border border-gray-200 p-3 text-left whitespace-nowrap text-gray-600">
+                                <span class="font-medium text-gray-800">{{ $s->rayon?->name }}</span><br>
+                                <span class="text-xs">{{ $s->room?->name }}</span>
                             </td>
-                            <td class="p-4 text-sm whitespace-nowrap">
-                                <span class="whitespace-nowrap">
-                                    {{ $s->rayon?->name }}
-                                </span><br>
-                                <span class="text-xs text-[#4c739a] whitespace-nowrap">
-                                    {{ $s->room?->name }}
-                                </span>
-                            </td>
-                            <td class="p-4 text-sm whitespace-nowrap">
+                            <td class="border border-gray-200 p-3 text-left whitespace-nowrap text-gray-600">
                                 @if($s->formalEducation)
-                                    <span class="whitespace-nowrap text-[#0d141b] dark:text-white">{{ $s->formalEducation->name }}</span><br>
+                                    <span class="font-medium text-gray-800">{{ $s->formalEducation->name }}</span><br>
                                 @endif
                                 @if($s->religiousEducation)
-                                    <span class="text-xs text-[#4c739a] whitespace-nowrap">{{ $s->religiousEducation->name }}</span>
+                                    <span class="text-xs">{{ $s->religiousEducation->name }}</span>
                                 @endif
                                 @if(!$s->formalEducation && !$s->religiousEducation)
-                                    <span class="text-xs text-[#4c739a]">-</span>
+                                    <span class="text-xs">-</span>
                                 @endif
                             </td>
-                            <td class="p-4 text-sm text-[#4c739a] whitespace-nowrap">
-                                {{ $s->gender == 'male' ? 'Laki-laki' : 'Perempuan' }}
-                            </td>
-                            <td class="p-4 whitespace-nowrap">
+                            <td class="border border-gray-200 p-3 text-center whitespace-nowrap">
                                 @if($s->status == 'active')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">Aktif</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Aktif</span>
                                 @elseif($s->status == 'inactive')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800">Nonaktif</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-red-100 text-red-700 border border-red-200">Nonaktif</span>
                                 @elseif($s->status == 'graduated')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800">Lulus</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">Lulus</span>
                                 @elseif($s->status == 'dropped_out')
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800">Keluar</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">Keluar</span>
                                 @else
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400 border border-gray-200 dark:border-gray-800">{{ ucfirst($s->status) }}</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">{{ ucfirst($s->status) }}</span>
                                 @endif
                             </td>
-                            <td class="p-4 whitespace-nowrap">
-                                <div
-                                    class="flex items-center justify-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                            <td class="border border-gray-200 p-3 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
                                     <a href="{{ route('admin.students.show', $s) }}"
-                                        class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors"
+                                        class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors"
                                         title="Lihat Detail">
-                                        <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                        <span class="material-symbols-outlined text-[16px]">visibility</span>
                                     </a>
                                     @if(Auth::user()->isAdmin())
                                     <a href="{{ route('admin.students.edit', $s) }}"
-                                        class="flex items-center justify-center w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 transition-colors"
+                                        class="w-8 h-8 rounded flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors"
                                         title="Edit">
-                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
-                                    <form action="{{ route('admin.students.destroy', $s) }}" method="POST"
-                                        class="inline-block">
+                                    <form action="{{ route('admin.students.destroy', $s) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
                                             @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus santri {{ $s->name }}?')"
-                                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors"
+                                            class="w-8 h-8 rounded flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors"
                                             title="Hapus">
-                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </form>
                                     @endif
@@ -295,7 +282,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-[#4c739a]">
+                            <td colspan="8" class="border border-gray-200 p-8 text-center text-gray-500">
                                 <span class="material-symbols-outlined text-4xl mb-2">person_off</span>
                                 <p>Belum ada data santri</p>
                             </td>

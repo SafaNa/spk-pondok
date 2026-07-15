@@ -229,7 +229,14 @@ class StudentController extends Controller
             'address' => 'nullable|string',
             'status' => 'required|in:active,inactive,graduated,dropped_out',
             // Wali
-            'wali_name'         => 'nullable|string|max:100',
+            'wali_name'         => [
+                'nullable', 'string', 'max:100',
+                function ($attribute, $value, $fail) use ($student, $existingWaliId) {
+                    if ($value && !$existingWaliId && $student->guardians()->exists()) {
+                        $fail('Santri ini sudah memiliki wali. Tidak bisa menambahkan wali baru.');
+                    }
+                }
+            ],
             'wali_username'     => [
                 'required_with:wali_name', 'nullable', 'string', 'max:50',
                 Rule::unique('guardians', 'username')->ignore($existingWaliId),

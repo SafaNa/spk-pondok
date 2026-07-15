@@ -46,7 +46,19 @@ class GuardianController extends Controller
             'job'           => 'nullable|string|max:100',
             'address'       => 'nullable|string',
             'student_ids'   => 'nullable|array',
-            'student_ids.*' => 'exists:students,id',
+            'student_ids.*' => [
+                'exists:students,id',
+                function ($attribute, $value, $fail) {
+                    $exists = \Illuminate\Support\Facades\DB::table('student_guardian')
+                        ->where('student_id', $value)
+                        ->exists();
+                    if ($exists) {
+                        $student = \App\Models\Master\Student::find($value);
+                        $name = $student ? $student->name : 'tersebut';
+                        $fail("Santri {$name} sudah memiliki wali lain.");
+                    }
+                },
+            ],
         ]);
 
         $guardian = Guardian::create([
@@ -92,7 +104,20 @@ class GuardianController extends Controller
             'job'           => 'nullable|string|max:100',
             'address'       => 'nullable|string',
             'student_ids'   => 'nullable|array',
-            'student_ids.*' => 'exists:students,id',
+            'student_ids.*' => [
+                'exists:students,id',
+                function ($attribute, $value, $fail) use ($guardian) {
+                    $exists = \Illuminate\Support\Facades\DB::table('student_guardian')
+                        ->where('student_id', $value)
+                        ->where('guardian_id', '!=', $guardian->id)
+                        ->exists();
+                    if ($exists) {
+                        $student = \App\Models\Master\Student::find($value);
+                        $name = $student ? $student->name : 'tersebut';
+                        $fail("Santri {$name} sudah memiliki wali lain.");
+                    }
+                },
+            ],
         ]);
 
         $data = $request->only(['name', 'username', 'relationship', 'phone', 'email', 'nik', 'job', 'address']);
