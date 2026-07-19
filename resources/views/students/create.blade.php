@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <input type="file" name="photo" id="photo" accept="image/*"
-                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    class="crop-avatar absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     onchange="previewImage(this)">
                             </div>
                             <div class="flex-1 space-y-1">

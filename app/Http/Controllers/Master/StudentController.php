@@ -165,7 +165,7 @@ class StudentController extends Controller
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in store request');
-            $validated['photo'] = $request->file('photo')->store('students', 'public');
+            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
             \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in store request');
@@ -264,10 +264,10 @@ class StudentController extends Controller
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in update request');
-            if ($student->photo) {
+            if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($student->photo);
             }
-            $validated['photo'] = $request->file('photo')->store('students', 'public');
+            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
             \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in update request');

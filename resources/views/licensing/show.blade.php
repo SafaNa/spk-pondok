@@ -256,6 +256,51 @@
                             @endif
                         </div>
 
+                        {{-- Riwayat Perpanjangan di Timeline --}}
+                        @if(isset($extensions) && $extensions->where('status', '!=', 'rejected')->count() > 0)
+                            @foreach($extensions->where('status', '!=', 'rejected')->values() as $index => $ext)
+                                {{-- Node: Pengajuan Perpanjangan --}}
+                                <div class="relative flex gap-4">
+                                    <div class="absolute -left-6 flex h-5 w-5 items-center justify-center rounded-full bg-blue-400 ring-4 ring-white dark:ring-slate-900">
+                                        <span class="material-symbols-outlined text-white text-[12px]">edit_note</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-blue-600 dark:text-blue-400">Pengajuan Perpanjangan #{{ $index + 1 }}</p>
+                                        <p class="text-xs text-slate-500">
+                                            Diajukan {{ $ext->created_at->locale('id')->translatedFormat('d F Y, H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                {{-- Node: Status Perpanjangan --}}
+                                @if($ext->status === 'approved')
+                                    <div class="relative flex gap-4">
+                                        <div class="absolute -left-6 flex h-5 w-5 items-center justify-center rounded-full bg-violet-500 ring-4 ring-white dark:ring-slate-900">
+                                            <span class="material-symbols-outlined text-white text-[12px]">check</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-violet-600 dark:text-violet-400">Disetujui</p>
+                                            <p class="text-xs text-slate-500">
+                                                Diperpanjang hingga {{ Carbon\Carbon::parse($ext->requested_new_end_date)->locale('id')->translatedFormat('d F Y') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="relative flex gap-4">
+                                        <div class="absolute -left-6 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 ring-4 ring-white dark:ring-slate-900">
+                                            <span class="material-symbols-outlined text-white text-[12px]">hourglass_top</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-amber-600 dark:text-amber-400">Menunggu Persetujuan</p>
+                                            <p class="text-xs text-slate-500">
+                                                Meminta perpanjangan hingga {{ Carbon\Carbon::parse($ext->requested_new_end_date)->locale('id')->translatedFormat('d F Y') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
+
                         {{-- Jatuh Tempo --}}
                         @if($license->status !== 'rejected')
                             <div class="relative flex gap-4">

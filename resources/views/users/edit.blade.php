@@ -54,7 +54,7 @@
                                 <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary">
                                     <span class="material-symbols-outlined text-[18px]">upload</span>
                                     Ganti Foto
-                                    <input type="file" name="photo" accept="image/*" class="hidden" @change="onFileChange">
+                                    <input type="file" name="photo" accept="image/*" class="crop-avatar hidden" @change="onFileChange">
                                 </label>
                                 <p class="text-xs text-slate-400">JPG, PNG, WebP — kosongkan jika tidak ingin mengganti</p>
                             </div>

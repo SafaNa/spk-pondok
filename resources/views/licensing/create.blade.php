@@ -203,7 +203,7 @@
                     <button type="submit"
                         class="order-1 sm:order-2 flex-[2] px-8 py-4 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-3">
                         <span class="material-symbols-outlined">save</span>
-                        Simpan & Cetak Surat
+                        Simpan
                     </button>
                 </div>
             </form>

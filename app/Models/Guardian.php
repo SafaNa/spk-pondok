@@ -15,7 +15,7 @@ class Guardian extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'password',
-        'phone', 'email', 'nik', 'address', 'job', 'relationship',
+        'phone', 'email', 'nik', 'address', 'job', 'relationship', 'avatar',
     ];
 
     protected $hidden = ['password'];

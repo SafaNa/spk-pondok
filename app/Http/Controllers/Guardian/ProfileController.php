@@ -31,9 +31,22 @@ class ProfileController extends Controller
             'address'      => 'nullable|string|max:1000',
             'job'          => 'nullable|string|max:100',
             'relationship' => 'required|in:father,mother,guardian,sibling',
+            'avatar'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $guardian->update($request->only('name', 'phone', 'email', 'nik', 'address', 'job', 'relationship'));
+        $data = $request->only('name', 'phone', 'email', 'nik', 'address', 'job', 'relationship');
+
+        if ($request->hasFile('avatar')) {
+            // Hapus avatar lama jika ada
+            if ($guardian->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($guardian->avatar)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($guardian->avatar);
+            }
+            // Upload yang baru menggunakan ImageService (crop 1:1, resize 500x500, webp)
+            $path = \App\Services\ImageService::processAndSaveAvatar($request->file('avatar'), 'guardian-avatars');
+            $data['avatar'] = $path;
+        }
+
+        $guardian->update($data);
 
         return back()->with('success_profile', 'Profil berhasil diperbarui.');
     }

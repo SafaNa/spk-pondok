@@ -187,9 +187,9 @@
                                     @if($license->student->photo)
                                         <img src="{{ asset('storage/' . $license->student->photo) }}"
                                             alt="{{ $license->student->name }}"
-                                            class="h-9 w-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200">
+                                            class="h-9 w-9 rounded-full object-cover shrink-0">
                                     @else
-                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-xs font-bold ring-1 ring-{{ $color }}-200">
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-xs font-bold">
                                             {{ $initials }}
                                         </div>
                                     @endif
@@ -243,7 +243,7 @@
                                     @elseif($license->status === 'rejected')
                                         <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-[11px] font-bold text-rose-700 shadow-sm ring-1 ring-rose-200">Ditolak</span>
                                     @endif
-                                    @if($license->student->pending_violations_count > 0)
+                                    @if($license->student->pending_violations_count > 0 && !($license->status === 'approved' && !$hasPendingExt))
                                         <span class="inline-flex items-center gap-0.5 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-600">
                                             <span class="material-symbols-outlined text-[11px]">warning</span> Pelanggaran
                                         </span>

@@ -141,8 +141,12 @@
                                         $colors = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
                                         $color = $colors[crc32($guardian->id) % count($colors)];
                                     @endphp
-                                    <div class="flex h-9 w-9 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-xs shrink-0 ring-1 ring-{{ $color }}-600/20">
-                                        {{ $initials }}
+                                    <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-xs shrink-0 ring-1 ring-{{ $color }}-600/20">
+                                        @if($guardian->avatar)
+                                            <img src="{{ asset('storage/' . $guardian->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                                        @else
+                                            {{ $initials }}
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-[#0d141b] dark:text-white">{{ $guardian->name }}</p>

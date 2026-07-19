@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Cropper.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body class="bg-[#f0f4f8] font-[Inter] overflow-hidden">
 
@@ -68,8 +72,12 @@
 
             <div class="p-3 border-t border-[#e7edf3] shrink-0">
                 <div class="flex items-center gap-3 px-2 py-2 mb-2">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
-                        {{ substr(Auth::guard('guardian')->user()->name, 0, 1) }}
+                    <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
+                        @if(Auth::guard('guardian')->user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::guard('guardian')->user()->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                        @else
+                            {{ substr(Auth::guard('guardian')->user()->name, 0, 1) }}
+                        @endif
                     </div>
                     <div class="overflow-hidden">
                         <p class="text-sm font-semibold text-[#0d141b] truncate">{{ Auth::guard('guardian')->user()->name }}</p>
@@ -129,6 +137,6 @@
     </script>
     
     @stack('scripts')
-
+    <x-cropper-modal />
 </body>
 </html>
