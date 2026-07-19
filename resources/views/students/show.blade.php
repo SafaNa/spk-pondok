@@ -243,9 +243,20 @@
                         <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3">
                             <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Data Wali</p>
                             @forelse($student->guardians as $guardian)
-                                <div class="space-y-1 mb-2">
-                                    <div class="text-slate-500 text-xs font-semibold">Nama Wali</div>
-                                    <div class="text-slate-900 dark:text-white font-medium text-sm">{{ $guardian->name }} ({{ $guardian->phone }})</div>
+                                <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-3 mb-3 bg-white dark:bg-slate-800">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="text-slate-900 dark:text-white font-bold text-sm">{{ $guardian->name }}</div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div class="space-y-0.5">
+                                            <span class="text-slate-500 block">Username</span>
+                                            <span class="font-medium text-slate-800 dark:text-slate-200">{{ $guardian->username }}</span>
+                                        </div>
+                                        <div class="space-y-0.5">
+                                            <span class="text-slate-500 block">No. HP / WA</span>
+                                            <span class="font-medium text-slate-800 dark:text-slate-200">{{ $guardian->phone ?? '-' }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="text-slate-500 text-xs italic">Belum ada data wali</div>

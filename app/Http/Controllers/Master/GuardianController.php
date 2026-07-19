@@ -8,6 +8,7 @@ use App\Models\Master\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class GuardianController extends Controller
@@ -22,9 +23,20 @@ class GuardianController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $guardians = Guardian::withCount('students')->latest()->paginate(15);
+        $search = $request->query('search');
+
+        $guardians = Guardian::withCount('students')
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('username', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
         return view('guardians.index', compact('guardians'));
     }
 
@@ -61,10 +73,12 @@ class GuardianController extends Controller
             ],
         ]);
 
+        $plainPassword = $request->password;
+
         $guardian = Guardian::create([
             'name'         => $request->name,
             'username'     => $request->username,
-            'password'     => Hash::make($request->password),
+            'password'     => Hash::make($plainPassword),
             'relationship' => $request->relationship,
             'phone'        => $request->phone,
             'email'        => $request->email,
@@ -76,7 +90,10 @@ class GuardianController extends Controller
         $guardian->students()->sync($request->input('student_ids', []));
 
         return redirect()->route('admin.guardians.index')
-            ->with('success', 'Data wali berhasil ditambahkan.');
+            ->with('success', 'Data wali berhasil ditambahkan.')
+            ->with('created_guardian_name', $guardian->name)
+            ->with('created_guardian_username', $guardian->username)
+            ->with('created_guardian_password', $plainPassword);
     }
 
     public function edit(Guardian $guardian)
@@ -160,6 +177,22 @@ class GuardianController extends Controller
             ]);
 
         return response()->json($students);
+    }
+
+    public function resetPassword(Request $request, Guardian $guardian)
+    {
+        $request->validate([
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        $plainPassword = $request->new_password;
+        $guardian->update(['password' => Hash::make($plainPassword)]);
+
+        return redirect()->route('admin.guardians.index')
+            ->with('success', 'Password wali ' . $guardian->name . ' berhasil direset.')
+            ->with('reset_guardian_name', $guardian->name)
+            ->with('reset_guardian_username', $guardian->username)
+            ->with('reset_guardian_password', $plainPassword);
     }
 
     public function destroy(Guardian $guardian)

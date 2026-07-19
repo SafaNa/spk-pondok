@@ -57,7 +57,7 @@
                         <h3 class="text-xl font-bold text-green-700 dark:text-green-500">Sanksi Selesai</h3>
                         <p class="text-green-600/80 dark:text-green-400 mt-1 text-sm">
                             Diverifikasi oleh <span class="font-semibold">{{ $violation->verifier->name }}</span>
-                            pada {{ $violation->verified_at->format('d F Y, H:i') }}
+                            pada {{ $violation->verified_at->locale('id')->translatedFormat('d F Y, H:i') }}
                         </p>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[20px] text-primary">calendar_today</span>
                             <p class="font-medium text-[#0d141b] dark:text-white">
-                                {{ $violation->date->format('d F Y') }}
+                                {{ $violation->date->locale('id')->translatedFormat('d F Y') }}
                             </p>
                         </div>
                     </div>
@@ -207,7 +207,7 @@
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[20px] text-primary">schedule</span>
                             <p class="font-medium text-[#0d141b] dark:text-white">
-                                {{ $violation->created_at->format('d F Y, H:i') }}
+                                {{ $violation->created_at->locale('id')->translatedFormat('d F Y, H:i') }}
                             </p>
                         </div>
                     </div>

@@ -105,7 +105,7 @@
                                         <div class="text-sm text-slate-700 dark:text-slate-300">{{ $license->leaveCategory->name ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $license->end_date->format('d M Y') }}</div>
+                                        <div class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $license->end_date->locale('id')->translatedFormat('d M Y') }}</div>
                                     </td>
                                     <td class="px-6 py-4">
                                         @if($license->actual_return_date)
@@ -120,7 +120,7 @@
                                                     Tepat Waktu
                                                 </span>
                                             @endif
-                                            <div class="text-[11px] text-slate-400 mt-1">Kembali: {{ $license->actual_return_date->format('d M Y') }}</div>
+                                            <div class="text-[11px] text-slate-400 mt-1">Kembali: {{ $license->actual_return_date->locale('id')->translatedFormat('d M Y') }}</div>
                                         @else
                                             @if(now()->startOfDay()->gt($license->end_date))
                                                 <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">

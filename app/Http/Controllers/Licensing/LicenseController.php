@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Licensing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Licensing\LeaveCategory;
+use App\Models\Licensing\LicenseExtension;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Master\AcademicYear;
 use App\Models\Master\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -24,15 +26,23 @@ class LicenseController extends Controller
         $totalPending  = (clone $kpiBase)->where('status', 'pending')->count();
         $totalApproved = (clone $kpiBase)->where('status', 'approved')->count();
         $totalRejected = (clone $kpiBase)->where('status', 'rejected')->count();
+        $totalPendingExt = (clone $kpiBase)->whereHas('extensions', fn($q) => $q->where('status', 'pending'))->count();
 
         $query = StudentLicense::with([
                 'student'      => fn($q) => $q->withCount('pendingViolations'),
                 'student.room',
                 'student.rayon',
                 'academicYear',
+                'extensions',
             ])
             ->when($selectedYearId,            fn($q) => $q->where('academic_year_id', $selectedYearId))
-            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('status'), function ($q) use ($request) {
+                if ($request->status === 'pending_extension') {
+                    $q->whereHas('extensions', fn($sq) => $sq->where('status', 'pending'));
+                } else {
+                    $q->where('status', $request->status);
+                }
+            })
             ->when($request->filled('type'),   fn($q) => $q->where('type',   $request->type))
             ->when($request->filled('start_date'), fn($q) => $q->whereDate('start_date', '>=', $request->start_date))
             ->when($request->filled('end_date'),   fn($q) => $q->whereDate('end_date',   '<=', $request->end_date))
@@ -45,7 +55,7 @@ class LicenseController extends Controller
 
         return view('licensing.index', compact(
             'recentLicenses', 'academicYears', 'selectedYearId',
-            'totalAll', 'totalPending', 'totalApproved', 'totalRejected'
+            'totalAll', 'totalPending', 'totalApproved', 'totalRejected', 'totalPendingExt'
         ));
     }
 
@@ -128,9 +138,11 @@ class LicenseController extends Controller
             'student'      => fn($q) => $q->withCount('pendingViolations'),
             'student.room',
             'student.rayon',
+            'student.district',
             'academicYear',
             'leaveCategory',
             'leaveReason',
+            'extensions',
         ]);
 
         $approvedCount = StudentLicense::where('student_id', $license->student_id)
@@ -377,5 +389,104 @@ class LicenseController extends Controller
         ]);
 
         return view('licensing.active-show', compact('license'));
+    }
+
+    /**
+     * POST: Pengurus input perpanjangan via telepon (source = admin).
+     */
+    public function storePhoneExtension(Request $request, StudentLicense $license)
+    {
+        $request->validate([
+            'requested_new_end_date' => [
+                'required', 'date',
+                'after:' . $license->end_date->format('Y-m-d'),
+                'before_or_equal:' . $license->end_date->copy()->addDays(3)->format('Y-m-d'),
+            ],
+            'notes'      => 'nullable|string|max:500',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ], [
+            'requested_new_end_date.after'           => 'Tanggal baru harus setelah tanggal kembali saat ini.',
+            'requested_new_end_date.before_or_equal' => 'Perpanjangan maksimal 3 hari dari tanggal kembali (' . $license->end_date->copy()->addDays(3)->format('d/m/Y') . ').',
+        ]);
+
+        $attachmentPath = null;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('extension-attachments', 'public');
+        }
+
+        $ext = LicenseExtension::create([
+            'student_license_id'     => $license->id,
+            'requested_new_end_date' => $request->requested_new_end_date,
+            'status'                 => 'pending',
+            'source'                 => 'admin',
+            'attachment'             => $attachmentPath,
+            'notes'                  => $request->notes,
+            'requested_at'           => now(),
+            'created_by_type'        => User::class,
+            'created_by_id'          => auth()->id(),
+        ]);
+
+        // Jika admin langsung menyetujui saat input via telepon
+        if ($request->boolean('auto_approve')) {
+            $license->update(['end_date' => $request->requested_new_end_date]);
+            $ext->update(['status' => 'approved', 'approved_at' => now()]);
+            return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.');
+        }
+
+        return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.');
+    }
+
+    /**
+     * POST: Admin setujui perpanjangan.
+     */
+    public function approveExtension(Request $request, LicenseExtension $extension)
+    {
+        if ($extension->status !== 'pending') {
+            return back()->with('error', 'Perpanjangan ini sudah diproses.');
+        }
+
+        $request->validate([
+            'admin_notes' => 'nullable|string|max:500',
+            'new_end_date' => 'nullable|date',
+        ]);
+
+        $license = $extension->studentLicense;
+        
+        $newDate = $request->new_end_date ? \Carbon\Carbon::parse($request->new_end_date) : $extension->requested_new_end_date;
+
+        // Update end_date izin ke tanggal baru
+        $license->update(['end_date' => $newDate]);
+
+        $extension->update([
+            'status'      => 'approved',
+            'approved_at' => now(),
+            'admin_notes' => $request->admin_notes,
+            'requested_new_end_date' => $newDate, // Save the actual approved date
+        ]);
+
+        return back()->with('success', 'Perpanjangan disetujui. Tanggal kembali diperbarui ke ' .
+            $newDate->format('d F Y') . '.');
+    }
+
+    /**
+     * POST: Admin tolak perpanjangan.
+     */
+    public function rejectExtension(Request $request, LicenseExtension $extension)
+    {
+        if ($extension->status !== 'pending') {
+            return back()->with('error', 'Perpanjangan ini sudah diproses.');
+        }
+
+        $request->validate([
+            'admin_notes' => 'nullable|string|max:500',
+        ]);
+
+        $extension->update([
+            'status'      => 'rejected',
+            'rejected_at' => now(),
+            'admin_notes' => $request->admin_notes,
+        ]);
+
+        return back()->with('success', 'Perpanjangan berhasil ditolak.');
     }
 }

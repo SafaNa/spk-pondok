@@ -104,7 +104,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-gray-900 dark:text-white">
-                                        {{ $event->start_date->format('d M Y') }} - {{ $event->end_date->format('d M Y') }}
+                                        {{ $event->start_date->locale('id')->translatedFormat('d M Y') }} - {{ $event->end_date->locale('id')->translatedFormat('d M Y') }}
                                     </div>
                                     <div class="text-xs text-gray-500">
                                         {{ $event->start_date->diffForHumans() }}

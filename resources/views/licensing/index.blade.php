@@ -51,6 +51,16 @@
                         <p class="text-[10px] text-amber-600">Perlu validasi</p>
                     </div>
                 </div>
+                <div class="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 shadow-sm min-w-[120px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+                        <span class="material-symbols-outlined text-[22px]">more_time</span>
+                    </div>
+                    <div>
+                        <p class="text-xl font-black text-violet-900 leading-none">{{ number_format($totalPendingExt) }}</p>
+                        <p class="text-xs font-semibold text-violet-800 mt-0.5">Perpanjangan</p>
+                        <p class="text-[10px] text-violet-600">Menunggu validasi</p>
+                    </div>
+                </div>
                 <div class="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 shadow-sm min-w-[120px]">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
                         <span class="material-symbols-outlined text-[22px]">check_circle</span>
@@ -104,7 +114,8 @@
                 <select name="status"
                     class="rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
                     <option value="">Semua Status</option>
-                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu</option>
+                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu Izin</option>
+                    <option value="pending_extension" {{ request('status') === 'pending_extension' ? 'selected' : '' }}>Menunggu Perpanjangan</option>
                     <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
                     <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                 </select>
@@ -208,21 +219,29 @@
 
                             {{-- Tanggal Izin --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="block text-sm text-[#0d141b]">{{ $license->start_date->format('d M Y') }}</span>
-                                <span class="text-[11px] text-[#4c739a]">s/d {{ $license->end_date->format('d M Y') }}</span>
+                                <span class="block text-sm text-[#0d141b]">{{ $license->start_date->locale('id')->translatedFormat('d M Y') }}</span>
+                                <span class="text-[11px] text-[#4c739a]">s/d {{ $license->end_date->locale('id')->translatedFormat('d M Y') }}</span>
                             </td>
 
                             {{-- Status --}}
                             <td class="px-4 py-4">
-                                <div class="flex flex-col items-center gap-1">
-                                    @if($license->is_emergency && $license->status === 'pending')
-                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Darurat</span>
+                                <div class="flex flex-col items-center gap-1.5">
+                                    @php $hasPendingExt = $license->extensions->where('status','pending')->isNotEmpty(); @endphp
+                                    
+                                    @if($hasPendingExt)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-[11px] font-bold text-violet-700 shadow-sm ring-1 ring-violet-200 animate-pulse">
+                                            <span class="material-symbols-outlined text-[14px]">more_time</span> Menunggu Perpanjangan
+                                        </span>
+                                    @elseif($license->is_emergency && $license->status === 'pending')
+                                        <span class="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-[11px] font-bold text-orange-700 shadow-sm ring-1 ring-orange-200">Darurat</span>
                                     @elseif($license->status === 'pending')
-                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Menunggu</span>
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-700 shadow-sm ring-1 ring-amber-200 animate-pulse">
+                                            <span class="material-symbols-outlined text-[14px]">new_releases</span> Baru
+                                        </span>
                                     @elseif($license->status === 'approved')
-                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Disetujui</span>
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-200">Disetujui</span>
                                     @elseif($license->status === 'rejected')
-                                        <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">Ditolak</span>
+                                        <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-[11px] font-bold text-rose-700 shadow-sm ring-1 ring-rose-200">Ditolak</span>
                                     @endif
                                     @if($license->student->pending_violations_count > 0)
                                         <span class="inline-flex items-center gap-0.5 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-600">

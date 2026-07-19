@@ -43,6 +43,17 @@ class DashboardController extends Controller
         $izinDisetujui   = StudentLicense::where('academic_year_id', $activeYearId)->where('status', 'approved')->count();
         $izinPending     = StudentLicense::where('academic_year_id', $activeYearId)->where('status', 'pending')->count();
         $izinDitolak     = StudentLicense::where('academic_year_id', $activeYearId)->where('status', 'rejected')->count();
+
+        // Tambahkan pengajuan perpanjangan ke perhitungan
+        $extensions = \App\Models\Licensing\LicenseExtension::whereHas('studentLicense', function($q) use ($activeYearId) {
+            $q->where('academic_year_id', $activeYearId);
+        })->get();
+
+        $extTotal    = $extensions->count();
+        $extApproved = $extensions->where('status', 'approved')->count();
+        $extPending  = $extensions->where('status', 'pending')->count();
+        $extRejected = $extensions->where('status', 'rejected')->count();
+
         $kasusDarurat    = StudentLicense::where('academic_year_id', $activeYearId)
                             ->where('is_emergency', true)
                             ->where('status', 'pending')
@@ -194,7 +205,8 @@ class DashboardController extends Controller
             'totalStudents', 'kepulangan', 'izinDisetujui', 
             'izinPending', 'izinDitolak', 'kasusDarurat',
             'recentLicenses', 'quotaWarnings', 'violationNotifs',
-            'chartData', 'activeYear', 'allAcademicYears'
+            'chartData', 'activeYear', 'allAcademicYears', 
+            'extTotal', 'extApproved', 'extPending', 'extRejected'
         ));
     }
 }

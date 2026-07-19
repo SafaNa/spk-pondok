@@ -24,7 +24,17 @@ class DashboardController extends Controller
         $pendingCount   = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->where('status', 'pending')->count();
         $rejectedCount  = StudentLicense::whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId)->where('status', 'rejected')->count();
 
-        $recentLicenses = StudentLicense::with('student')
+        // Tambahkan pengajuan perpanjangan ke perhitungan
+        $extensions = \App\Models\Licensing\LicenseExtension::whereHas('studentLicense', function($q) use ($studentIds, $activeYearId) {
+            $q->whereIn('student_id', $studentIds)->where('academic_year_id', $activeYearId);
+        })->get();
+
+        $extTotal    = $extensions->count();
+        $extApproved = $extensions->where('status', 'approved')->count();
+        $extPending  = $extensions->where('status', 'pending')->count();
+        $extRejected = $extensions->where('status', 'rejected')->count();
+
+        $recentLicenses = StudentLicense::with(['student', 'extensions'])
             ->whereIn('student_id', $studentIds)
             ->where('academic_year_id', $activeYearId)
             ->latest()
@@ -33,7 +43,8 @@ class DashboardController extends Controller
 
         return view('guardian.dashboard', compact(
             'guardian', 'students', 'recentLicenses',
-            'totalLicenses', 'approvedCount', 'pendingCount', 'rejectedCount'
+            'totalLicenses', 'approvedCount', 'pendingCount', 'rejectedCount',
+            'extTotal', 'extApproved', 'extPending', 'extRejected'
         ));
     }
 }

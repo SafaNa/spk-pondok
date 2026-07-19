@@ -40,7 +40,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-emerald-700 dark:text-emerald-400">Santri Sudah Kembali</h3>
                     <p class="text-emerald-600/80 dark:text-emerald-400 text-sm mt-0.5">
-                        Santri telah ditandai kembali pada <strong>{{ Carbon\Carbon::parse($license->actual_return_date)->format('d F Y') }}</strong>.
+                        Santri telah ditandai kembali pada <strong>{{ Carbon\Carbon::parse($license->actual_return_date)->locale('id')->translatedFormat('d F Y') }}</strong>.
                     </p>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-rose-700 dark:text-rose-400">Telat Kembali!</h3>
                     <p class="text-rose-600/80 dark:text-rose-400 text-sm mt-0.5">
-                        Sudah melewati batas waktu <strong>{{ $lateDays }} hari</strong> sejak {{ $license->end_date->format('d F Y') }}
+                        Sudah melewati batas waktu <strong>{{ $lateDays }} hari</strong> sejak {{ $license->end_date->locale('id')->translatedFormat('d F Y') }}
                     </p>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-amber-700 dark:text-amber-400">Sedang Izin</h3>
                     <p class="text-amber-600/80 dark:text-amber-400 text-sm mt-0.5">
-                        Jatuh tempo kembali pada <strong>{{ $license->end_date->format('d F Y') }}</strong>
+                        Jatuh tempo kembali pada <strong>{{ $license->end_date->locale('id')->translatedFormat('d F Y') }}</strong>
                         ({{ $license->end_date->diffForHumans() }})
                     </p>
                 </div>
@@ -219,14 +219,14 @@
                             <p class="text-xs text-slate-500 mb-1">Tanggal Berangkat</p>
                             <p class="font-semibold text-slate-800 dark:text-white flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px] text-primary">flight_takeoff</span>
-                                {{ $license->start_date->format('d F Y') }}
+                                {{ $license->start_date->locale('id')->translatedFormat('d F Y') }}
                             </p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500 mb-1">Tanggal Kembali (Rencana)</p>
                             <p class="font-semibold {{ $isLate ? 'text-rose-600' : 'text-slate-800 dark:text-white' }} flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[18px] {{ $isLate ? 'text-rose-500' : 'text-primary' }}">event</span>
-                                {{ $license->end_date->format('d F Y') }}
+                                {{ $license->end_date->locale('id')->translatedFormat('d F Y') }}
                                 @if($isLate)
                                     <span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">Telat {{ $lateDays }} hari</span>
                                 @endif
@@ -266,7 +266,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-800 dark:text-white">Izin Diajukan</p>
-                                <p class="text-xs text-slate-500">{{ $license->created_at->format('d F Y, H:i') }}</p>
+                                <p class="text-xs text-slate-500">{{ $license->created_at->locale('id')->translatedFormat('d F Y, H:i') }}</p>
                             </div>
                         </div>
 
@@ -277,7 +277,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-slate-800 dark:text-white">Izin Disetujui</p>
-                                <p class="text-xs text-slate-500">{{ $license->updated_at->format('d F Y, H:i') }}</p>
+                                <p class="text-xs text-slate-500">{{ $license->updated_at->locale('id')->translatedFormat('d F Y, H:i') }}</p>
                             </div>
                         </div>
 
@@ -290,7 +290,7 @@
                                 <p class="text-sm font-bold {{ $isLate ? 'text-rose-600' : 'text-slate-800 dark:text-white' }}">
                                     Jatuh Tempo Kembali {{ $isLate ? '(Telat!)' : '' }}
                                 </p>
-                                <p class="text-xs text-slate-500">{{ $license->end_date->format('d F Y') }}</p>
+                                <p class="text-xs text-slate-500">{{ $license->end_date->locale('id')->translatedFormat('d F Y') }}</p>
                             </div>
                         </div>
 
@@ -302,7 +302,7 @@
                             </div>
                             <div>
                                 <p class="text-sm font-bold text-emerald-600 dark:text-emerald-400">Santri Sudah Kembali</p>
-                                <p class="text-xs text-slate-500">{{ Carbon\Carbon::parse($license->actual_return_date)->format('d F Y') }}</p>
+                                <p class="text-xs text-slate-500">{{ Carbon\Carbon::parse($license->actual_return_date)->locale('id')->translatedFormat('d F Y') }}</p>
                             </div>
                         </div>
                         @else

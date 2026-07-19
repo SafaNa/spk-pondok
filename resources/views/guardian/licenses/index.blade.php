@@ -38,16 +38,25 @@
                         <th class="px-5 py-3 text-xs font-semibold text-[#4c739a] uppercase whitespace-nowrap">Kembali</th>
                         <th class="px-5 py-3 text-xs font-semibold text-[#4c739a] uppercase whitespace-nowrap">Diajukan</th>
                         <th class="px-5 py-3 text-xs font-semibold text-[#4c739a] uppercase text-center">Status</th>
+                        <th class="px-5 py-3 text-xs font-semibold text-[#4c739a] uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-[#e7edf3] dark:divide-slate-700">
                     @forelse($licenses as $license)
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td class="px-5 py-3 text-sm font-medium text-[#0d141b] dark:text-white whitespace-nowrap">{{ $license->student?->name ?? '-' }}</td>
-                            <td class="px-5 py-3 text-sm text-[#0d141b] dark:text-white max-w-xs truncate">{{ $license->description ?? '-' }}</td>
-                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->start_date->format('d M Y') }}</td>
-                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->end_date->format('d M Y') }}</td>
-                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->created_at->format('d M Y') }}</td>
+                            <td class="px-5 py-3 text-sm text-[#0d141b] dark:text-white max-w-xs truncate">{{ $license->leaveReason?->reason ?? '-' }}</td>
+                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->start_date->locale('id')->translatedFormat('d M Y') }}</td>
+                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">
+                                {{ $license->end_date->locale('id')->translatedFormat('d M Y') }}
+                                @if($license->status === 'approved' && !$license->actual_return_date)
+                                    @php $ext = $license->extensions->where('status','pending')->first(); @endphp
+                                    @if($ext)
+                                        <span class="ml-1 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">+Perpanjangan</span>
+                                    @endif
+                                @endif
+                            </td>
+                            <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->created_at->locale('id')->translatedFormat('d M Y') }}</td>
                             <td class="px-5 py-3 text-center">
                                 @if($license->status === 'pending')
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Menunggu</span>
@@ -57,10 +66,45 @@
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">Ditolak</span>
                                 @endif
                             </td>
+                            <td class="px-5 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    {{-- Tombol Detail (Muncul untuk semua status) --}}
+                                    <a href="{{ route('guardian.licenses.show', $license) }}" title="Lihat Detail"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </a>
+
+                                    @if($license->status === 'pending')
+                                        {{-- Tombol Edit (Hanya jika Menunggu) --}}
+                                        <a href="{{ route('guardian.licenses.edit', $license) }}" title="Edit Pengajuan"
+                                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </a>
+                                        
+                                        {{-- Tombol Hapus (Hanya jika Menunggu) --}}
+                                        <form action="{{ route('guardian.licenses.destroy', $license) }}" method="POST" class="inline-block"
+                                            onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan izin ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" title="Batalkan Pengajuan"
+                                                class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if($license->status === 'approved' && !$license->actual_return_date)
+                                        <a href="{{ route('guardian.licenses.extend', $license) }}" title="Tambah Perpanjangan"
+                                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">more_time</span>
+                                        </a>
+                                    @endif
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-12 text-center">
+                            <td colspan="7" class="px-5 py-12 text-center">
                                 <span class="material-symbols-outlined text-4xl text-slate-300 block mb-2">history</span>
                                 <p class="text-sm text-[#4c739a]">Belum ada riwayat pengajuan izin.</p>
                                 <a href="{{ route('guardian.licenses.create') }}" class="inline-flex items-center gap-1 mt-3 text-sm font-semibold text-primary hover:underline">

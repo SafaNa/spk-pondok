@@ -52,6 +52,42 @@
         </div>
     @endif
 
+    {{-- Notifikasi Password Wali Baru (dari form tambah santri) --}}
+    @if(session('created_guardian_password'))
+        <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700/50 overflow-hidden shadow-sm">
+            <div class="flex items-start gap-4 px-5 py-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-300">
+                    <span class="material-symbols-outlined text-[22px]">key</span>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-emerald-800 dark:text-emerald-200 text-sm mb-1">
+                        Akun wali <span class="text-emerald-700 dark:text-emerald-300">{{ session('created_guardian_name') }}</span> berhasil dibuat!
+                    </p>
+                    <p class="text-xs text-emerald-700 dark:text-emerald-400 mb-3">Berikan informasi login berikut kepada wali / santri:</p>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-700 px-3 py-2">
+                            <span class="material-symbols-outlined text-[15px] text-emerald-500">alternate_email</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Username:</span>
+                            <span class="text-sm font-bold text-slate-800 dark:text-white font-mono">{{ session('created_guardian_username') }}</span>
+                        </div>
+                        <div class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-700 px-3 py-2">
+                            <span class="material-symbols-outlined text-[15px] text-emerald-500">lock</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">Password:</span>
+                            <span class="text-sm font-bold text-slate-800 dark:text-white font-mono">{{ session('created_guardian_password') }}</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[13px]">info</span>
+                        Notifikasi ini hanya tampil sekali. Simpan password sebelum meninggalkan halaman ini.
+                    </p>
+                </div>
+                <button onclick="this.closest('.mb-6').remove()" class="text-emerald-400 hover:text-emerald-600 transition-colors shrink-0">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </div>
+    @endif
+
     <!-- Filter & Search Bar -->
     <div class="mb-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 p-4">
         <form action="{{ route('admin.students.index') }}" method="GET">

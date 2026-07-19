@@ -121,7 +121,7 @@
                                             {{ $statusText }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3 text-[#4c739a] text-sm">{{ $r->created_at->format('d M Y, H:i') }}</td>
+                                    <td class="px-6 py-3 text-[#4c739a] text-sm">{{ $r->created_at->locale('id')->translatedFormat('d M Y, H:i') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

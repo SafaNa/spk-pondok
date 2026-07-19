@@ -178,6 +178,7 @@ class StudentController extends Controller
 
         $student = Student::create($validated);
 
+        $createdGuardian = null;
         if ($request->filled('wali_name')) {
             $guardian = Guardian::create([
                 'name'         => $request->wali_name,
@@ -188,10 +189,24 @@ class StudentController extends Controller
                 'relationship' => $request->wali_relationship ?? 'ayah',
             ]);
             $student->guardians()->attach($guardian->id);
+            $createdGuardian = [
+                'name'     => $guardian->name,
+                'username' => $guardian->username,
+                'password' => $request->wali_password,
+            ];
         }
 
-        return redirect()->route('admin.students.index')
+        $redirect = redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil ditambahkan');
+
+        if ($createdGuardian) {
+            $redirect = $redirect
+                ->with('created_guardian_name', $createdGuardian['name'])
+                ->with('created_guardian_username', $createdGuardian['username'])
+                ->with('created_guardian_password', $createdGuardian['password']);
+        }
+
+        return $redirect;
     }
 
     public function update(Request $request, Student $student)

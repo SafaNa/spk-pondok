@@ -81,7 +81,7 @@
                             </td>
                             <td class="px-4 py-4">
                                 <span class="block text-sm font-semibold {{ now()->startOfDay()->gt($license->end_date) ? 'text-rose-600' : 'text-[#0d141b]' }}">
-                                    {{ $license->end_date->format('d M Y') }}
+                                    {{ $license->end_date->locale('id')->translatedFormat('d M Y') }}
                                 </span>
                             </td>
                             <td class="px-4 py-4 text-center">
