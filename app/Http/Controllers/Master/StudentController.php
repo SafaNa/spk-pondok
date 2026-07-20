@@ -160,7 +160,7 @@ class StudentController extends Controller
             'wali_password'     => 'required_with:wali_name|nullable|string|min:6',
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
-            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
+            'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -186,7 +186,7 @@ class StudentController extends Controller
                 'password'     => Hash::make($request->wali_password),
                 'phone'        => $request->wali_phone,
                 'email'        => $request->wali_email,
-                'relationship' => $request->wali_relationship ?? 'ayah',
+                'relationship' => $request->wali_relationship ?? 'father',
             ]);
             $student->guardians()->attach($guardian->id);
             $createdGuardian = [
@@ -259,7 +259,7 @@ class StudentController extends Controller
             'wali_password'     => 'nullable|string|min:6',
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
-            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
+            'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -281,7 +281,7 @@ class StudentController extends Controller
                 'username'     => $request->wali_username,
                 'phone'        => $request->wali_phone,
                 'email'        => $request->wali_email,
-                'relationship' => $request->wali_relationship ?? 'ayah',
+                'relationship' => $request->wali_relationship ?? 'father',
             ];
             if ($request->filled('wali_password')) {
                 $waliData['password'] = Hash::make($request->wali_password);

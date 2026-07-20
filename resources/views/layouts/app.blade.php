@@ -721,9 +721,10 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        {{-- Generic Confirmation Modal --}}
-        <div x-data @keydown.escape.window="$store.confirmModal.cancel()" x-show="$store.confirmModal.show" x-cloak
+    {{-- Generic Confirmation Modal --}}
+    <div x-data @keydown.escape.window="$store.confirmModal.cancel()" x-show="$store.confirmModal.show" x-cloak
             class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             {{-- Backdrop --}}
             <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
@@ -823,7 +824,6 @@
 
 
         <!-- Page-specific Scripts -->
-        <x-cropper-modal />
         @stack('scripts')
 
         <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
@@ -871,5 +871,8 @@
 
         <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <!-- Cropper Modal: HARUS setelah Alpine.js agar listener tidak ditimpa -->
+        <x-cropper-modal />
     </body>
 </html>

@@ -58,7 +58,7 @@ class UserController extends Controller
         ]);
 
         $photoPath = $request->hasFile('photo')
-            ? $request->file('photo')->store('users', 'public')
+            ? \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'users')
             : null;
 
         User::create([
@@ -102,10 +102,10 @@ class UserController extends Controller
         ];
 
         if ($request->hasFile('photo')) {
-            if ($user->photo) {
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
                 Storage::disk('public')->delete($user->photo);
             }
-            $data['photo'] = $request->file('photo')->store('users', 'public');
+            $data['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'users');
         }
 
         if (!empty($validated['password'])) {

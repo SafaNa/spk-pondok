@@ -735,11 +735,11 @@
                                 </div>
                                 <select name="wali_relationship" style="background-image: none;"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
-                                    @php $selRel = old('wali_relationship', $existingWali?->relationship ?? 'ayah'); @endphp
-                                    <option value="ayah"    {{ $selRel === 'ayah'    ? 'selected' : '' }}>Ayah</option>
-                                    <option value="ibu"     {{ $selRel === 'ibu'     ? 'selected' : '' }}>Ibu</option>
-                                    <option value="wali"    {{ $selRel === 'wali'    ? 'selected' : '' }}>Wali</option>
-                                    <option value="saudara" {{ $selRel === 'saudara' ? 'selected' : '' }}>Saudara</option>
+                                    @php $selRel = old('wali_relationship', $existingWali?->relationship ?? 'father'); @endphp
+                                    <option value="father"   {{ $selRel === 'father'   ? 'selected' : '' }}>Ayah</option>
+                                    <option value="mother"   {{ $selRel === 'mother'   ? 'selected' : '' }}>Ibu</option>
+                                    <option value="guardian" {{ $selRel === 'guardian' ? 'selected' : '' }}>Wali</option>
+                                    <option value="sibling"  {{ $selRel === 'sibling'  ? 'selected' : '' }}>Saudara</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                                     <span class="material-symbols-outlined">expand_more</span>

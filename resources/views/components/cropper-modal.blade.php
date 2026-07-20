@@ -1,150 +1,152 @@
-<div id="cropperModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 sm:p-6" style="background: rgba(15,23,42,0.8); backdrop-filter: blur(4px);">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700 animate-fade-in relative">
-        <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
-            <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+<div id="cropperModal" class="fixed inset-0 z-[9999] items-center justify-center p-4 sm:p-6" style="display:none; background: rgba(15,23,42,0.8); backdrop-filter: blur(4px);">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700 animate-fade-in relative">
+        
+        {{-- Modal Header --}}
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 shrink-0">
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary">crop</span>
                 Sesuaikan Foto
             </h3>
-            <button type="button" onclick="closeCropperModal()" class="text-slate-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50 dark:hover:bg-red-500/10 p-1">
-                <span class="material-symbols-outlined">close</span>
+            <button type="button" onclick="window.closeCropperModal()" class="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 p-2 rounded-xl transition-colors">
+                <span class="material-symbols-outlined text-[24px]">close</span>
             </button>
         </div>
-        <div class="p-4 bg-slate-100 dark:bg-slate-950 flex justify-center items-center h-[350px] sm:h-[400px]">
-            <div class="w-full h-full">
-                <img id="cropperImage" src="" alt="Cropper" class="max-w-full block">
+
+        {{-- Cropper Container --}}
+        <div class="p-4 sm:p-6 bg-slate-100 dark:bg-slate-900 flex-1 flex items-center justify-center overflow-hidden min-h-[300px]">
+            <div class="w-full h-full max-h-[50vh] mx-auto shadow-inner rounded-xl overflow-hidden bg-black/5 relative flex items-center justify-center">
+                <img id="cropperImage" src="" alt="Image to crop" style="max-width:100%; max-height:100%; display:block;">
             </div>
         </div>
-        <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 bg-white dark:bg-slate-900">
-            <button type="button" onclick="closeCropperModal()" class="px-5 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors text-sm">
+
+        {{-- Modal Footer --}}
+        <div class="px-6 py-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex items-center justify-end gap-3">
+            <button type="button" onclick="window.closeCropperModal()" class="px-5 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                 Batal
             </button>
-            <button type="button" id="cropSaveBtn" class="px-5 py-2.5 rounded-xl font-semibold bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all text-sm flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">check</span>
+            <button type="button" onclick="window.saveCrop()" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">crop</span>
                 Potong & Simpan
             </button>
         </div>
+
     </div>
 </div>
 
-<style>
-    /* Prevent cropper image from overflowing before initialization */
-    #cropperImage { max-height: 100%; max-width: 100%; display: block; }
-</style>
-
 <script>
-    let cropper = null;
-    let currentFileInput = null;
-    let cropperModal = document.getElementById('cropperModal');
-    let cropperImage = document.getElementById('cropperImage');
-    let cropSaveBtn = document.getElementById('cropSaveBtn');
+(function() {
+    // Hindari registrasi ulang jika script sudah pernah jalan
+    if (window._cropperReady) return;
+    window._cropperReady = true;
 
+    var cropperInstance = null;
+    var currentFileInput = null;
+
+    // SATU listener saja di document level
     document.addEventListener('change', function(e) {
-        if (e.target && e.target.matches('input[type="file"].crop-avatar')) {
-            const file = e.target.files[0];
-            if (!file) return;
+        if (!e.target || !e.target.classList || !e.target.classList.contains('crop-avatar')) return;
+        
+        var file = e.target.files[0];
+        if (!file) return;
+        if (e.target.dataset.isCropped === '1') return;
+        if (!file.type.startsWith('image/')) return;
 
-            // Skip if this is our programmatically dispatched file
-            if (e.target.dataset.isCropped === "1") {
-                delete e.target.dataset.isCropped;
-                return;
-            }
+        currentFileInput = e.target;
 
-            // Must be image
-            if (!file.type.startsWith('image/')) return;
-
-            currentFileInput = e.target;
-
-            // Read file and load into cropper
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                cropperImage.src = event.target.result;
-                openCropperModal();
-            };
-            reader.readAsDataURL(file);
-            
-            // Prevent default form behavior temporarily if any
-            e.preventDefault();
-        }
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+            var img = document.getElementById('cropperImage');
+            if (!img) return;
+            img.src = evt.target.result;
+            openModal();
+        };
+        reader.readAsDataURL(file);
     });
 
-    function openCropperModal() {
-        cropperModal.classList.remove('hidden');
-        cropperModal.classList.add('flex');
-        
-        if (cropper) {
-            cropper.destroy();
+    function openModal() {
+        var modal = document.getElementById('cropperModal');
+        var img = document.getElementById('cropperImage');
+        if (!modal || !img) return;
+
+        // Gunakan inline style, BUKAN class Tailwind, dengan important
+        modal.style.setProperty('display', 'flex', 'important');
+
+        if (cropperInstance) {
+            cropperInstance.destroy();
+            cropperInstance = null;
         }
 
-        cropper = new Cropper(cropperImage, {
-            aspectRatio: 1, // 1:1 Square
-            viewMode: 1, // Restrict the crop box to not exceed the size of the canvas
-            dragMode: 'move',
-            autoCropArea: 0.9,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: false,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false,
-        });
+        setTimeout(function() {
+            cropperInstance = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 1,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+        }, 150);
     }
 
-    function closeCropperModal() {
-        cropperModal.classList.add('hidden');
-        cropperModal.classList.remove('flex');
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
+    window.closeCropperModal = function() {
+        var modal = document.getElementById('cropperModal');
+        var img = document.getElementById('cropperImage');
+
+        if (cropperInstance) {
+            cropperInstance.destroy();
+            cropperInstance = null;
         }
+        if (img) img.src = '';
+        if (modal) modal.style.display = 'none';
+        
         if (currentFileInput) {
-            // If canceled, reset the input
             currentFileInput.value = '';
             currentFileInput = null;
         }
-    }
+    };
 
-    cropSaveBtn.addEventListener('click', function() {
-        if (!cropper || !currentFileInput) return;
+    window.saveCrop = function() {
+        if (!cropperInstance || !currentFileInput) return;
 
-        // Show loading state
-        const originalText = cropSaveBtn.innerHTML;
-        cropSaveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Memproses...';
-        cropSaveBtn.disabled = true;
-
-        // Get cropped canvas
-        const canvas = cropper.getCroppedCanvas({
-            width: 800,
-            height: 800,
+        var canvas = cropperInstance.getCroppedCanvas({
+            width: 500,
+            height: 500,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
         });
 
+        if (!canvas) return;
+
         canvas.toBlob(function(blob) {
-            // Create a new File from the blob
-            const ext = currentFileInput.files[0].name.split('.').pop();
-            const fileName = 'cropped_avatar.' + (ext === 'png' ? 'png' : 'jpg');
-            const file = new File([blob], fileName, { type: blob.type, lastModified: new Date().getTime() });
+            if (!blob) return;
 
-            // Create DataTransfer to simulate file selection
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
+            var originalName = (currentFileInput.files[0] && currentFileInput.files[0].name) || 'avatar.png';
+            var ext = originalName.split('.').pop();
+            var file = new File([blob], 'cropped_avatar.' + ext, { type: blob.type });
 
-            // Replace input files
-            currentFileInput.files = dataTransfer.files;
-            currentFileInput.dataset.isCropped = "1"; // Mark as cropped to prevent infinite loop
+            var dt = new DataTransfer();
+            dt.items.add(file);
 
-            // Dispatch change event to trigger Alpine/Vue/other preview listeners
+            currentFileInput.dataset.isCropped = '1';
+            currentFileInput.files = dt.files;
             currentFileInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-            // Cleanup & Close
-            cropSaveBtn.innerHTML = originalText;
-            cropSaveBtn.disabled = false;
-            
-            // Close modal without resetting the input
-            const inputRef = currentFileInput;
-            currentFileInput = null; // unset so closeCropperModal doesn't reset it
-            closeCropperModal();
-        }, 'image/jpeg', 0.9);
-    });
+            // Tutup modal tanpa reset input
+            var modal = document.getElementById('cropperModal');
+            var img = document.getElementById('cropperImage');
+            if (cropperInstance) {
+                cropperInstance.destroy();
+                cropperInstance = null;
+            }
+            if (img) img.src = '';
+            if (modal) modal.style.display = 'none';
+            currentFileInput = null;
+        }, 'image/png');
+    };
+})();
 </script>
