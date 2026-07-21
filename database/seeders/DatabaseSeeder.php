@@ -9,6 +9,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            SettingSeeder::class,
             DepartmentSeeder::class,
             UserSeeder::class,
             \Laravolt\Indonesia\Seeds\DatabaseSeeder::class,
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
             SantriSeeder::class,
             LeaveCategorySeeder::class,
             ViolationSeeder::class,
+            History2023Seeder::class,
         ]);
     }
 }
