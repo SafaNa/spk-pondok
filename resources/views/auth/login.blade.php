@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - SIM Kepulangan Santri</title>
+    <title>Admin Login - {{ $appSetting->app_name ?? 'SIM Kepulangan Santri' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 
     <!-- Google Fonts -->
@@ -56,22 +56,25 @@
             </div>
             <div class="relative z-10">
                 <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-                        <span class="material-symbols-outlined text-3xl">school</span>
+                    <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg flex h-10 w-10 items-center justify-center overflow-hidden">
+                        @if(isset($appSetting) && $appSetting->logo)
+                            <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain">
+                        @else
+                            <span class="material-symbols-outlined text-3xl">school</span>
+                        @endif
                     </div>
-                    <span class="text-xl font-bold tracking-wide uppercase">Sistem Informasi Manajemen Santri</span>
+                    <span class="text-xl font-bold tracking-wide uppercase">{{ $appSetting->pesantren_name ?? 'Pesantren Administration System' }}</span>
                 </div>
             </div>
             <div class="relative z-10 max-w-lg">
-                <h1 class="text-2xl md:text-3xl font-bold leading-tight mb-6">SISTEM VALIDASI IZIN DAN KEPULANGAN SANTRI
+                <h1 class="text-2xl md:text-3xl font-bold leading-tight mb-6">{{ $appSetting->app_name ?? 'SISTEM VALIDASI IZIN DAN KEPULANGAN SANTRI' }}
                 </h1>
                 <p class="text-lg text-blue-50 leading-relaxed opacity-90">
-                    Sistem informasi terintegrasi untuk mengelola validasi perizinan kepulangan santri, pembayaran SPP,
-                    dan pencatatan pelanggaran dalam satu platform yang terpadu dan efisien.
+                    {{ $appSetting->description ?? 'Sistem informasi terintegrasi untuk mengelola validasi perizinan kepulangan santri, pembayaran SPP, dan pencatatan pelanggaran dalam satu platform yang terpadu dan efisien.' }}
                 </p>
             </div>
             <div class="relative z-10 text-sm text-blue-100 opacity-60">
-                © {{ date('Y') }} Pesantren Administration System.
+                © {{ date('Y') }} {{ $appSetting->pesantren_name ?? 'Pesantren Administration System' }}.
             </div>
         </div>
 
@@ -79,8 +82,12 @@
         <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-12 relative">
             <!-- Mobile Header Logo (Visible only on small screens) -->
             <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-primary">
-                <span class="material-symbols-outlined text-3xl">school</span>
-                <span class="font-bold text-lg text-[#0d141b] dark:text-white">SIM Santri</span>
+                @if(isset($appSetting) && $appSetting->logo)
+                    <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="h-8 w-8 object-contain">
+                @else
+                    <span class="material-symbols-outlined text-3xl">school</span>
+                @endif
+                <span class="font-bold text-lg text-[#0d141b] dark:text-white">{{ $appSetting->pesantren_name ?? 'Pesantren' }}</span>
             </div>
 
             <div class="w-full max-w-[480px] flex flex-col gap-6">

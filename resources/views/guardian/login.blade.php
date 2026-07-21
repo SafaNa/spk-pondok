@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Wali Santri</title>
+    <title>Login Wali Santri - {{ $appSetting->app_name ?? 'SIM Kepulangan Santri' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -13,8 +13,12 @@
     <div class="w-full max-w-sm">
 
         <div class="text-center mb-8">
-            <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 mb-4">
-                <span class="material-symbols-outlined text-[32px]">family_restroom</span>
+            <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 mb-4 overflow-hidden">
+                @if(isset($appSetting) && $appSetting->logo)
+                    <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain bg-white">
+                @else
+                    <span class="material-symbols-outlined text-[32px]">family_restroom</span>
+                @endif
             </div>
             <h1 class="text-2xl font-black text-[#0d141b] dark:text-white">Portal Wali Santri</h1>
             <p class="text-sm text-[#4c739a] mt-1">Masuk untuk mengelola pengajuan izin santri Anda</p>
