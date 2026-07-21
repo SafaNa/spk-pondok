@@ -132,11 +132,27 @@ class UpdateStudentAddresses extends Command
             $cityCode = substr($districtCode, 0, 4);
             $provinceCode = substr($cityCode, 0, 2);
 
+            $cityName = \Laravolt\Indonesia\Models\City::where('code', $cityCode)->value('name');
+            $birthPlace = ucwords(strtolower(str_replace(['KABUPATEN ', 'KOTA '], '', $cityName)));
+            
+            $villageName = ucwords(strtolower($village->name));
+            $districtName = ucwords(strtolower($village->district->name));
+            
+            $streetPrefixes = ['Jl. Raya', 'Jl. Merdeka', 'Jl. Pahlawan', 'Jl. Diponegoro', 'Jl. Sudirman', 'Jl. KH. Hasyim Asyari', 'Gg. Mawar', 'Gg. Melati'];
+            $prefix = $streetPrefixes[array_rand($streetPrefixes)];
+            $no = rand(1, 150);
+            $rt = '0' . rand(1, 9);
+            $rw = '0' . rand(1, 5);
+            
+            $fakeAddress = "{$prefix} {$villageName} No. {$no}, RT {$rt}/RW {$rw}";
+
             $student->update([
                 'province_code' => $provinceCode,
                 'city_code' => $cityCode,
                 'district_code' => $districtCode,
                 'village_code' => $village->code,
+                'birth_place' => $birthPlace,
+                'address' => $fakeAddress,
             ]);
 
             $currentIndex++;
