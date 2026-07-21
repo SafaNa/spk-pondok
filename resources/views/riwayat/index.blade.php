@@ -87,7 +87,7 @@
                             <tr
                                 class="border-b border-[#e7edf3] dark:border-slate-700 text-xs uppercase tracking-wider text-[#4c739a]">
                                 <th class="px-6 py-3 font-semibold whitespace-nowrap">Nama Santri</th>
-                                <th class="px-6 py-3 font-semibold whitespace-nowrap">NIS</th>
+                                <th class="px-6 py-3 font-semibold whitespace-nowrap">NIS / NIM</th>
                                 <th class="px-6 py-3 font-semibold whitespace-nowrap">Nilai Akhir</th>
                                 <th class="px-6 py-3 font-semibold whitespace-nowrap">Status</th>
                                 <th class="px-6 py-3 font-semibold whitespace-nowrap">Tanggal</th>

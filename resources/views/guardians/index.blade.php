@@ -159,7 +159,17 @@
                             <td class="px-5 py-3 text-sm text-[#4c739a] font-mono">{{ $guardian->username }}</td>
                             <td class="px-5 py-3">
                                 @php
-                                    $relMap = ['father'=>['label'=>'Ayah','color'=>'blue'], 'mother'=>['label'=>'Ibu','color'=>'pink'], 'guardian'=>['label'=>'Wali','color'=>'amber'], 'sibling'=>['label'=>'Saudara','color'=>'green']];
+                                    $relMap = [
+                                        'father' => ['label' => 'Ayah', 'color' => 'blue'],
+                                        'mother' => ['label' => 'Ibu', 'color' => 'pink'],
+                                        'sibling' => ['label' => 'Saudara', 'color' => 'emerald'],
+                                        'uncle' => ['label' => 'Paman', 'color' => 'cyan'],
+                                        'aunt' => ['label' => 'Bibi', 'color' => 'rose'],
+                                        'nephew_niece' => ['label' => 'Keponakan', 'color' => 'teal'],
+                                        'grandfather' => ['label' => 'Kakek', 'color' => 'slate'],
+                                        'grandmother' => ['label' => 'Nenek', 'color' => 'gray'],
+                                        'guardian' => ['label' => 'Wali', 'color' => 'amber']
+                                    ];
                                     $rel = $relMap[$guardian->relationship] ?? ['label'=>ucfirst($guardian->relationship),'color'=>'slate'];
                                 @endphp
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold

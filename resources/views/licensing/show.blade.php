@@ -136,7 +136,7 @@
                     @endif
                     <div>
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $name }}</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">NIS. {{ $license->student->nis ?? '-' }}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ $license->student->identifier_label ?? 'NIS' }}. {{ $license->student->nis ?? '-' }}</p>
                     </div>
                 </div>
 

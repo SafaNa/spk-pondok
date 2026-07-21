@@ -103,10 +103,14 @@
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Hubungan dengan Santri <span class="text-red-500">*</span></label>
                     <select name="relationship" required
                         class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
-                        <option value="father"   {{ old('relationship', $guardian->relationship) === 'father'   ? 'selected' : '' }}>Ayah</option>
-                        <option value="mother"   {{ old('relationship', $guardian->relationship) === 'mother'   ? 'selected' : '' }}>Ibu</option>
-                        <option value="guardian" {{ old('relationship', $guardian->relationship) === 'guardian' ? 'selected' : '' }}>Wali</option>
-                        <option value="sibling"  {{ old('relationship', $guardian->relationship) === 'sibling'  ? 'selected' : '' }}>Saudara</option>
+                        <option value="father"        {{ old('relationship', $guardian->relationship) === 'father'        ? 'selected' : '' }}>Ayah</option>
+                        <option value="mother"        {{ old('relationship', $guardian->relationship) === 'mother'        ? 'selected' : '' }}>Ibu</option>
+                        <option value="sibling"       {{ old('relationship', $guardian->relationship) === 'sibling'       ? 'selected' : '' }}>Saudara Kandung</option>
+                        <option value="uncle"         {{ old('relationship', $guardian->relationship) === 'uncle'         ? 'selected' : '' }}>Paman</option>
+                        <option value="aunt"          {{ old('relationship', $guardian->relationship) === 'aunt'          ? 'selected' : '' }}>Bibi</option>
+                        <option value="nephew_niece"  {{ old('relationship', $guardian->relationship) === 'nephew_niece'  ? 'selected' : '' }}>Keponakan</option>
+                        <option value="grandfather"   {{ old('relationship', $guardian->relationship) === 'grandfather'   ? 'selected' : '' }}>Kakek</option>
+                        <option value="grandmother"   {{ old('relationship', $guardian->relationship) === 'grandmother'   ? 'selected' : '' }}>Nenek</option>
                     </select>
                     @error('relationship')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>

@@ -72,10 +72,14 @@
                                 </div>
                                 <select name="relationship" required style="background-image: none;"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
-                                    <option value="father" {{ old('relationship', $guardian->relationship) == 'father' ? 'selected' : '' }}>Ayah</option>
-                                    <option value="mother" {{ old('relationship', $guardian->relationship) == 'mother' ? 'selected' : '' }}>Ibu</option>
-                                    <option value="guardian" {{ old('relationship', $guardian->relationship) == 'guardian' ? 'selected' : '' }}>Wali</option>
-                                    <option value="sibling" {{ old('relationship', $guardian->relationship) == 'sibling' ? 'selected' : '' }}>Saudara</option>
+                                    <option value="father"        {{ old('relationship', $guardian->relationship) == 'father'        ? 'selected' : '' }}>Ayah</option>
+                                    <option value="mother"        {{ old('relationship', $guardian->relationship) == 'mother'        ? 'selected' : '' }}>Ibu</option>
+                                    <option value="sibling"       {{ old('relationship', $guardian->relationship) == 'sibling'       ? 'selected' : '' }}>Saudara Kandung</option>
+                                    <option value="uncle"         {{ old('relationship', $guardian->relationship) == 'uncle'         ? 'selected' : '' }}>Paman</option>
+                                    <option value="aunt"          {{ old('relationship', $guardian->relationship) == 'aunt'          ? 'selected' : '' }}>Bibi</option>
+                                    <option value="nephew_niece"  {{ old('relationship', $guardian->relationship) == 'nephew_niece'  ? 'selected' : '' }}>Keponakan</option>
+                                    <option value="grandfather"   {{ old('relationship', $guardian->relationship) == 'grandfather'   ? 'selected' : '' }}>Kakek</option>
+                                    <option value="grandmother"   {{ old('relationship', $guardian->relationship) == 'grandmother'   ? 'selected' : '' }}>Nenek</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                                     <span class="material-symbols-outlined">expand_more</span>
@@ -230,7 +234,7 @@
                                             </svg>
                                         </div>
                                         <input type="text" x-model="search" @input="doSearch()" @click.stop
-                                            placeholder="Ketik nama atau NIS santri..."
+                                            placeholder="Ketik nama atau NIS / NIM santri..."
                                             class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
                                     </div>
                                 </div>

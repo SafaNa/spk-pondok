@@ -18,7 +18,7 @@
     {{-- Filter and Search Form --}}
     <form action="{{ route('admin.memorization.index') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full 2xl:w-auto mb-4">
         <div class="w-full sm:w-auto flex-1 min-w-[200px]">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari NIS/Nama..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" />
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari NIS / NIM/Nama..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" />
         </div>
         <div class="w-full sm:w-auto">
             <select name="education_level" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg pl-3 pr-8 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm truncate" onchange="this.form.submit()">

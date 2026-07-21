@@ -112,7 +112,7 @@
                             @endif
                             <div class="flex-1 min-w-0">
                                 <p class="font-bold text-[#0d141b] dark:text-white text-sm truncate">{{ $student->name }}</p>
-                                <p class="text-xs text-[#4c739a] mb-3">NIS: {{ $student->nis ?? '-' }}</p>
+                                <p class="text-xs text-[#4c739a] mb-3">{{ $student->identifier_label }}: {{ $student->nis ?? '-' }}</p>
                                 <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-xs">
                                     <div>
                                         <p class="text-[#4c739a]">Rayon</p>

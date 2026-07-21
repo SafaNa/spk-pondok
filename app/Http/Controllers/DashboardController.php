@@ -105,11 +105,16 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $driver = DB::connection()->getDriverName();
+        $monthFormatSql = $driver === 'pgsql' ? "to_char(start_date, 'Mon YYYY')" : 'DATE_FORMAT(start_date, "%b %Y")';
+        $yearSql = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM start_date)' : 'YEAR(start_date)';
+        $monthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM start_date)' : 'MONTH(start_date)';
+
         // 3. Tren Pengajuan Izin Bulanan (Area/Line)
-        $licenseTrend = StudentLicense::selectRaw('DATE_FORMAT(start_date, "%b %Y") as month_name, count(*) as total')
+        $licenseTrend = StudentLicense::selectRaw($monthFormatSql . ' as month_name, count(*) as total')
             ->where('academic_year_id', $activeYearId)
-            ->groupBy('month_name', DB::raw('YEAR(start_date)'), DB::raw('MONTH(start_date)'))
-            ->orderByRaw('YEAR(start_date), MONTH(start_date)')
+            ->groupBy('month_name', DB::raw($yearSql), DB::raw($monthSql))
+            ->orderByRaw($yearSql . ', ' . $monthSql)
             ->get();
 
         // 4. Kategori Pelanggaran (Doughnut)
@@ -120,11 +125,15 @@ class DashboardController extends Controller
             ->groupBy('violation_categories.id', 'violation_categories.name')
             ->get();
 
+        $vMonthFormatSql = $driver === 'pgsql' ? "to_char(date, 'Mon YYYY')" : 'DATE_FORMAT(date, "%b %Y")';
+        $vYearSql = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM date)' : 'YEAR(date)';
+        $vMonthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM date)' : 'MONTH(date)';
+
         // 5. Tren Pelanggaran Bulanan (Area)
-        $violationTrend = ViolationRecord::selectRaw('DATE_FORMAT(date, "%b %Y") as month_name, count(*) as total')
+        $violationTrend = ViolationRecord::selectRaw($vMonthFormatSql . ' as month_name, count(*) as total')
             ->whereIn('period_id', $activePeriods)
-            ->groupBy('month_name', DB::raw('YEAR(date)'), DB::raw('MONTH(date)'))
-            ->orderByRaw('YEAR(date), MONTH(date)')
+            ->groupBy('month_name', DB::raw($vYearSql), DB::raw($vMonthSql))
+            ->orderByRaw($vYearSql . ', ' . $vMonthSql)
             ->get();
 
         // 6. Top 5 Rayon Pelanggaran (Horizontal Bar)

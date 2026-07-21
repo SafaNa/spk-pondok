@@ -105,7 +105,7 @@
                         <div>
                             <p class="text-sm text-[#4c739a] mb-1">Nama Lengkap</p>
                             <p class="font-bold text-[#0d141b] dark:text-white">{{ $violation->student->name }}</p>
-                            <p class="text-sm text-[#4c739a] mt-0.5">NIS: {{ $violation->student->nis }}</p>
+                            <p class="text-sm text-[#4c739a] mt-0.5">{{ $violation->student->identifier_label ?? 'NIS' }}: {{ $violation->student->nis }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-[#4c739a] mb-1">Pendidikan</p>

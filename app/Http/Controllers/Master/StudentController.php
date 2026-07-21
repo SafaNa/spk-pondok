@@ -92,7 +92,66 @@ class StudentController extends Controller
         $rooms = Room::with('rayon')->orderBy('name')->get();
         $educationLevels = EducationLevel::where('type', 'formal')->orderBy('name')->get();
 
-        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels'));
+        $stats = [
+            'total_students' => Student::count(),
+            'active_students' => Student::where('status', 'active')->count(),
+            'total_rayons' => Rayon::count(),
+            'total_rooms' => Room::count(),
+        ];
+
+        $rawStats = Student::select('city_code', 'district_code', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+            ->whereNotNull('city_code')
+            ->groupBy('city_code', 'district_code')
+            ->with(['city', 'district'])
+            ->get();
+
+        $sumenepStats = [];
+        $pamekasanTotal = 0;
+        $sampangTotal = 0;
+        $bangkalanTotal = 0;
+        $luarMaduraTotal = 0;
+
+        foreach ($rawStats as $stat) {
+            if (!$stat->city) continue;
+
+            $cityName = strtoupper($stat->city->name);
+
+            if (str_contains($cityName, 'SUMENEP')) {
+                if ($stat->district) {
+                    $label = 'Kec. ' . ucwords(strtolower($stat->district->name));
+                    if (!isset($sumenepStats[$label])) $sumenepStats[$label] = 0;
+                    $sumenepStats[$label] += $stat->total;
+                }
+            } elseif (str_contains($cityName, 'PAMEKASAN')) {
+                $pamekasanTotal += $stat->total;
+            } elseif (str_contains($cityName, 'SAMPANG')) {
+                $sampangTotal += $stat->total;
+            } elseif (str_contains($cityName, 'BANGKALAN')) {
+                $bangkalanTotal += $stat->total;
+            } else {
+                $luarMaduraTotal += $stat->total;
+            }
+        }
+
+        arsort($sumenepStats);
+
+        $finalStats = [];
+        
+        foreach ($sumenepStats as $label => $total) {
+            $finalStats[$label] = $total;
+        }
+
+        if ($pamekasanTotal > 0) $finalStats['Kabupaten Pamekasan'] = $pamekasanTotal;
+        if ($sampangTotal > 0) $finalStats['Kabupaten Sampang'] = $sampangTotal;
+        if ($bangkalanTotal > 0) $finalStats['Kabupaten Bangkalan'] = $bangkalanTotal;
+        if ($luarMaduraTotal > 0) $finalStats['Luar Madura'] = $luarMaduraTotal;
+
+        $chartData = [
+            'labels' => array_keys($finalStats),
+            'series' => array_values($finalStats),
+        ];
+
+        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels', 'stats', 'chartData'));
     }
 
     public function create()

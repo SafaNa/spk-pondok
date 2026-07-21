@@ -88,6 +88,89 @@
         </div>
     @endif
 
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6">
+        <!-- Total Santri -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-[#e7edf3] dark:border-slate-700 shadow-sm flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                <span class="material-symbols-outlined text-[24px]">groups</span>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#4c739a]">Total Santri</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#0d141b] dark:text-white">{{ number_format($stats['total_students']) }}</h3>
+            </div>
+        </div>
+
+        <!-- Santri Aktif -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-[#e7edf3] dark:border-slate-700 shadow-sm flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                <span class="material-symbols-outlined text-[24px]">how_to_reg</span>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#4c739a]">Santri Aktif</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#0d141b] dark:text-white">{{ number_format($stats['active_students']) }}</h3>
+            </div>
+        </div>
+
+        <!-- Total Rayon -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-[#e7edf3] dark:border-slate-700 shadow-sm flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                <span class="material-symbols-outlined text-[24px]">domain</span>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#4c739a]">Total Rayon</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#0d141b] dark:text-white">{{ number_format($stats['total_rayons']) }}</h3>
+            </div>
+        </div>
+
+        <!-- Total Kamar -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 border border-[#e7edf3] dark:border-slate-700 shadow-sm flex items-center gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                <span class="material-symbols-outlined text-[24px]">meeting_room</span>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-[#4c739a]">Total Kamar</p>
+                <h3 class="text-xl sm:text-2xl font-bold text-[#0d141b] dark:text-white">{{ number_format($stats['total_rooms']) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demografi Kota Chart -->
+    @if(isset($chartData) && count($chartData['labels']) > 0)
+    <div x-data="{ open: false }" class="mb-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-900/50">
+        <button @click="open = !open" type="button" class="w-full flex items-center justify-between p-4 sm:p-5 text-left focus:outline-none transition-colors group" :class="{'bg-slate-50 dark:bg-slate-800/30': open, 'hover:bg-blue-50/50 dark:hover:bg-slate-800/50': !open}">
+            <div class="flex items-center gap-4">
+                <style>
+                    @keyframes customPulse {
+                        0%, 100% { opacity: 1; transform: scale(1); }
+                        50% { opacity: 0.5; transform: scale(0.95); }
+                    }
+                    .icon-kedap-kedip {
+                        animation: customPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+                    }
+                </style>
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 icon-kedap-kedip">
+                    <span class="material-symbols-outlined text-[24px]">language</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-[#0d141b] dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Demografi Populasi Santri</h3>
+                    <p class="text-sm text-[#4c739a] mt-0.5">Buka untuk melihat statistik sebaran wilayah asal seluruh santri.</p>
+                </div>
+            </div>
+            <div class="flex-shrink-0 ml-4 flex items-center gap-3">
+                <span class="text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block" x-text="open ? 'Tutup Grafik' : 'Lihat Grafik'"></span>
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50 transition-colors">
+                    <span class="material-symbols-outlined transition-transform duration-300" :class="{'rotate-180': open}">expand_more</span>
+                </div>
+            </div>
+        </button>
+        
+        <div x-show="open" x-collapse x-cloak class="px-4 pb-4 sm:px-6 sm:pb-6 border-t border-slate-100 dark:border-slate-800 pt-4">
+            <div id="chartDemografiKota" class="min-h-[300px]"></div>
+        </div>
+    </div>
+    @endif
+
     <!-- Filter & Search Bar -->
     <div class="mb-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 p-4">
         <form action="{{ route('admin.students.index') }}" method="GET">
@@ -98,7 +181,7 @@
                         <span class="material-symbols-outlined text-[#4c739a] text-[20px]">search</span>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari nama atau NIS santri..."
+                        placeholder="Cari nama atau NIS / NIM santri..."
                         class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
                 </div>
 
@@ -200,7 +283,7 @@
                         <th class="border border-gray-200 p-3 text-center font-bold w-12">No</th>
                         <th class="border border-gray-200 p-3 text-center font-bold">Foto</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Nama Lengkap</th>
-                        <th class="border border-gray-200 p-3 text-center font-bold">NIS</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">NIS / NIM</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Rayon & Kamar</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Pendidikan</th>
                         <th class="border border-gray-200 p-3 text-center font-bold">Status</th>
@@ -350,3 +433,62 @@
     {{-- Import modal code removed for now --}}
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartData = @json($chartData ?? []);
+        
+        if (document.querySelector("#chartDemografiKota") && chartData.labels && chartData.labels.length > 0) {
+            // Hitung tinggi ideal: 30px per item, minimal 350px
+            const chartHeight = Math.max(350, chartData.labels.length * 35);
+            
+            new ApexCharts(document.querySelector("#chartDemografiKota"), {
+                chart: {
+                    type: 'bar',
+                    height: chartHeight,
+                    toolbar: { show: false },
+                    fontFamily: 'inherit'
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                        borderRadius: 4,
+                        barHeight: '60%',
+                        distributed: true
+                    }
+                },
+                colors: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e', '#84cc16', '#14b8a6', '#6366f1'],
+                dataLabels: { 
+                    enabled: true,
+                    style: { colors: ['#fff'] }
+                },
+                series: [{
+                    name: 'Jumlah Santri',
+                    data: chartData.series
+                }],
+                xaxis: {
+                    categories: chartData.labels,
+                    labels: {
+                        style: { colors: '#94a3b8' }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        maxWidth: 400,
+                        style: { colors: '#64748b', fontSize: '13px', fontWeight: 500 }
+                    }
+                },
+                legend: { show: false },
+                grid: {
+                    borderColor: '#e2e8f0',
+                    strokeDashArray: 4,
+                    xaxis: { lines: { show: true } },
+                    yaxis: { lines: { show: false } }
+                }
+            }).render();
+        }
+    });
+</script>
+@endpush

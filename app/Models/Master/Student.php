@@ -99,4 +99,22 @@ class Student extends Model
     {
         return $this->phone;
     }
+
+    public function getIdentifierLabelAttribute()
+    {
+        $formal = strtolower($this->formalEducation?->name ?? '');
+        $higherEdKeywords = [
+            'universitas', 'institut', 'sekolah tinggi', 'politeknik', 
+            'akademi', 'kampus', 'perguruan tinggi', 's1', 's2', 's3', 
+            'd1', 'd2', 'd3', 'd4', 'mahasiswa'
+        ];
+        
+        foreach ($higherEdKeywords as $keyword) {
+            if (str_contains($formal, $keyword)) {
+                return 'NIM';
+            }
+        }
+        
+        return 'NIS';
+    }
 }

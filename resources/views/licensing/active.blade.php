@@ -70,7 +70,7 @@
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="px-4 py-4">
                                 <div class="font-bold text-[#0d141b]">{{ $license->student->name }}</div>
-                                <div class="text-[11px] text-[#4c739a]">NIS. {{ $license->student->nis ?? '-' }}</div>
+                                <div class="text-[11px] text-[#4c739a]">{{ $license->student->identifier_label ?? 'NIS' }}. {{ $license->student->nis ?? '-' }}</div>
                             </td>
                             <td class="px-4 py-4">
                                 <span class="block text-sm text-[#0d141b]">{{ $license->student->rayon->name ?? '-' }}</span>
