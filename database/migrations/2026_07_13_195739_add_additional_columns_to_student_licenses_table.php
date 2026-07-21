@@ -21,10 +21,7 @@ return new class extends Migration
             if (!Schema::hasColumn('student_licenses', 'source')) {
                 $table->enum('source', ['admin', 'guardian'])->nullable()->after('status');
             }
-            // `hasColumn` for morphs requires checking the type column
-            if (!Schema::hasColumn('student_licenses', 'creator_type')) {
-                $table->nullableUuidMorphs('creator');
-            }
+            
             if (!Schema::hasColumn('student_licenses', 'attachment')) {
                 $table->string('attachment')->nullable()->after('notes');
             }
@@ -36,6 +33,12 @@ return new class extends Migration
             }
             if (!Schema::hasColumn('student_licenses', 'rejected_at')) {
                 $table->timestamp('rejected_at')->nullable();
+            }
+
+            if (!Schema::hasColumn('student_licenses', 'creator_type')) {
+                $table->string('creator_type')->after('rejected_at')->nullable();
+                $table->string('creator_id')->after('creator_type')->nullable();
+                $table->index(['creator_type', 'creator_id'], 'licenses_creator_index');
             }
         });
     }
@@ -55,7 +58,7 @@ return new class extends Migration
                 'attachment',
                 'submitted_at',
                 'approved_at',
-                'rejected_at'
+                'rejected_at',
             ];
 
             foreach ($checkColumns as $col) {
@@ -69,7 +72,8 @@ return new class extends Migration
             }
 
             if (Schema::hasColumn('student_licenses', 'creator_type')) {
-                $table->dropMorphs('creator');
+                $table->dropIndex('licenses_creator_index');
+                $table->dropColumn(['creator_type', 'creator_id']);
             }
         });
     }
