@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
 
 // Master Data Controllers
 use App\Http\Controllers\Master\StudentController;
@@ -37,12 +38,11 @@ use App\Http\Controllers\Licensing\LaporanController;
 use App\Http\Controllers\Licensing\NotifikasiController;
 use App\Http\Controllers\Licensing\MemorizationController;
 use App\Http\Controllers\Licensing\LeaveCategoryController;
+use App\Models\Licensing\LicenseExtension;
 use App\Models\Licensing\StudentMemorizationItem;
 
 // Landing page — pilih role (admin / wali santri)
 Route::get('/', function () {
-    if (Auth::check()) return redirect()->route('admin.dashboard');
-    if (Auth::guard('guardian')->check()) return redirect()->route('guardian.dashboard');
     return view('landing');
 })->name('landing');
 
@@ -66,6 +66,13 @@ Route::prefix('guardian')->name('guardian.')->group(function () {
         Route::get('/licenses', [GuardianLicenseController::class, 'index'])->name('licenses.index');
         Route::get('/licenses/create', [GuardianLicenseController::class, 'create'])->name('licenses.create');
         Route::post('/licenses', [GuardianLicenseController::class, 'store'])->name('licenses.store');
+        Route::get('/licenses/{license}/extend', [GuardianLicenseController::class, 'requestExtension'])->name('licenses.extend');
+        Route::post('/licenses/{license}/extend', [GuardianLicenseController::class, 'storeExtension'])->name('licenses.extend.store');
+        Route::get('/licenses/{license}', [GuardianLicenseController::class, 'show'])->name('licenses.show');
+        Route::get('/licenses/{license}/edit', [GuardianLicenseController::class, 'edit'])->name('licenses.edit');
+        Route::put('/licenses/{license}', [GuardianLicenseController::class, 'update'])->name('licenses.update');
+        Route::delete('/licenses/{license}', [GuardianLicenseController::class, 'destroy'])->name('licenses.destroy');
+        Route::get('/leave-categories/{leaveCategory}/reasons', [GuardianLicenseController::class, 'categoryReasons'])->name('leave-categories.reasons');
         Route::get('/profile', [GuardianProfileController::class, 'show'])->name('profile');
         Route::put('/profile', [GuardianProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [GuardianProfileController::class, 'updatePassword'])->name('profile.password');
@@ -90,8 +97,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Settings
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+
 
     // Master Data: Academic Years & Periods
     Route::post('/academic-years/{academic_year}/toggle-status', [AcademicYearController::class, 'toggleStatus'])->name('academic-years.toggle-status');
@@ -112,6 +125,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
     Route::resource('students', StudentController::class);
     Route::get('guardians/search-students', [GuardianController::class, 'searchStudents'])->name('guardians.search-students');
+    Route::post('guardians/{guardian}/reset-password', [GuardianController::class, 'resetPassword'])->name('guardians.reset-password');
     Route::resource('guardians', GuardianController::class);
 
     // User Management
@@ -129,6 +143,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     })->name('theme.set');
 
     // Violation Routes
+    Route::get('/violations/search-students', [ViolationController::class, 'searchStudents'])->name('violations.search-students');
     Route::get('/violations/history/{student}', [ViolationController::class, 'history'])->name('violations.history');
     Route::post('/violations/{id}/verify-sanction', [ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
     Route::resource('violations', ViolationController::class);
@@ -137,6 +152,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('violation-categories', ViolationCategoryController::class);
 
     // Licensing Routes
+    Route::get('/licenses/reports', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'index'])->name('licenses.reports');
+    Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
+    Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
 
     // Individual License
@@ -148,6 +166,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/licenses/{license}/approve', [LicenseController::class, 'approve'])->name('licenses.approve');
     Route::post('/licenses/{license}/force-approve', [LicenseController::class, 'forceApprove'])->name('licenses.force-approve');
     Route::post('/licenses/{license}/reject', [LicenseController::class, 'reject'])->name('licenses.reject');
+    Route::post('/licenses/{license}/return', [LicenseController::class, 'recordReturn'])->name('licenses.return');
+    Route::post('/licenses/{license}/extend-phone',       [LicenseController::class, 'storePhoneExtension'])->name('licenses.extend-phone');
+    Route::post('/extensions/{extension}/approve',         [LicenseController::class, 'approveExtension'])->name('extensions.approve');
+    Route::post('/extensions/{extension}/reject',          [LicenseController::class, 'rejectExtension'])->name('extensions.reject');
     Route::delete('/licenses/{license}', [LicenseController::class, 'destroy'])->name('licenses.destroy');
 
     // Leave Categories (Master Data)

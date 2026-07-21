@@ -24,8 +24,12 @@
             {{-- Header --}}
             <div class="bg-gradient-to-br from-primary/10 via-purple-500/5 to-pink-500/5 px-6 py-6 sm:px-8 sm:py-8 border-b border-primary/10">
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-primary/20 text-primary">
-                        <span class="material-symbols-outlined text-[32px]">edit_square</span>
+                    <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-primary/20 text-primary shrink-0">
+                        @if($guardian->avatar)
+                            <img src="{{ asset('storage/' . $guardian->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                        @else
+                            <span class="material-symbols-outlined text-[32px]">person</span>
+                        @endif
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white tracking-tight">Edit Data Wali</h1>
@@ -307,7 +311,7 @@
                 this.debounceTimer = setTimeout(async () => {
                     this.loading = true;
                     try {
-                        const res = await fetch(_guardianSearchUrl + '?q=' + encodeURIComponent(q));
+                        const res = await fetch(_guardianSearchUrl + '?q=' + encodeURIComponent(q) + '&guardian_id={{ $guardian->id }}');
                         this.results = await res.json();
                     } finally {
                         this.loading = false;

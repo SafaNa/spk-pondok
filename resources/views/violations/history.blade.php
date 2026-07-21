@@ -115,7 +115,7 @@
                                                 {{ $category->name }}
                                             </span>
                                             <span>•</span>
-                                            <span>{{ $violation->date->format('d F Y') }}</span>
+                                            <span>{{ $violation->date->locale('id')->translatedFormat('d F Y') }}</span>
                                         </div>
                                          <p class="text-sm text-slate-600 dark:text-slate-400">
                                             <span class="font-medium">Sanksi:</span> {{ $violation->sanction }}

@@ -5,106 +5,134 @@
 @section('breadcrumb', 'Manajemen User')
 
 @section('content')
-    <div class="rounded-2xl p-4 sm:p-6 border border-blue-100 mb-6"
-        style="background: linear-gradient(135deg, #eff6ffff 20%, #eef2ffb3 50%, #faf5ff99 80%);">
-        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            <div class="flex flex-col gap-1">
-                <h1 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">Manajemen User</h1>
-                <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola akun Admin dan Pengurus Departemen.</p>
-            </div>
-            <a href="{{ route('admin.users.create') }}"
-                class="group flex items-center gap-2 h-10 px-5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all transform hover:-translate-y-0.5 w-fit">
-                <span class="material-symbols-outlined text-[18px] group-hover:rotate-90 transition-transform duration-300">add</span>
-                <span class="whitespace-nowrap">Tambah User</span>
-            </a>
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex gap-2">
+            <a href="{{ route('admin.users.index') }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ !request('role') ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Semua User</a>
+            <a href="{{ route('admin.users.index', ['role' => 'perizinan']) }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'perizinan' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Pengurus Perizinan</a>
+            <a href="{{ route('admin.users.index', ['role' => 'departemen']) }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'departemen' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Departemen</a>
         </div>
+        <a href="{{ route('admin.users.create') }}" class="flex items-center gap-2 px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white text-sm font-medium shadow-sm transition-colors">
+            <span class="material-symbols-outlined text-[18px]">add</span> Tambah User
+        </a>
     </div>
 
     @if(session('success'))
-        <div class="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-lg flex items-center gap-3">
+        <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-3">
             <span class="material-symbols-outlined">check_circle</span>
             <span>{{ session('success') }}</span>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg flex items-center gap-3">
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-3">
             <span class="material-symbols-outlined">error</span>
             <span>{{ session('error') }}</span>
         </div>
     @endif
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 overflow-hidden flex flex-col">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-sm border-collapse border-hidden">
                 <thead>
-                    <tr class="bg-[#f8fafc] dark:bg-slate-800/50 border-b border-[#e7edf3] dark:border-slate-700">
-                        <th class="p-4 w-12"></th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Nama Lengkap</th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Username</th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Tipe</th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase whitespace-nowrap">Departemen</th>
-                        <th class="p-4 text-xs font-semibold tracking-wide text-[#4c739a] uppercase text-center whitespace-nowrap w-24">Aksi</th>
+                    <tr class="bg-gray-50 text-gray-700">
+                        <th class="border border-gray-200 p-3 text-center font-bold w-12">No</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Foto</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Nama Lengkap</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Username</th>
+                        <th class="border border-gray-200 p-3 text-left font-bold">Email</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Role</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Departemen</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">No HP</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Status</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold w-36">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-[#e7edf3] dark:divide-slate-700">
+                <tbody class="divide-y divide-gray-200">
+                    @php
+                        $avatarColors = [
+                            ['bg' => 'bg-red-100', 'text' => 'text-red-700', 'border' => 'border-red-200'],
+                            ['bg' => 'bg-orange-100', 'text' => 'text-orange-700', 'border' => 'border-orange-200'],
+                            ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'border' => 'border-amber-200'],
+                            ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'border' => 'border-green-200'],
+                            ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200'],
+                            ['bg' => 'bg-teal-100', 'text' => 'text-teal-700', 'border' => 'border-teal-200'],
+                            ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-700', 'border' => 'border-cyan-200'],
+                            ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'border' => 'border-blue-200'],
+                            ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-700', 'border' => 'border-indigo-200'],
+                            ['bg' => 'bg-violet-100', 'text' => 'text-violet-700', 'border' => 'border-violet-200'],
+                            ['bg' => 'bg-fuchsia-100', 'text' => 'text-fuchsia-700', 'border' => 'border-fuchsia-200'],
+                            ['bg' => 'bg-pink-100', 'text' => 'text-pink-700', 'border' => 'border-pink-200'],
+                            ['bg' => 'bg-rose-100', 'text' => 'text-rose-700', 'border' => 'border-rose-200'],
+                        ];
+                    @endphp
                     @forelse($users as $user)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                            <td class="p-4">
-                                @if($user->photo)
-                                    <img src="{{ Storage::url($user->photo) }}" alt="{{ $user->name }}"
-                                        class="w-9 h-9 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700">
+                        <tr class="bg-white hover:bg-gray-50">
+                            <td class="border border-gray-200 p-3 text-center font-bold text-gray-800">
+                                {{ method_exists($users, 'firstItem') ? $users->firstItem() + $loop->index : $loop->iteration }}
+                            </td>
+                            <td class="border border-gray-200 p-3 text-center">
+                                <div class="flex justify-center">
+                                    @if($user->photo)
+                                        <img src="{{ Storage::url($user->photo) }}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full object-cover border border-gray-200">
+                                    @else
+                                        @php
+                                            $colorIndex = abs(crc32($user->name)) % count($avatarColors);
+                                            $color = $avatarColors[$colorIndex];
+                                        @endphp
+                                        <div class="w-10 h-10 rounded-full {{ $color['bg'] }} flex items-center justify-center {{ $color['text'] }} font-bold text-sm border {{ $color['border'] }}">
+                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="border border-gray-200 p-3 text-left text-gray-800 font-medium">{{ $user->name }}</td>
+                            <td class="border border-gray-200 p-3 text-left text-gray-600">{{ $user->username }}</td>
+                            <td class="border border-gray-200 p-3 text-left text-gray-600">{{ $user->email ?? $user->username . '@latee.sch.id' }}</td>
+                            <td class="border border-gray-200 p-3 text-center">
+                                @if($user->isLicensingOfficer() || ($user->department && $user->department->acronym === 'PERIZINAN'))
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Pengurus Perizinan</span>
+                                @elseif($user->isAdmin())
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">Admin</span>
                                 @else
-                                    <div class="w-9 h-9 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary font-bold text-sm border-2 border-slate-200 dark:border-slate-700">
-                                        {{ strtoupper(substr($user->name, 0, 1)) }}
-                                    </div>
+                                    <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">Departemen</span>
                                 @endif
                             </td>
-                            <td class="p-4 text-sm font-medium text-[#0d141b] dark:text-white">{{ $user->name }}</td>
-                            <td class="p-4 text-sm font-mono text-[#4c739a] whitespace-nowrap">{{ $user->username }}</td>
-                            <td class="p-4 whitespace-nowrap">
-                                @if($user->isAdmin())
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
-                                        <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span>
-                                        Admin
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                                        <span class="material-symbols-outlined text-[14px]">apartment</span>
-                                        Departemen
-                                    </span>
-                                @endif
+                            <td class="border border-gray-200 p-3 text-center text-gray-600">
+                                {{ $user->department?->name ?? 'Semua' }}
                             </td>
-                            <td class="p-4 whitespace-nowrap text-sm text-[#4c739a]">
-                                {{ $user->department?->name ?? '-' }}
+                            <td class="border border-gray-200 p-3 text-center text-gray-600">
+                                081234567890
                             </td>
-                            <td class="p-4 whitespace-nowrap">
-                                <div class="flex items-center justify-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                    <a href="{{ route('admin.users.edit', $user) }}"
-                                        class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-[#4c739a] hover:text-primary transition-colors" title="Edit">
-                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                            <td class="border border-gray-200 p-3 text-center">
+                                <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Aktif</span>
+                            </td>
+                            <td class="border border-gray-200 p-3 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <a href="#" class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors" title="Lihat">
+                                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                    </a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="w-8 h-8 rounded flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors" title="Edit">
+                                        <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
                                     @if(!$user->isAdmin())
-                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus akun {{ $user->name }}?');" class="inline-block">
+                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus akun {{ $user->name }}?');" class="inline-block">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                class="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-[#4c739a] hover:text-red-600 transition-colors" title="Hapus">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            <button type="submit" class="w-8 h-8 rounded flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors" title="Hapus">
+                                                <span class="material-symbols-outlined text-[16px]">delete</span>
                                             </button>
                                         </form>
                                     @else
-                                        <span class="p-1.5 text-slate-300 dark:text-slate-600 cursor-not-allowed" title="Admin tidak dapat dihapus">
-                                            <span class="material-symbols-outlined text-[20px]">lock</span>
-                                        </span>
+                                        <button type="button" disabled class="w-8 h-8 rounded flex items-center justify-center bg-red-300 text-white cursor-not-allowed" title="Admin tidak dapat dihapus">
+                                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                                        </button>
                                     @endif
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-[#4c739a]">
+                            <td colspan="10" class="border border-gray-200 p-8 text-center text-gray-500">
                                 <span class="material-symbols-outlined text-4xl block mb-2">person_off</span>
                                 <p class="text-sm">Belum ada user.</p>
                             </td>

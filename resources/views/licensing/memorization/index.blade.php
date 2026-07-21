@@ -66,8 +66,21 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                                        {{ substr($mem->student->name, 0, 2) }}
+                                    @php
+                                        $initials = strtoupper(substr($mem->student->name, 0, 1) . (str_contains($mem->student->name, ' ') ? substr($mem->student->name, strpos($mem->student->name, ' ') + 1, 1) : substr($mem->student->name, 1, 1)));
+                                        $colors = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
+                                        $color = $colors[crc32($mem->student->id) % count($colors)];
+                                    @endphp
+                                    <div class="flex h-10 w-10 items-center justify-center shrink-0">
+                                        @if ($mem->student->photo)
+                                            <button @click="$store.imageModal.open('{{ asset('storage/' . $mem->student->photo) }}', '{{ $mem->student->name }}')" class="shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-full">
+                                                <img src="{{ asset('storage/' . $mem->student->photo) }}" alt="{{ $mem->student->name }}" class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-200 hover:scale-110 transition-transform cursor-zoom-in">
+                                            </button>
+                                        @else
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 font-bold text-xs ring-1 ring-{{ $color }}-600/20">
+                                                {{ $initials }}
+                                            </div>
+                                        @endif
                                     </div>
                                     <div>
                                         <p class="font-semibold text-slate-700 dark:text-slate-200">{{ $mem->student->name }}</p>

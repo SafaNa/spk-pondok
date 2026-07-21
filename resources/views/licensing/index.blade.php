@@ -51,6 +51,16 @@
                         <p class="text-[10px] text-amber-600">Perlu validasi</p>
                     </div>
                 </div>
+                <div class="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 shadow-sm min-w-[120px]">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+                        <span class="material-symbols-outlined text-[22px]">more_time</span>
+                    </div>
+                    <div>
+                        <p class="text-xl font-black text-violet-900 leading-none">{{ number_format($totalPendingExt) }}</p>
+                        <p class="text-xs font-semibold text-violet-800 mt-0.5">Perpanjangan</p>
+                        <p class="text-[10px] text-violet-600">Menunggu validasi</p>
+                    </div>
+                </div>
                 <div class="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 shadow-sm min-w-[120px]">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
                         <span class="material-symbols-outlined text-[22px]">check_circle</span>
@@ -104,7 +114,8 @@
                 <select name="status"
                     class="rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
                     <option value="">Semua Status</option>
-                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu</option>
+                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu Izin</option>
+                    <option value="pending_extension" {{ request('status') === 'pending_extension' ? 'selected' : '' }}>Menunggu Perpanjangan</option>
                     <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
                     <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                 </select>
@@ -161,9 +172,9 @@
                         @php
                             $guardian = optional($license->student->guardians->first());
                             $rowNo    = ($recentLicenses->currentPage() - 1) * $recentLicenses->perPage() + $loop->iteration;
-                            $colors   = ['blue','indigo','violet','emerald','amber','rose','cyan','orange'];
+                            $colors   = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
                             $color    = $colors[crc32($license->student->id) % count($colors)];
-                            $initials = strtoupper(substr($license->student->name, 0, 1));
+                            $initials = strtoupper(substr($license->student->name, 0, 1) . (str_contains($license->student->name, ' ') ? substr($license->student->name, strpos($license->student->name, ' ') + 1, 1) : substr($license->student->name, 1, 1)));
                         @endphp
                         <tr class="hover:bg-slate-50/70 transition-colors">
 
@@ -176,9 +187,9 @@
                                     @if($license->student->photo)
                                         <img src="{{ asset('storage/' . $license->student->photo) }}"
                                             alt="{{ $license->student->name }}"
-                                            class="h-9 w-9 rounded-full object-cover shrink-0 ring-1 ring-slate-200">
+                                            class="h-9 w-9 rounded-full object-cover shrink-0">
                                     @else
-                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-xs font-bold ring-1 ring-{{ $color }}-200">
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-xs font-bold">
                                             {{ $initials }}
                                         </div>
                                     @endif
@@ -208,23 +219,31 @@
 
                             {{-- Tanggal Izin --}}
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="block text-sm text-[#0d141b]">{{ $license->start_date->format('d M Y') }}</span>
-                                <span class="text-[11px] text-[#4c739a]">s/d {{ $license->end_date->format('d M Y') }}</span>
+                                <span class="block text-sm text-[#0d141b]">{{ $license->start_date->locale('id')->translatedFormat('d M Y') }}</span>
+                                <span class="text-[11px] text-[#4c739a]">s/d {{ $license->end_date->locale('id')->translatedFormat('d M Y') }}</span>
                             </td>
 
                             {{-- Status --}}
                             <td class="px-4 py-4">
-                                <div class="flex flex-col items-center gap-1">
-                                    @if($license->is_emergency && $license->status === 'pending')
-                                        <span class="inline-flex items-center rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Darurat</span>
+                                <div class="flex flex-col items-center gap-1.5">
+                                    @php $hasPendingExt = $license->extensions->where('status','pending')->isNotEmpty(); @endphp
+                                    
+                                    @if($hasPendingExt)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-[11px] font-bold text-violet-700 shadow-sm ring-1 ring-violet-200 animate-pulse">
+                                            <span class="material-symbols-outlined text-[14px]">more_time</span> Menunggu Perpanjangan
+                                        </span>
+                                    @elseif($license->is_emergency && $license->status === 'pending')
+                                        <span class="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-[11px] font-bold text-orange-700 shadow-sm ring-1 ring-orange-200">Darurat</span>
                                     @elseif($license->status === 'pending')
-                                        <span class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Menunggu</span>
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-700 shadow-sm ring-1 ring-amber-200 animate-pulse">
+                                            <span class="material-symbols-outlined text-[14px]">new_releases</span> Baru
+                                        </span>
                                     @elseif($license->status === 'approved')
-                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Disetujui</span>
+                                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700 shadow-sm ring-1 ring-emerald-200">Disetujui</span>
                                     @elseif($license->status === 'rejected')
-                                        <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">Ditolak</span>
+                                        <span class="inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-[11px] font-bold text-rose-700 shadow-sm ring-1 ring-rose-200">Ditolak</span>
                                     @endif
-                                    @if($license->student->pending_violations_count > 0)
+                                    @if($license->student->pending_violations_count > 0 && !($license->status === 'approved' && !$hasPendingExt))
                                         <span class="inline-flex items-center gap-0.5 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-600">
                                             <span class="material-symbols-outlined text-[11px]">warning</span> Pelanggaran
                                         </span>
@@ -243,13 +262,18 @@
                                         class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
-                                    <form action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan izin ini?');">
+                                    <form id="form-delete-license-{{ $license->id }}" action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors" title="Hapus">
-                                            <span class="material-symbols-outlined text-[20px]">delete</span>
-                                        </button>
                                     </form>
+                                    <button type="button" title="Hapus"
+                                        @click="$store.deleteModal.open(
+                                            document.getElementById('form-delete-license-{{ $license->id }}'),
+                                            'Yakin ingin menghapus pengajuan izin {{ addslashes($license->student->name ?? '') }}?'
+                                        )"
+                                        class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

@@ -160,12 +160,12 @@ class StudentController extends Controller
             'wali_password'     => 'required_with:wali_name|nullable|string|min:6',
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
-            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
+            'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
         ]);
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in store request');
-            $validated['photo'] = $request->file('photo')->store('students', 'public');
+            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
             \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in store request');
@@ -178,6 +178,7 @@ class StudentController extends Controller
 
         $student = Student::create($validated);
 
+        $createdGuardian = null;
         if ($request->filled('wali_name')) {
             $guardian = Guardian::create([
                 'name'         => $request->wali_name,
@@ -185,13 +186,27 @@ class StudentController extends Controller
                 'password'     => Hash::make($request->wali_password),
                 'phone'        => $request->wali_phone,
                 'email'        => $request->wali_email,
-                'relationship' => $request->wali_relationship ?? 'ayah',
+                'relationship' => $request->wali_relationship ?? 'father',
             ]);
             $student->guardians()->attach($guardian->id);
+            $createdGuardian = [
+                'name'     => $guardian->name,
+                'username' => $guardian->username,
+                'password' => $request->wali_password,
+            ];
         }
 
-        return redirect()->route('admin.students.index')
+        $redirect = redirect()->route('admin.students.index')
             ->with('success', 'Data santri berhasil ditambahkan');
+
+        if ($createdGuardian) {
+            $redirect = $redirect
+                ->with('created_guardian_name', $createdGuardian['name'])
+                ->with('created_guardian_username', $createdGuardian['username'])
+                ->with('created_guardian_password', $createdGuardian['password']);
+        }
+
+        return $redirect;
     }
 
     public function update(Request $request, Student $student)
@@ -229,7 +244,14 @@ class StudentController extends Controller
             'address' => 'nullable|string',
             'status' => 'required|in:active,inactive,graduated,dropped_out',
             // Wali
-            'wali_name'         => 'nullable|string|max:100',
+            'wali_name'         => [
+                'nullable', 'string', 'max:100',
+                function ($attribute, $value, $fail) use ($student, $existingWaliId) {
+                    if ($value && !$existingWaliId && $student->guardians()->exists()) {
+                        $fail('Santri ini sudah memiliki wali. Tidak bisa menambahkan wali baru.');
+                    }
+                }
+            ],
             'wali_username'     => [
                 'required_with:wali_name', 'nullable', 'string', 'max:50',
                 Rule::unique('guardians', 'username')->ignore($existingWaliId),
@@ -237,15 +259,15 @@ class StudentController extends Controller
             'wali_password'     => 'nullable|string|min:6',
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
-            'wali_relationship' => 'nullable|in:ayah,ibu,wali,saudara',
+            'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
         ]);
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in update request');
-            if ($student->photo) {
+            if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($student->photo);
             }
-            $validated['photo'] = $request->file('photo')->store('students', 'public');
+            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
             \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in update request');
@@ -259,7 +281,7 @@ class StudentController extends Controller
                 'username'     => $request->wali_username,
                 'phone'        => $request->wali_phone,
                 'email'        => $request->wali_email,
-                'relationship' => $request->wali_relationship ?? 'ayah',
+                'relationship' => $request->wali_relationship ?? 'father',
             ];
             if ($request->filled('wali_password')) {
                 $waliData['password'] = Hash::make($request->wali_password);

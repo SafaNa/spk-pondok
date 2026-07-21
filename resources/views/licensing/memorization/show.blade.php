@@ -110,6 +110,27 @@
                     <p class="font-semibold text-slate-700 dark:text-slate-300">{{ $memorization->created_at->format('d/m/Y') }}</p>
                 </div>
             </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y sm:divide-y-0 divide-slate-100 dark:divide-slate-700 border-t border-slate-100 dark:border-slate-700">
+                <div class="px-5 py-4">
+                    <p class="text-xs text-slate-400 uppercase tracking-wide mb-1">Gender & Alamat</p>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-white mb-1">
+                        {{ $memorization->student->gender === 'male' ? 'Laki-laki' : 'Perempuan' }}
+                    </p>
+                    <p class="text-sm text-slate-700 dark:text-slate-300">
+                        {{ $memorization->student->address ?? '-' }}
+                    </p>
+                </div>
+                <div class="px-5 py-4">
+                    <p class="text-xs text-slate-400 uppercase tracking-wide mb-1">Orang Tua & Wali</p>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-white mb-1">
+                        Ayah: {{ $memorization->student->father_name ?? '-' }} | Ibu: {{ $memorization->student->mother_name ?? '-' }}
+                    </p>
+                    <p class="text-sm text-slate-700 dark:text-slate-300">
+                        Wali: {{ $memorization->student->guardians->pluck('name')->implode(', ') ?: '-' }}
+                    </p>
+                </div>
+            </div>
 
             {{-- Progress Bar --}}
             <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-700">

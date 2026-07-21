@@ -29,11 +29,30 @@
             </div>
         @endif
 
-        <form action="{{ route('guardian.profile.update') }}" method="POST" class="space-y-4">
+        <form action="{{ route('guardian.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {{-- Foto Profil --}}
+                <div class="space-y-1.5 sm:col-span-2 flex flex-col sm:flex-row items-center gap-4">
+                    <div class="h-20 w-20 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden flex-shrink-0 border-2 border-blue-200">
+                        @if($guardian->avatar)
+                            <img src="{{ asset('storage/' . $guardian->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                        @else
+                            <span class="text-blue-600 font-bold text-2xl">{{ strtoupper(substr($guardian->name, 0, 1)) }}</span>
+                        @endif
+                    </div>
+                    <div class="w-full">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Foto Profil (Opsional)</label>
+                        <input type="file" name="avatar" accept="image/*"
+                            class="crop-avatar w-full px-3 py-2 mt-1 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        <p class="text-xs text-slate-400 mt-1">Format: JPG, PNG. Maksimal 2MB.</p>
+                        @error('avatar')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+
                 <div class="space-y-1.5">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Nama Lengkap <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name', $guardian->name) }}" required

@@ -19,4 +19,9 @@ class LeaveCategory extends Model
     {
         return $this->hasMany(LeaveReason::class)->orderBy('order');
     }
+
+    public function licenses()
+    {
+        return $this->hasMany(StudentLicense::class);
+    }
 }

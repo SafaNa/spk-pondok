@@ -70,8 +70,14 @@ class ViolationController extends Controller
             return redirect()->back()->with('error', 'Tidak ada periode aktif. Silakan aktifkan periode terlebih dahulu.');
         }
 
-        // Get active students
-        $students = Student::where('status', 'active')->orderBy('name')->get();
+        // Hanya memuat siswa jika ada data old() (misal validasi gagal)
+        $students = collect();
+        if (old('student_id')) {
+            $student = Student::find(old('student_id'));
+            if ($student) {
+                $students->push($student);
+            }
+        }
 
         // Get violation types (filtered by department for departemen staff)
         $query = ViolationType::where('is_active', true)
@@ -129,15 +135,20 @@ class ViolationController extends Controller
         // WhatsApp Notification Link
         $waRedirectUrl = null;
         try {
-            $student = Student::find($validated['student_id']);
-            if ($student && $student->notification_phone) {
-                $service = new \App\Services\WhatsAppService();
-                $message = "PEMBERITAHUAN PELANGGARAN: \n" .
-                    "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}. \n" .
-                    "Sanksi: {$violationType->default_sanction}. \n" .
-                    "Tanggal: " . \Carbon\Carbon::parse($validated['date'])->format('d-m-Y') . ". \n" .
-                    "Mohon kerjasamanya dari Bapak/Ibu. Terima kasih.";
-                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+            $student = Student::with('guardians')->find($validated['student_id']);
+            if ($student) {
+                $phone = $student->guardians->whereNotNull('phone')->first()?->phone
+                      ?? $student->phone
+                      ?? null;
+                if ($phone) {
+                    $tanggal = \Carbon\Carbon::parse($validated['date'])->format('d-m-Y');
+                    $message = "PEMBERITAHUAN PELANGGARAN\n" .
+                        "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}.\n" .
+                        "Sanksi: {$violationType->default_sanction}.\n" .
+                        "Tanggal: {$tanggal}.\n" .
+                        "Mohon kerjasamanya. Terima kasih.";
+                    $waRedirectUrl = (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+                }
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to generate WA Link Violation: " . $e->getMessage());
@@ -239,7 +250,8 @@ class ViolationController extends Controller
             return redirect()->back()->with('error', 'Tidak ada periode aktif.');
         }
 
-        $students = Student::where('status', 'active')->orderBy('name')->get();
+        // Hanya memuat siswa terkait
+        $students = collect([$violation->student]);
 
         // Get violation types
         $query = ViolationType::where('is_active', true)
@@ -331,5 +343,30 @@ class ViolationController extends Controller
         $violation->delete();
 
         return redirect()->route('admin.violations.index')->with('success', 'Pelanggaran berhasil dihapus');
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $q = $request->input('q', '');
+        $qLower = strtolower($q);
+
+        $students = Student::with('room')
+            ->where('status', 'active')
+            ->where(function ($query) use ($qLower) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . $qLower . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?', ['%' . $qLower . '%']);
+            })
+            ->orderBy('name')
+            ->limit(30)
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'id'   => $s->id,
+                    'text' => $s->name,
+                    'info' => ($s->nis ?? '-') . ' - ' . ($s->room?->name ?? 'Belum ada kamar')
+                ];
+            });
+
+        return response()->json(['results' => $students]);
     }
 }

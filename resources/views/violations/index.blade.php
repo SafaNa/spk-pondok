@@ -133,7 +133,7 @@
                                     <div class="flex items-center gap-4 text-xs text-[#4c739a]">
                                         <span class="flex items-center gap-1">
                                             <span class="material-symbols-outlined text-[16px]">calendar_today</span>
-                                            {{ $violation->date->format('d M Y') }}
+                                            {{ $violation->date->locale('id')->translatedFormat('d M Y') }}
                                         </span>
                                         @if($violation->sanction_status === 'completed')
                                             <span class="flex items-center gap-1 text-green-600">
