@@ -39,7 +39,7 @@ class History2023Seeder extends Seeder
             return;
         }
 
-        $userId = DB::table('users')->value('id') ?? 1;
+        $userId = DB::table('users')->value('id') ?? (string) Str::uuid();
         $violationTypes = DB::table('violation_types')->get();
         $leaveCategories = DB::table('leave_categories')->pluck('id')->toArray();
         $leaveReasons = DB::table('leave_reasons')->pluck('id')->toArray();
