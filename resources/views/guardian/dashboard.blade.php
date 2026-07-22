@@ -11,6 +11,48 @@
         <p class="text-sm text-[#4c739a]">Pantau status izin dan kelola pengajuan untuk santri Anda.</p>
     </div>
 
+    {{-- Smart Alert: Izin Hampir Habis / Terlambat --}}
+    @php
+        $expiringLicenses = collect();
+        if(isset($recentLicenses)) {
+            $expiringLicenses = $recentLicenses->filter(function($license) {
+                if ($license->status === 'approved' && !$license->actual_return_date) {
+                    $daysRemaining = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($license->end_date)->startOfDay(), false);
+                    return $daysRemaining <= 1; // Besok, hari ini, atau telat
+                }
+                return false;
+            });
+        }
+    @endphp
+
+    @if($expiringLicenses->isNotEmpty())
+        <div class="mb-6 space-y-3">
+            @foreach($expiringLicenses as $expLicense)
+                @php
+                    $daysRemaining = \Carbon\Carbon::now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($expLicense->end_date)->startOfDay(), false);
+                    $isLate = $daysRemaining < 0;
+                    $statusText = $isLate ? "telah Habis (Terlambat " . abs($daysRemaining) . " Hari)" : ($daysRemaining === 0 ? "Habis Hari Ini" : "akan Habis Besok");
+                    $bgClass = $isLate ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200";
+                    $textClass = $isLate ? "text-red-800" : "text-amber-800";
+                    $iconClass = $isLate ? "text-red-500" : "text-amber-500";
+                @endphp
+                <div class="{{ $bgClass }} border rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined {{ $iconClass }} text-[24px]">warning</span>
+                        <div>
+                            <p class="{{ $textClass }} font-bold text-sm">Peringatan: Masa Izin {{ $statusText }}</p>
+                            <p class="{{ $textClass }} text-xs opacity-90">Izin kepulangan untuk <strong>{{ $expLicense->student->name }}</strong> jatuh tempo pada {{ \Carbon\Carbon::parse($expLicense->end_date)->locale('id')->translatedFormat('d F Y') }}.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('guardian.licenses.extend', $expLicense) }}" class="shrink-0 flex items-center justify-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-200 transition-colors shadow-sm">
+                        <span class="material-symbols-outlined text-[16px]">more_time</span>
+                        Ajukan Perpanjangan
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     {{-- KPI --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-[#e7edf3] dark:border-slate-700 shadow-sm p-4 border-l-4 border-l-blue-500">
@@ -112,7 +154,7 @@
                             @endif
                             <div class="flex-1 min-w-0">
                                 <p class="font-bold text-[#0d141b] dark:text-white text-sm truncate">{{ $student->name }}</p>
-                                <p class="text-xs text-[#4c739a] mb-3">NIS: {{ $student->nis ?? '-' }}</p>
+                                <p class="text-xs text-[#4c739a] mb-3">{{ $student->identifier_label }}: {{ $student->nis ?? '-' }}</p>
                                 <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-xs">
                                     <div>
                                         <p class="text-[#4c739a]">Rayon</p>

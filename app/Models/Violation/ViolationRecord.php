@@ -2,7 +2,6 @@
 
 namespace App\Models\Violation;
 
-use App\Models\Master\Period;
 use App\Models\Master\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -29,9 +28,9 @@ class ViolationRecord extends Model
         return $this->belongsTo(ViolationType::class);
     }
 
-    public function period()
+    public function academicYear()
     {
-        return $this->belongsTo(Period::class);
+        return $this->belongsTo(\App\Models\Master\AcademicYear::class);
     }
 
     public function creator()

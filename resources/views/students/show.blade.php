@@ -38,7 +38,7 @@
                         @endif
                         <div>
                             <h1 class="text-2xl font-bold mb-1 text-slate-900 dark:text-white tracking-tight">{{ $student->name }}</h1>
-                            <p class="text-slate-500 text-sm">NIS: {{ $student->nis }}</p>
+                            <p class="text-slate-500 text-sm">{{ $student->identifier_label ?? 'NIS' }}: {{ $student->nis }}</p>
                             <div class="mt-2">
                                 @if($student->status == 'active')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">Aktif</span>
@@ -85,7 +85,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wide">
-                                <span class="material-symbols-outlined text-[16px]">id_card</span> NIS
+                                <span class="material-symbols-outlined text-[16px]">id_card</span> {{ $student->identifier_label ?? 'NIS' }}
                             </div>
                             <div class="text-slate-900 dark:text-white font-medium">{{ $student->nis }}</div>
                         </div>

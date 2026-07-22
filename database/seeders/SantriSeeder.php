@@ -2,12 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\Master\Student;
-use App\Models\Master\Room;
-use App\Models\Master\EducationLevel;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Models\Master\Student;
+use App\Models\Guardian;
+use App\Models\Master\Rayon;
+use App\Models\Master\Room;
+use Faker\Factory as Faker;
 
 class SantriSeeder extends Seeder
 {
@@ -18,253 +21,157 @@ class SantriSeeder extends Seeder
      */
     public function run()
     {
-        Schema::disableForeignKeyConstraints();
-        Student::truncate();
-        Schema::enableForeignKeyConstraints();
+        $faker = Faker::create('id_ID');
 
-        // Get first room and education levels for seeding
-        $room = Room::first();
-        $diniyahLevel = EducationLevel::where('type', 'religious')->first();
-        $formalLevel = EducationLevel::where('type', 'formal')->first();
+        $rayons = Rayon::pluck('id')->toArray();
+        $rooms = Room::pluck('id')->toArray();
+        $educationLevels = \App\Models\Master\EducationLevel::pluck('id')->toArray();
+        $defaultPassword = Hash::make('password');
 
-        if (!$room) {
-            $this->command->warn('No rooms found. Please run RoomSeeder first.');
-            return;
-        }
+        $studentCount = 200;
 
-        $rayonA = \App\Models\Master\Rayon::where('name', 'Rayon A')->first();
-        $rayonB = \App\Models\Master\Rayon::where('name', 'Rayon B')->first();
-        $rayonC = \App\Models\Master\Rayon::where('name', 'Rayon C')->first();
+        // Target distributions based on user request (for 200 students)
+        $luarMaduraTarget = 10;
+        $bangkalanTarget = 7;
+        $sampangTarget = 4;
+        $pamekasanTarget = 14;
+        
+        $sumenepCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%sumenep%')->first();
+        $pamekasanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%pamekasan%')->first();
+        $sampangCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%sampang%')->first();
+        $bangkalanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%bangkalan%')->first();
 
-        $santri = [
-            [
-                'name' => 'Ahmad Fauzi',
-                'nis' => 'S001',
-                'nik' => '3171051520100001',
-                'gender' => 'male',
-                'birth_place' => 'Jakarta',
-                'birth_date' => '2010-05-15',
-                'address' => 'Jl. Merdeka No. 123, Jakarta Pusat',
-                'rayon_id' => $rayonA?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Budi Santoso',
-                'father_education' => 'S1',
-                'father_occupation' => 'Pegawai Swasta',
-                'mother_name' => 'Siti Nurhaliza',
+        // Fetch villages for each category
+        $luarMaduraVillages = \Laravolt\Indonesia\Models\Village::whereHas('district.city', function($q) use ($sumenepCity, $pamekasanCity, $sampangCity, $bangkalanCity) {
+            $q->whereNotIn('code', [$sumenepCity->code, $pamekasanCity->code, $sampangCity->code, $bangkalanCity->code]);
+        })->inRandomOrder()->limit(100)->get();
+
+        $bangkalanVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($bangkalanCity) {
+            $q->where('city_code', $bangkalanCity->code);
+        })->inRandomOrder()->limit(50)->get();
+
+        $sampangVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($sampangCity) {
+            $q->where('city_code', $sampangCity->code);
+        })->inRandomOrder()->limit(50)->get();
+
+        $pamekasanVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($pamekasanCity) {
+            $q->where('city_code', $pamekasanCity->code);
+        })->inRandomOrder()->limit(50)->get();
+
+        // Lenteng & Ganding
+        $sumenepFavoredVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($sumenepCity) {
+            $q->where('city_code', $sumenepCity->code)
+              ->where(function($q2) {
+                  $q2->where('name', 'like', '%lenteng%')->orWhere('name', 'like', '%ganding%')
+                  ->orWhere('name', 'like', '%guluk%');
+              });
+        })->inRandomOrder()->limit(100)->get();
+
+        // Other Sumenep
+        $sumenepOtherVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($sumenepCity) {
+            $q->where('city_code', $sumenepCity->code)
+              ->where('name', 'not like', '%lenteng%')
+              ->where('name', 'not like', '%ganding%')
+              ->where('name', 'not like', '%guluk%');
+        })->inRandomOrder()->limit(100)->get();
+
+
+        for ($i = 0; $i < $studentCount; $i++) {
+            $rayonId = count($rayons) > 0 ? $rayons[array_rand($rayons)] : null;
+            $roomId = count($rooms) > 0 ? $rooms[array_rand($rooms)] : null;
+            $religiousEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
+            $formalEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
+
+            if ($i < $luarMaduraTarget) {
+                $village = $luarMaduraVillages->random();
+            } elseif ($i < $luarMaduraTarget + $bangkalanTarget) {
+                $village = $bangkalanVillages->random();
+            } elseif ($i < $luarMaduraTarget + $bangkalanTarget + $sampangTarget) {
+                $village = $sampangVillages->random();
+            } elseif ($i < $luarMaduraTarget + $bangkalanTarget + $sampangTarget + $pamekasanTarget) {
+                $village = $pamekasanVillages->random();
+            } else {
+                // For Sumenep, 70% chance to be in Lenteng/Ganding
+                if (rand(1, 100) <= 70 && $sumenepFavoredVillages->isNotEmpty()) {
+                    $village = $sumenepFavoredVillages->random();
+                } else {
+                    $village = $sumenepOtherVillages->random();
+                }
+            }
+
+            $districtCode = $village->district_code;
+            $cityCode = substr($districtCode, 0, 4);
+            $provinceCode = substr($cityCode, 0, 2);
+            $villageCode = $village->code;
+            
+            $cityName = \Laravolt\Indonesia\Models\City::where('code', $cityCode)->value('name');
+            $birthPlace = ucwords(strtolower(str_replace(['KABUPATEN ', 'KOTA '], '', $cityName)));
+            
+            $villageName = ucwords(strtolower($village->name));
+            $districtName = ucwords(strtolower($village->district->name));
+            $provinceName = ucwords(strtolower(\Laravolt\Indonesia\Models\Province::where('code', $provinceCode)->value('name')));
+            
+            $address = "Dusun " . $faker->streetName() . " RT " . $faker->numerify('0#') . " RW " . $faker->numerify('0#') . ", Desa $villageName, Kec. $districtName, $cityName, $provinceName";
+
+            // 1. Create Guardian
+            $fatherName = $faker->firstName('male') . ' ' . $faker->lastName('male');
+            $motherName = $faker->firstName('female') . ' ' . $faker->lastName('female');
+            
+            $guardianPhone = '08' . $faker->numerify('##########');
+            
+            $guardian = Guardian::create([
+                'id' => (string) Str::uuid(),
+                'name' => $fatherName,
+                'username' => strtolower(explode(' ', $fatherName)[0]) . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
+                'password' => $defaultPassword,
+                'phone' => $guardianPhone,
+                'email' => $faker->unique()->safeEmail(),
+                'nik' => $faker->numerify('################'),
+                'address' => $faker->address(),
+                'job' => $faker->jobTitle(),
+                'relationship' => 'father',
+            ]);
+
+            // 2. Create Student
+            $gender = $faker->randomElement(['male', 'female']);
+            $studentPhone = '08' . $faker->numerify('##########');
+            $studentName = $faker->firstName($gender) . ' ' . $faker->lastName($gender);
+            
+            $student = Student::create([
+                'id' => (string) Str::uuid(),
+                'nis' => $faker->unique()->numerify('########'),
+                'nik' => $faker->numerify('################'),
+                'name' => $studentName,
+                'gender' => $gender,
+                'birth_place' => $birthPlace,
+                'birth_date' => $faker->date('Y-m-d', '-12 years'),
+                'religious_education_level_id' => $religiousEdId,
+                'formal_education_level_id' => $formalEdId,
+                'province_code' => $provinceCode,
+                'city_code' => $cityCode,
+                'district_code' => $districtCode,
+                'village_code' => $villageCode,
+                'address' => $address,
+                'rayon_id' => $rayonId,
+                'room_id' => $roomId,
+                'father_name' => $fatherName,
+                'father_education' => 'SMA',
+                'father_occupation' => $faker->jobTitle(),
+                'mother_name' => $motherName,
                 'mother_education' => 'SMA',
                 'mother_occupation' => 'Ibu Rumah Tangga',
-                'phone' => '081234567890',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
+                'entry_date' => today(),
+                'phone' => $studentPhone,
                 'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Siti Aminah',
-                'nis' => 'S002',
-                'nik' => '3201062220110002',
-                'gender' => 'female',
-                'birth_place' => 'Bogor',
-                'birth_date' => '2011-03-22',
-                'address' => 'Jl. Raya Bogor KM 30, Bogor',
-                'rayon_id' => $rayonB?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Surya Wijaya',
-                'father_occupation' => 'Wiraswasta',
-                'mother_name' => 'Dewi Sartika',
-                'mother_occupation' => 'Guru',
-                'phone' => '081298765432',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Muhammad Rizki',
-                'nis' => 'S003',
-                'nik' => '3276101120100003',
-                'gender' => 'male',
-                'birth_place' => 'Depok',
-                'birth_date' => '2010-11-10',
-                'address' => 'Jl. Raya Depok No. 45, Depok',
-                'rayon_id' => $rayonA?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Hendra Kusuma',
-                'father_occupation' => 'PNS',
-                'mother_name' => 'Dewi Lestari',
-                'mother_occupation' => 'Ibu Rumah Tangga',
-                'phone' => '081312345678',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Nurul Hikmah',
-                'nis' => 'S004',
-                'nik' => '3603051820110004',
-                'gender' => 'female',
-                'birth_place' => 'Tangerang',
-                'birth_date' => '2011-07-18',
-                'address' => 'Perumahan Taman Sari Blok A1, Tangerang',
-                'rayon_id' => $rayonB?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Agus Setiawan',
-                'father_occupation' => 'Pedagang',
-                'mother_name' => 'Rina Susanti',
-                'mother_occupation' => 'Wirausaha',
-                'phone' => '081512345678',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Abdul Rahman',
-                'nis' => 'S005',
-                'nik' => '3275093020100005',
-                'gender' => 'male',
-                'birth_place' => 'Bekasi',
-                'birth_date' => '2010-09-30',
-                'address' => 'Jl. Raya Bekasi Timur No. 78, Bekasi',
-                'rayon_id' => $rayonA?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Ahmad Dahlan',
-                'father_occupation' => 'Petani',
-                'mother_name' => 'Rina Wulandari',
-                'mother_occupation' => 'Ibu Rumah Tangga',
-                'phone' => '081612345678',
-                'entry_date' => '2023-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'inactive',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Putri Ayu',
-                'nis' => 'S006',
-                'nik' => '3171012520110006',
-                'gender' => 'female',
-                'birth_place' => 'Jakarta',
-                'birth_date' => '2011-01-25',
-                'address' => 'Jl. Kebon Jeruk Raya No. 12, Jakarta Barat',
-                'rayon_id' => $rayonC?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Andi Kurniawan',
-                'father_occupation' => 'Karyawan BUMN',
-                'mother_name' => 'Sari Melati',
-                'mother_occupation' => 'Dokter',
-                'phone' => '081712345678',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Daffa Maulana',
-                'nis' => 'S007',
-                'nik' => '3674010520100007',
-                'gender' => 'male',
-                'birth_place' => 'Tangerang Selatan',
-                'birth_date' => '2010-12-05',
-                'address' => 'BSD City, Sektor 1.1, Tangerang Selatan',
-                'rayon_id' => $rayonA?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Rudi Hermawan',
-                'father_occupation' => 'Pengusaha',
-                'mother_name' => 'Ani Suryani',
-                'mother_occupation' => 'Ibu Rumah Tangga',
-                'phone' => '081812345678',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Aisyah Putri',
-                'nis' => 'S008',
-                'nik' => '3276041720110008',
-                'gender' => 'female',
-                'birth_place' => 'Depok',
-                'birth_date' => '2011-04-17',
-                'address' => 'Jl. Margonda Raya No. 100, Depok',
-                'rayon_id' => $rayonB?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Bambang Sutrisno',
-                'father_occupation' => 'Dosen',
-                'mother_name' => 'Endang Rahayu',
-                'mother_occupation' => 'Pegawai Swasta',
-                'phone' => '081912345678',
-                'entry_date' => '2023-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'graduated',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Fajar Ramadhan',
-                'nis' => 'S009',
-                'nik' => '3201082220100009',
-                'gender' => 'male',
-                'birth_place' => 'Bogor',
-                'birth_date' => '2010-08-22',
-                'address' => 'Perumahan Bogor Asri Blok C5, Bogor',
-                'rayon_id' => $rayonA?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Eko Prasetyo',
-                'father_occupation' => 'TNI',
-                'mother_name' => 'Lina Marlina',
-                'mother_occupation' => 'Ibu Rumah Tangga',
-                'phone' => '082112345678',
-                'entry_date' => '2024-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Dian Sastri',
-                'nis' => 'S010',
-                'nik' => '3171021420110010',
-                'gender' => 'female',
-                'birth_place' => 'Jakarta',
-                'birth_date' => '2011-02-14',
-                'address' => 'Jl. Jend. Sudirman Kav. 1, Jakarta Selatan',
-                'rayon_id' => $rayonC?->id,
-                'room_id' => $room->id,
-                'father_name' => 'Hendra Kurniawan',
-                'father_occupation' => 'Arsitek',
-                'mother_name' => 'Maya Sari',
-                'mother_occupation' => 'Akuntan',
-                'phone' => '082212345678',
-                'entry_date' => '2023-07-01',
-                'religious_education_level_id' => $diniyahLevel?->id,
-                'formal_education_level_id' => $formalLevel?->id,
-                'status' => 'dropped_out',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
+            ]);
 
-        foreach ($santri as $data) {
-            Student::create($data);
+            // 3. Attach Guardian to Student via Pivot
+            DB::table('student_guardian')->insert([
+                'student_id' => $student->id,
+                'guardian_id' => $guardian->id,
+            ]);
         }
-
-        $this->command->info('Student data seeded successfully!');
+        
+        $this->command->info("200 dummy students and guardians created successfully with all fields filled.");
     }
 }

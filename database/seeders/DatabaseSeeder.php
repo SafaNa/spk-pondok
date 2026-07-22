@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
             SantriSeeder::class,
             LeaveCategorySeeder::class,
             ViolationSeeder::class,
-            History2023Seeder::class,
         ]);
     }
 }

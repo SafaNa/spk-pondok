@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Master\Student;
-use App\Models\Master\Period;
 use App\Models\Finance\SppPayment;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Violation\ViolationRecord;
@@ -31,7 +30,6 @@ class DashboardController extends Controller
         }
         
         $activeYearId = $activeYear ? $activeYear->id : null;
-        $activePeriods = Period::where('academic_year_id', $activeYearId)->pluck('id')->toArray();
 
         $totalStudents   = Student::where('status', 'active')->count();
         $kepulangan      = StudentLicense::where('academic_year_id', $activeYearId)
@@ -105,32 +103,42 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $driver = DB::connection()->getDriverName();
+        $monthFormatSql = $driver === 'pgsql' ? "to_char(start_date, 'Mon YYYY')" : 'DATE_FORMAT(start_date, "%b %Y")';
+        $yearSql = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM start_date)' : 'YEAR(start_date)';
+        $monthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM start_date)' : 'MONTH(start_date)';
+
         // 3. Tren Pengajuan Izin Bulanan (Area/Line)
-        $licenseTrend = StudentLicense::selectRaw('DATE_FORMAT(start_date, "%b %Y") as month_name, count(*) as total')
+        $licenseTrend = StudentLicense::selectRaw($monthFormatSql . ' as month_name, count(*) as total')
             ->where('academic_year_id', $activeYearId)
-            ->groupBy('month_name', DB::raw('YEAR(start_date)'), DB::raw('MONTH(start_date)'))
-            ->orderByRaw('YEAR(start_date), MONTH(start_date)')
+            ->groupBy('month_name', DB::raw($yearSql), DB::raw($monthSql))
+            ->orderByRaw($yearSql . ', ' . $monthSql)
             ->get();
 
         // 4. Kategori Pelanggaran (Doughnut)
         $violationCategories = ViolationRecord::join('violation_types', 'violation_records.violation_type_id', '=', 'violation_types.id')
             ->join('violation_categories', 'violation_types.violation_category_id', '=', 'violation_categories.id')
-            ->whereIn('violation_records.period_id', $activePeriods)
+            ->where('violation_records.academic_year_id', $activeYearId)
             ->select('violation_categories.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('violation_categories.id', 'violation_categories.name')
             ->get();
 
+        $vMonthFormatSql = $driver === 'pgsql' ? "to_char(date, 'Mon YYYY')" : 'DATE_FORMAT(date, "%b %Y")';
+        $vYearSql = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM date)' : 'YEAR(date)';
+        $vMonthSql = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM date)' : 'MONTH(date)';
+
+        $violations = ViolationRecord::where('academic_year_id', $activeYearId)->count();
         // 5. Tren Pelanggaran Bulanan (Area)
-        $violationTrend = ViolationRecord::selectRaw('DATE_FORMAT(date, "%b %Y") as month_name, count(*) as total')
-            ->whereIn('period_id', $activePeriods)
-            ->groupBy('month_name', DB::raw('YEAR(date)'), DB::raw('MONTH(date)'))
-            ->orderByRaw('YEAR(date), MONTH(date)')
+        $violationTrend = ViolationRecord::selectRaw($vMonthFormatSql . ' as month_name, count(*) as total')
+            ->where('academic_year_id', $activeYearId)
+            ->groupBy('month_name', DB::raw($vYearSql), DB::raw($vMonthSql))
+            ->orderByRaw($vYearSql . ', ' . $vMonthSql)
             ->get();
 
         // 6. Top 5 Rayon Pelanggaran (Horizontal Bar)
         $topRayons = ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
             ->join('rayons', 'students.rayon_id', '=', 'rayons.id')
-            ->whereIn('violation_records.period_id', $activePeriods)
+            ->where('violation_records.academic_year_id', $activeYearId)
             ->select('rayons.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('rayons.id', 'rayons.name')
             ->orderByDesc('total')
@@ -158,7 +166,7 @@ class DashboardController extends Controller
 
         // 10. Top 10 Santri Paling Banyak Melanggar
         $topStudentViolations = ViolationRecord::join('students', 'violation_records.student_id', '=', 'students.id')
-            ->whereIn('violation_records.period_id', $activePeriods)
+            ->where('violation_records.academic_year_id', $activeYearId)
             ->select('students.name', DB::raw('count(violation_records.id) as total'))
             ->groupBy('students.id', 'students.name')
             ->orderByDesc('total')

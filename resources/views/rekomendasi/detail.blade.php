@@ -50,7 +50,7 @@
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-[#0d141b] dark:text-white">{{ $santri->nama }}</h2>
-                    <p class="text-[#4c739a]">NIS: {{ $santri->nis }}</p>
+                    <p class="text-[#4c739a]">{{ $santri->identifier_label ?? 'NIS' }}: {{ $santri->nis }}</p>
                 </div>
             </div>
             <div class="flex items-center gap-6">

@@ -105,7 +105,9 @@
         <div class="p-5 border-b border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900">
             <form action="{{ route('admin.guardians.index') }}" method="GET" class="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
+                    </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, username, atau no HP wali..." 
                         class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 </div>
@@ -159,7 +161,17 @@
                             <td class="px-5 py-3 text-sm text-[#4c739a] font-mono">{{ $guardian->username }}</td>
                             <td class="px-5 py-3">
                                 @php
-                                    $relMap = ['father'=>['label'=>'Ayah','color'=>'blue'], 'mother'=>['label'=>'Ibu','color'=>'pink'], 'guardian'=>['label'=>'Wali','color'=>'amber'], 'sibling'=>['label'=>'Saudara','color'=>'green']];
+                                    $relMap = [
+                                        'father' => ['label' => 'Ayah', 'color' => 'blue'],
+                                        'mother' => ['label' => 'Ibu', 'color' => 'pink'],
+                                        'sibling' => ['label' => 'Saudara', 'color' => 'emerald'],
+                                        'uncle' => ['label' => 'Paman', 'color' => 'cyan'],
+                                        'aunt' => ['label' => 'Bibi', 'color' => 'rose'],
+                                        'nephew_niece' => ['label' => 'Keponakan', 'color' => 'teal'],
+                                        'grandfather' => ['label' => 'Kakek', 'color' => 'slate'],
+                                        'grandmother' => ['label' => 'Nenek', 'color' => 'gray'],
+                                        'guardian' => ['label' => 'Wali', 'color' => 'amber']
+                                    ];
                                     $rel = $relMap[$guardian->relationship] ?? ['label'=>ucfirst($guardian->relationship),'color'=>'slate'];
                                 @endphp
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold

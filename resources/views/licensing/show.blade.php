@@ -136,7 +136,7 @@
                     @endif
                     <div>
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $name }}</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">NIS. {{ $license->student->nis ?? '-' }}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ $license->student->identifier_label ?? 'NIS' }}. {{ $license->student->nis ?? '-' }}</p>
                     </div>
                 </div>
 
@@ -842,19 +842,24 @@
                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
                         Tolak izin kepulangan <strong class="text-slate-800 dark:text-white">{{ $license->student->name }}</strong>?
                     </p>
-                    <div class="flex gap-3">
-                        <button type="button" @click="showRejectModal = false"
-                            class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            Batal
-                        </button>
-                        <form action="{{ route('admin.licenses.reject', $license->id) }}" method="POST" class="flex-1">
-                            @csrf
+                    <form action="{{ route('admin.licenses.reject', $license->id) }}" method="POST">
+                        @csrf
+                        <div class="space-y-1.5 mb-6 text-left">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Alasan Penolakan (Opsional)</label>
+                            <textarea name="rejection_reason" rows="2" placeholder="Berikan alasan penolakan..."
+                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-800 dark:text-white focus:outline-none focus:border-primary resize-none"></textarea>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" @click="showRejectModal = false"
+                                class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                Batal
+                            </button>
                             <button type="submit"
-                                class="w-full px-4 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors">
+                                class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors">
                                 Ya, Tolak
                             </button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

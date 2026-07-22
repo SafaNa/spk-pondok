@@ -80,17 +80,17 @@
             </div>
         </div>
 
-        {{-- Violations by Period --}}
-        @forelse($violationsByPeriod as $periodName => $periodViolations)
+        {{-- Violations by Academic Year --}}
+        @forelse($violationsByAcademicYear as $yearId => $yearViolations)
             <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
                 <div class="bg-slate-50/50 dark:bg-slate-800/50 px-6 py-4 border-b border-slate-100 dark:border-slate-700">
                      <h3 class="font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">calendar_month</span>
-                        {{ $periodName }}
+                        <span class="material-symbols-outlined text-primary">event_note</span>
+                        Tahun Ajaran {{ $yearViolations->first()->academicYear->name ?? 'Tidak diketahui' }}
                     </h3>
                 </div>
                 <div class="divide-y divide-slate-100 dark:divide-slate-800">
-                    @foreach($periodViolations as $violation)
+                    @foreach($yearViolations as $violation)
                         <div class="p-6 hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                             <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
                                 <div class="flex items-start gap-4">

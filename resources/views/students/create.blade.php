@@ -84,10 +84,10 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- NIS --}}
+                        {{-- NIS / NIM --}}
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                NIS <span class="text-red-500">*</span>
+                                NIS / NIM <span class="text-red-500">*</span>
                             </label>
                             <div class="relative group">
                                 <div
@@ -717,10 +717,14 @@
                                 </div>
                                 <select name="wali_relationship" style="background-image: none;"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium appearance-none focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200">
-                                    <option value="father"   {{ old('wali_relationship','father') === 'father'   ? 'selected' : '' }}>Ayah</option>
-                                    <option value="mother"   {{ old('wali_relationship') === 'mother'   ? 'selected' : '' }}>Ibu</option>
-                                    <option value="guardian" {{ old('wali_relationship') === 'guardian' ? 'selected' : '' }}>Wali</option>
-                                    <option value="sibling"  {{ old('wali_relationship') === 'sibling'  ? 'selected' : '' }}>Saudara</option>
+                                    <option value="father"        {{ old('wali_relationship','father') === 'father'        ? 'selected' : '' }}>Ayah</option>
+                                    <option value="mother"        {{ old('wali_relationship') === 'mother'        ? 'selected' : '' }}>Ibu</option>
+                                    <option value="sibling"       {{ old('wali_relationship') === 'sibling'       ? 'selected' : '' }}>Saudara Kandung</option>
+                                    <option value="uncle"         {{ old('wali_relationship') === 'uncle'         ? 'selected' : '' }}>Paman</option>
+                                    <option value="aunt"          {{ old('wali_relationship') === 'aunt'          ? 'selected' : '' }}>Bibi</option>
+                                    <option value="nephew_niece"  {{ old('wali_relationship') === 'nephew_niece'  ? 'selected' : '' }}>Keponakan</option>
+                                    <option value="grandfather"   {{ old('wali_relationship') === 'grandfather'   ? 'selected' : '' }}>Kakek</option>
+                                    <option value="grandmother"   {{ old('wali_relationship') === 'grandmother'   ? 'selected' : '' }}>Nenek</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                                     <span class="material-symbols-outlined">expand_more</span>

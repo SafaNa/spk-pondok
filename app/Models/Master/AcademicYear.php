@@ -4,7 +4,6 @@ namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Master\Period;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class AcademicYear extends Model
@@ -17,9 +16,4 @@ class AcademicYear extends Model
         'stage1_deadline' => 'date',
         'stage2_deadline' => 'date',
     ];
-
-    public function periods()
-    {
-        return $this->hasMany(Period::class);
-    }
 }

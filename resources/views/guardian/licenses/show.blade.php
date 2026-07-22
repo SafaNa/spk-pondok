@@ -45,7 +45,7 @@
                     @endif
                     <div>
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $name }}</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">NIS. {{ $license->student->nis ?? '-' }}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ $license->student->identifier_label ?? 'NIS' }}. {{ $license->student->nis ?? '-' }}</p>
                     </div>
                 </div>
 
@@ -231,6 +231,21 @@
 
         {{-- Right Column: License Details --}}
         <div class="lg:col-span-2 flex flex-col gap-6">
+            @if($license->status === 'approved' && !$license->actual_return_date)
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-center gap-6 justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 mb-1">Butuh Waktu Tambahan?</h3>
+                        <p class="text-sm text-blue-700 dark:text-blue-400">Anda dapat mengajukan perpanjangan izin secara online jika santri berhalangan untuk kembali tepat waktu sesuai jadwal.</p>
+                    </div>
+                    <a href="{{ route('guardian.licenses.extend', $license) }}" class="shrink-0 flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <span class="material-symbols-outlined text-[20px]">more_time</span>
+                        Ajukan Perpanjangan
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800">
                 <div class="px-6 py-4 border-b border-[#e7edf3] dark:border-slate-800 flex items-center justify-between">
                     <h3 class="text-base font-bold text-slate-800 dark:text-white">Informasi Izin</h3>

@@ -101,6 +101,7 @@
                     </label>
                     <input type="date" name="start_date" id="start_date"
                         value="{{ old('start_date', date('Y-m-d')) }}" required
+                        min="{{ date('Y-m-d') }}"
                         onchange="calcDuration()"
                         class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
                     @error('start_date')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
@@ -111,6 +112,8 @@
                     </label>
                     <input type="date" name="end_date" id="end_date"
                         value="{{ old('end_date', date('Y-m-d')) }}" required readonly tabindex="-1"
+                        min="{{ date('Y-m-d') }}"
+                        onchange="calcDuration()"
                         class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-300 text-sm cursor-not-allowed focus:outline-none">
                     @error('end_date')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
@@ -220,49 +223,47 @@ function applyDateLogic() {
     var startDateInput = document.getElementById('start_date');
     var endDateInput = document.getElementById('end_date');
     
-    // For guardian, end date is always read-only
-    endDateInput.readOnly = true;
-    endDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+    // Always allow end date to be editable now, just constrained
+    endDateInput.readOnly = false;
+    endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
 
     if (!catId) {
-        startDateInput.readOnly = false;
-        startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+        endDateInput.removeAttribute('max');
         return;
     }
     
     var cat = categoriesData[catId];
     if (!cat) return;
     
-    var duration = 1; // Default 1 day for guardian if not fixed
-    
-    if (cat.is_fixed_duration) {
-        startDateInput.readOnly = true;
-        startDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-        
-        // Reset to today
-        var today = new Date();
-        var ty = today.getFullYear();
-        var tm = String(today.getMonth() + 1).padStart(2, '0');
-        var td = String(today.getDate()).padStart(2, '0');
-        startDateInput.value = ty + '-' + tm + '-' + td;
-        
-        if (cat.duration_days) {
-            duration = cat.duration_days;
-        }
-    } else {
-        startDateInput.readOnly = false;
-        startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-    }
-    
     if (startDateInput.value) {
         var startDate = new Date(startDateInput.value);
-        startDate.setDate(startDate.getDate() + (duration - 1));
+        var minDateStr = startDateInput.value;
+        endDateInput.min = minDateStr;
         
-        var y = startDate.getFullYear();
-        var m = String(startDate.getMonth() + 1).padStart(2, '0');
-        var d = String(startDate.getDate()).padStart(2, '0');
-        
-        endDateInput.value = y + '-' + m + '-' + d;
+        if (cat.is_fixed_duration && cat.duration_days) {
+            // Calculate max date
+            var maxDate = new Date(startDate);
+            maxDate.setDate(maxDate.getDate() + (cat.duration_days - 1));
+            
+            var y = maxDate.getFullYear();
+            var m = String(maxDate.getMonth() + 1).padStart(2, '0');
+            var d = String(maxDate.getDate()).padStart(2, '0');
+            var maxDateStr = y + '-' + m + '-' + d;
+            
+            endDateInput.max = maxDateStr;
+            
+            // Constrain current value if it's out of bounds
+            if (endDateInput.value > maxDateStr) {
+                endDateInput.value = maxDateStr;
+            } else if (endDateInput.value < minDateStr) {
+                endDateInput.value = minDateStr;
+            }
+        } else {
+            endDateInput.removeAttribute('max');
+            if (endDateInput.value < minDateStr) {
+                endDateInput.value = minDateStr;
+            }
+        }
     }
     calcDuration();
 }
@@ -285,14 +286,26 @@ function calcDuration() {
     var start = document.getElementById('start_date').value;
     var end   = document.getElementById('end_date').value;
     var info  = document.getElementById('durasiInfo');
+    var catId = document.getElementById('leaveCategorySelect').value;
+    var cat = catId ? categoriesData[catId] : null;
+
+    if (!catId) {
+        info.classList.add('hidden');
+        return;
+    }
+
     if (start && end) {
         var diff = Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1;
         if (diff > 0) {
             info.classList.remove('hidden');
-            info.textContent = 'Durasi izin: ' + diff + ' hari';
+            if (cat && !cat.is_fixed_duration) {
+                info.innerHTML = 'Durasi izin: <strong>' + diff + ' hari</strong>. <span class="text-[12px] italic opacity-80">(Jumlah hari akan disesuaikan berdasarkan kebutuhan dan persetujuan pengurus)</span>';
+            } else {
+                info.innerHTML = 'Durasi izin: Maksimal <strong>' + diff + ' hari</strong>';
+            }
         } else {
             info.classList.remove('hidden');
-            info.textContent = 'Tanggal kembali tidak boleh lebih awal dari tanggal mulai.';
+            info.innerHTML = 'Tanggal kembali tidak boleh lebih awal dari tanggal mulai.';
         }
     } else {
         info.classList.add('hidden');

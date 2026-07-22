@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="id" class="light">
 
 <head>
     <meta charset="utf-8" />
@@ -99,9 +99,9 @@
                 <!-- Page Heading -->
                 <div class="flex flex-col gap-2 mb-2">
                     <h2 class="text-[#0d141b] dark:text-white tracking-tight text-[32px] font-bold leading-tight">
-                        Administrator Login</h2>
+                        Login Administrator</h2>
                     <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal">
-                        Welcome back! Please enter your details to access the dashboard.
+                        Selamat datang kembali! Silakan masukkan kredensial Anda untuk mengakses dasbor.
                     </p>
                 </div>
 
@@ -111,7 +111,7 @@
                         class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
                         <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
                         <div class="flex-1">
-                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Authentication Failed</h3>
+                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Autentikasi Gagal</h3>
                             <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ session('error') }}</p>
                         </div>
                     </div>
@@ -122,16 +122,16 @@
                         class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
                         <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
                         <div class="flex-1">
-                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Authentication Failed</h3>
+                            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Autentikasi Gagal</h3>
                             <p class="text-sm text-red-600 dark:text-red-400 mt-1">
-                                The credentials provided do not match our records. Please try again.
+                                Kredensial yang diberikan tidak cocok dengan data kami. Silakan coba lagi.
                             </p>
                         </div>
                     </div>
                 @endif
 
                 <!-- Login Form -->
-                <form action="{{ route('admin.login') }}" method="POST" class="flex flex-col gap-5">
+                <form action="{{ route('admin.login') }}" method="POST" class="flex flex-col gap-5" onsubmit="showLoading()">
                     @csrf
 
                     <!-- Username Input Field -->
@@ -163,7 +163,7 @@
                         <div class="flex w-full items-stretch rounded-lg relative group">
                             <input
                                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('password') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 focus:border-primary h-14 placeholder:text-[#4c739a] p-[15px] pr-12 text-base font-normal leading-normal transition-all"
-                                id="password" name="password" placeholder="Enter your password" required type="password"
+                                id="password" name="password" placeholder="masukkan password" required type="password"
                                 value="password" />
                             <button
                                 class="absolute right-0 top-0 h-full px-4 text-[#4c739a] hover:text-primary dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-colors"
@@ -187,21 +187,22 @@
                                     class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 text-[16px] pointer-events-none font-bold">check</span>
                             </div>
                             <span
-                                class="text-sm font-medium text-[#0d141b] dark:text-slate-300 group-hover:text-primary transition-colors">Remember
-                                me</span>
+                                class="text-sm font-medium text-[#0d141b] dark:text-slate-300 group-hover:text-primary transition-colors">Ingat
+                                saya</span>
                         </label>
                         <a class="text-sm font-bold text-primary hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
                             href="#">
-                            Forgot Password?
+                            Lupa Password?
                         </a>
                     </div>
 
                     <!-- Submit Button -->
                     <button
+                        id="submitBtn"
                         class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-md hover:shadow-lg mt-4 gap-2"
                         type="submit">
-                        <span class="material-symbols-outlined text-[20px]">login</span>
-                        <span class="truncate">Sign In</span>
+                        <span id="submitBtnIcon" class="material-symbols-outlined text-[20px]">login</span>
+                        <span id="submitBtnText" class="truncate">Masuk</span>
                     </button>
                 </form>
             </div>
@@ -219,6 +220,20 @@
                 passwordInput.type = 'password';
                 passwordIcon.textContent = 'visibility';
             }
+        }
+
+        function showLoading() {
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('submitBtnText');
+            const btnIcon = document.getElementById('submitBtnIcon');
+
+            // Prevent multiple clicks
+            btn.classList.add('opacity-75', 'cursor-wait');
+            
+            // Change text and icon
+            btnText.textContent = 'Memproses...';
+            btnIcon.textContent = 'sync';
+            btnIcon.classList.add('animate-spin');
         }
     </script>
 </body>

@@ -198,7 +198,7 @@
                                             class="block font-semibold text-[#0d141b] hover:text-primary transition-colors leading-tight">
                                             {{ $license->student->name }}
                                         </a>
-                                        <span class="text-[11px] text-[#4c739a]">NIS. {{ $license->student->nis ?? '-' }}</span>
+                                        <span class="text-[11px] text-[#4c739a]">{{ $license->student->identifier_label ?? 'NIS' }}. {{ $license->student->nis ?? '-' }}</span>
                                     </div>
                                 </div>
                             </td>

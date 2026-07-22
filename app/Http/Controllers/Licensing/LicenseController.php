@@ -307,14 +307,23 @@ class LicenseController extends Controller
         return back()->with('success', 'Izin disetujui sebagai kasus darurat.')->with('wa_url', $waUrl);
     }
 
-    public function reject(StudentLicense $license)
+    public function reject(Request $request, StudentLicense $license)
     {
-        $license->update(['status' => 'rejected', 'rejected_at' => now()]);
+        $data = ['status' => 'rejected', 'rejected_at' => now()];
+        
+        if ($request->filled('rejection_reason')) {
+            $data['notes'] = $license->notes ? $license->notes . "\nAlasan Penolakan: " . $request->rejection_reason : "Alasan Penolakan: " . $request->rejection_reason;
+        }
+        
+        $license->update($data);
 
         $license->load('student.guardians');
+        
+        $reasonText = $request->filled('rejection_reason') ? "\nAlasan: " . $request->rejection_reason : "";
+        
         $waUrl = $this->waUrl($license,
             "IZIN PULANG DITOLAK\n" .
-            "Pengajuan izin pulang Ananda {$license->student->name} tidak dapat disetujui saat ini.\n" .
+            "Pengajuan izin pulang Ananda {$license->student->name} tidak dapat disetujui saat ini.{$reasonText}\n" .
             "Silakan hubungi pihak pesantren untuk informasi lebih lanjut. Terima kasih."
         );
 
@@ -430,10 +439,28 @@ class LicenseController extends Controller
         if ($request->boolean('auto_approve')) {
             $license->update(['end_date' => $request->requested_new_end_date]);
             $ext->update(['status' => 'approved', 'approved_at' => now()]);
-            return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.');
+            
+            $license->load('student.guardians');
+            $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
+            $waUrl = $this->waUrl($license,
+                "PERPANJANGAN IZIN DISETUJUI\n" .
+                "Perpanjangan izin Ananda {$license->student->name} telah dicatat dan disetujui.\n" .
+                "Tanggal kembali yang baru: {$newDateStr}.\n" .
+                "Harap jadikan periksa. Terima kasih."
+            );
+            
+            return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.')->with('wa_url', $waUrl);
         }
 
-        return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.');
+        $license->load('student.guardians');
+        $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
+        $waUrl = $this->waUrl($license,
+            "PENGAJUAN PERPANJANGAN IZIN\n" .
+            "Pengajuan perpanjangan izin Ananda {$license->student->name} hingga {$newDateStr} telah dicatat dan sedang menunggu persetujuan.\n" .
+            "Terima kasih."
+        );
+
+        return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.')->with('wa_url', $waUrl);
     }
 
     /**
@@ -464,8 +491,17 @@ class LicenseController extends Controller
             'requested_new_end_date' => $newDate, // Save the actual approved date
         ]);
 
+        $license->load('student.guardians');
+        $newDateStr = $newDate->format('d-m-Y');
+        $waUrl = $this->waUrl($license,
+            "PERPANJANGAN IZIN DISETUJUI\n" .
+            "Pengajuan perpanjangan izin Ananda {$license->student->name} telah disetujui.\n" .
+            "Tanggal kembali yang baru: {$newDateStr}.\n" .
+            "Harap jadikan periksa. Terima kasih."
+        );
+
         return back()->with('success', 'Perpanjangan disetujui. Tanggal kembali diperbarui ke ' .
-            $newDate->format('d F Y') . '.');
+            $newDate->format('d F Y') . '.')->with('wa_url', $waUrl);
     }
 
     /**
@@ -487,6 +523,17 @@ class LicenseController extends Controller
             'admin_notes' => $request->admin_notes,
         ]);
 
-        return back()->with('success', 'Perpanjangan berhasil ditolak.');
+        $license = $extension->studentLicense;
+        $license->load('student.guardians');
+        
+        $reasonText = $request->filled('admin_notes') ? "\nAlasan: " . $request->admin_notes : "";
+        
+        $waUrl = $this->waUrl($license,
+            "PERPANJANGAN IZIN DITOLAK\n" .
+            "Mohon maaf, pengajuan perpanjangan izin Ananda {$license->student->name} tidak dapat disetujui.{$reasonText}\n" .
+            "Harap santri kembali sesuai jadwal semula. Terima kasih."
+        );
+
+        return back()->with('success', 'Perpanjangan berhasil ditolak.')->with('wa_url', $waUrl);
     }
 }

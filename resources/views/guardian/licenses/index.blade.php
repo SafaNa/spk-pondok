@@ -94,9 +94,10 @@
                                     @endif
 
                                     @if($license->status === 'approved' && !$license->actual_return_date)
-                                        <a href="{{ route('guardian.licenses.extend', $license) }}" title="Tambah Perpanjangan"
-                                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-                                            <span class="material-symbols-outlined text-[18px]">more_time</span>
+                                        <a href="{{ route('guardian.licenses.extend', $license) }}" title="Ajukan Perpanjangan"
+                                            class="flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-xs transition-colors border border-blue-200">
+                                            <span class="material-symbols-outlined text-[16px]">more_time</span>
+                                            <span class="hidden sm:inline">Perpanjang</span>
                                         </a>
                                     @endif
                                 </div>

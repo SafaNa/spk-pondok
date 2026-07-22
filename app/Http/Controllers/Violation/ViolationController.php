@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Violation\ViolationRecord;
 use App\Models\Violation\ViolationType;
 use App\Models\Master\Student;
-use App\Models\Master\Period;
+use App\Models\Master\AcademicYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,10 +64,10 @@ class ViolationController extends Controller
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $activePeriod = Period::where('is_active', true)->first();
+        $activeAcademicYear = AcademicYear::where('status', 'active')->first();
 
-        if (!$activePeriod) {
-            return redirect()->back()->with('error', 'Tidak ada periode aktif. Silakan aktifkan periode terlebih dahulu.');
+        if (!$activeAcademicYear) {
+            return redirect()->back()->with('error', 'Tidak ada tahun ajaran aktif. Silakan aktifkan terlebih dahulu.');
         }
 
         // Hanya memuat siswa jika ada data old() (misal validasi gagal)
@@ -90,7 +90,7 @@ class ViolationController extends Controller
 
         $violationTypes = $query->get();
 
-        return view('violations.create', compact('students', 'violationTypes', 'activePeriod'));
+        return view('violations.create', compact('students', 'violationTypes', 'activeAcademicYear'));
     }
 
     /**
@@ -108,10 +108,10 @@ class ViolationController extends Controller
         ]);
 
         $violationType = ViolationType::findOrFail($validated['violation_type_id']);
-        $period = Period::where('is_active', true)->first();
+        $academicYear = AcademicYear::where('status', 'active')->first();
 
-        if (!$period) {
-            return redirect()->back()->with('error', 'Tidak ada periode aktif');
+        if (!$academicYear) {
+            return redirect()->back()->with('error', 'Tidak ada tahun ajaran aktif');
         }
 
         // Check permission
@@ -124,7 +124,7 @@ class ViolationController extends Controller
         ViolationRecord::create([
             'student_id' => $validated['student_id'],
             'violation_type_id' => $validated['violation_type_id'],
-            'period_id' => $period->id,
+            'academic_year_id' => $academicYear->id,
             'date' => $validated['date'],
             'sanction' => $violationType->default_sanction, // Automatically set
             'sanction_status' => 'pending',
@@ -168,7 +168,7 @@ class ViolationController extends Controller
             'student',
             'violationType.category',
             'violationType.department',
-            'period',
+            'academicYear',
             'creator'
         ])->findOrFail($id);
 
@@ -212,7 +212,7 @@ class ViolationController extends Controller
             ->with([
                 'violationType.category',
                 'violationType.department',
-                'period',
+                'academicYear',
                 'creator',
                 'verifier'
             ])
@@ -220,9 +220,9 @@ class ViolationController extends Controller
             ->get();
 
         // Group by period
-        $violationsByPeriod = $violations->groupBy('period_id');
+        $violationsByAcademicYear = $violations->groupBy('academic_year_id');
 
-        return view('violations.history', compact('student', 'violations', 'violationsByPeriod'));
+        return view('violations.history', compact('student', 'violations', 'violationsByAcademicYear'));
     }
 
     /**
@@ -245,9 +245,9 @@ class ViolationController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengedit pelanggaran');
         }
 
-        $activePeriod = Period::where('is_active', true)->first();
-        if (!$activePeriod) {
-            return redirect()->back()->with('error', 'Tidak ada periode aktif.');
+        $activeAcademicYear = AcademicYear::where('status', 'active')->first();
+        if (!$activeAcademicYear) {
+            return redirect()->back()->with('error', 'Tidak ada tahun ajaran aktif.');
         }
 
         // Hanya memuat siswa terkait
@@ -264,7 +264,7 @@ class ViolationController extends Controller
 
         $violationTypes = $query->get();
 
-        return view('violations.edit', compact('violation', 'students', 'violationTypes', 'activePeriod'));
+        return view('violations.edit', compact('violation', 'students', 'violationTypes', 'activeAcademicYear'));
     }
 
     /**

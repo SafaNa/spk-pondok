@@ -10,7 +10,7 @@ class EducationLevelSeeder extends Seeder
     public function run()
     {
         // Formal
-        $formalLevels = ['SD', 'SMP', 'SMA', 'SMK'];
+        $formalLevels = ['SD', 'SMP', 'SMA', 'SMK', 'Perguruan Tinggi'];
         foreach ($formalLevels as $level) {
             EducationLevel::create(['name' => $level, 'type' => 'formal']);
         }
