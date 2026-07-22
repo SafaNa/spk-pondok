@@ -37,9 +37,21 @@ class SantriSeeder extends Seeder
         $pamekasanTarget = 14;
         
         $sumenepCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%sumenep%')->first();
+        if (!$sumenepCity) $sumenepCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%SUMENEP%')->first();
+
         $pamekasanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%pamekasan%')->first();
+        if (!$pamekasanCity) $pamekasanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%PAMEKASAN%')->first();
+
         $sampangCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%sampang%')->first();
+        if (!$sampangCity) $sampangCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%SAMPANG%')->first();
+
         $bangkalanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%bangkalan%')->first();
+        if (!$bangkalanCity) $bangkalanCity = \Laravolt\Indonesia\Models\City::where('name', 'like', '%BANGKALAN%')->first();
+
+        if (!$sumenepCity || !$pamekasanCity || !$sampangCity || !$bangkalanCity) {
+            $this->command->error('Missing Madura cities. Ensure Laravolt Indonesia is seeded correctly.');
+            return;
+        }
 
         // Fetch villages for each category
         $luarMaduraVillages = \Laravolt\Indonesia\Models\Village::whereHas('district.city', function($q) use ($sumenepCity, $pamekasanCity, $sampangCity, $bangkalanCity) {
@@ -62,17 +74,18 @@ class SantriSeeder extends Seeder
         $sumenepFavoredVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($sumenepCity) {
             $q->where('city_code', $sumenepCity->code)
               ->where(function($q2) {
-                  $q2->where('name', 'like', '%lenteng%')->orWhere('name', 'like', '%ganding%')
-                  ->orWhere('name', 'like', '%guluk%');
+                  $q2->where('name', 'like', '%lenteng%')->orWhere('name', 'like', '%LENTENG%')
+                  ->orWhere('name', 'like', '%ganding%')->orWhere('name', 'like', '%GANDING%')
+                  ->orWhere('name', 'like', '%guluk%')->orWhere('name', 'like', '%GULUK%');
               });
         })->inRandomOrder()->limit(100)->get();
 
         // Other Sumenep
         $sumenepOtherVillages = \Laravolt\Indonesia\Models\Village::whereHas('district', function($q) use ($sumenepCity) {
             $q->where('city_code', $sumenepCity->code)
-              ->where('name', 'not like', '%lenteng%')
-              ->where('name', 'not like', '%ganding%')
-              ->where('name', 'not like', '%guluk%');
+              ->where('name', 'not like', '%lenteng%')->where('name', 'not like', '%LENTENG%')
+              ->where('name', 'not like', '%ganding%')->where('name', 'not like', '%GANDING%')
+              ->where('name', 'not like', '%guluk%')->where('name', 'not like', '%GULUK%');
         })->inRandomOrder()->limit(100)->get();
 
 
