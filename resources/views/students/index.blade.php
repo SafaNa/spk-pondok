@@ -187,8 +187,8 @@
 
                 {{-- Baris 2: Filter + Tombol sejajar --}}
                 <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                    {{-- 4 Select Filter --}}
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
+                    {{-- 5 Select Filter --}}
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 flex-1">
                         {{-- Pendidikan --}}
                         <div class="relative">
                             <select name="education_level" style="background-image:none;"
@@ -229,6 +229,22 @@
                                 @foreach($rooms as $room)
                                     <option value="{{ $room->id }}" {{ request('room') == $room->id ? 'selected' : '' }}>
                                         {{ $room->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5">
+                                <span class="material-symbols-outlined text-[18px] text-[#4c739a]">expand_more</span>
+                            </div>
+                        </div>
+
+                        {{-- Wilayah (Demografi) --}}
+                        <div class="relative">
+                            <select name="region" style="background-image:none;"
+                                class="w-full pl-3 pr-9 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none">
+                                <option value="">Semua Wilayah</option>
+                                @foreach($regionOptions as $regionName)
+                                    <option value="{{ $regionName }}" {{ request('region') == $regionName ? 'selected' : '' }}>
+                                        {{ $regionName }}
                                     </option>
                                 @endforeach
                             </select>

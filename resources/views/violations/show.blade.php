@@ -214,9 +214,9 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-[#4c739a] mb-2">Periode</p>
+                    <p class="text-sm text-[#4c739a] mb-2">Tahun Ajaran</p>
                     <span class="px-3 py-2 bg-blue-500/10 text-blue-600 rounded font-medium inline-block">
-                        {{ $violation->period->name }}
+                        {{ $violation->academicYear->name }}
                     </span>
                 </div>
 

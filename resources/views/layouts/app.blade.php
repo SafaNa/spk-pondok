@@ -373,7 +373,7 @@
                     @if(Auth::user()->isAdmin())
 
                         <!-- Data Master Group -->
-                        <div x-data="{ open: {{ (request()->is('admin/academic-years*', 'admin/periods*', 'admin/education-levels*', 'admin/rayons*', 'admin/rooms*', 'admin/departments*', 'admin/leave-categories*')) ? 'true' : 'false' }} }"
+                        <div x-data="{ open: {{ (request()->is('admin/academic-years*', 'admin/education-levels*', 'admin/rayons*', 'admin/rooms*', 'admin/departments*', 'admin/leave-categories*')) ? 'true' : 'false' }} }"
                             class="mb-2">
                             <button @click="open = !open"
                                 class="flex items-center justify-between w-full gap-3 px-3 py-2.5 rounded-lg text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors group">
@@ -391,11 +391,6 @@
                                     href="{{ route('admin.academic-years.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">event_note</span>
                                     <span class="text-sm font-medium">Tahun Ajaran</span>
-                                </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.periods.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
-                                    href="{{ route('admin.periods.index') }}">
-                                    <span class="material-symbols-outlined text-[20px]">calendar_month</span>
-                                    <span class="text-sm font-medium">Periode</span>
                                 </a>
                                 <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">

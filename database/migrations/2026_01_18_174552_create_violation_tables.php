@@ -35,7 +35,7 @@ return new class extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignUuid('violation_type_id')->constrained('violation_types');
-            $table->foreignUuid('period_id')->constrained('periods');
+            $table->foreignUuid('academic_year_id')->constrained('academic_years');
             $table->date('date'); // tanggal_kejadian
             $table->text('sanction');
             $table->enum('sanction_status', ['pending', 'completed'])->default('pending'); // belum_selesai, selesai

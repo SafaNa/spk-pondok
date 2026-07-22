@@ -128,6 +128,7 @@
                                         <span class="material-symbols-outlined">event</span>
                                     </div>
                                     <input type="date" name="start_date" id="start_date" value="{{ old('start_date', date('Y-m-d')) }}" required onchange="calculateDuration()"
+                                        min="{{ date('Y-m-d') }}"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200">
                                 </div>
                             </div>
@@ -142,6 +143,7 @@
                                         <span class="material-symbols-outlined">event_upcoming</span>
                                     </div>
                                     <input type="date" name="end_date" id="end_date" value="{{ old('end_date', date('Y-m-d')) }}" required onchange="calculateDuration()"
+                                        min="{{ date('Y-m-d') }}"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200">
                                 </div>
                             </div>
@@ -256,45 +258,47 @@
             var startDateInput = document.getElementById('start_date');
             var endDateInput = document.getElementById('end_date');
             
+            // Always allow end date to be editable now, just constrained
+            endDateInput.readOnly = false;
+            endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+
             if (!catId) {
-                // Default to editable if no category
-                startDateInput.readOnly = false;
-                startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-                endDateInput.readOnly = false;
-                endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                endDateInput.removeAttribute('max');
                 return;
             }
             
             var cat = categoriesData[catId];
             if (!cat) return;
             
-            if (cat.is_fixed_duration) {
-                startDateInput.readOnly = true;
-                startDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-                
-                // Reset start date to today when locked
-                var today = new Date();
-                var ty = today.getFullYear();
-                var tm = String(today.getMonth() + 1).padStart(2, '0');
-                var td = String(today.getDate()).padStart(2, '0');
-                startDateInput.value = ty + '-' + tm + '-' + td;
-                
-                var duration = cat.duration_days ? cat.duration_days : 1;
+            if (startDateInput.value) {
                 var startDate = new Date(startDateInput.value);
-                startDate.setDate(startDate.getDate() + (duration - 1));
+                var minDateStr = startDateInput.value;
+                endDateInput.min = minDateStr;
                 
-                var y = startDate.getFullYear();
-                var m = String(startDate.getMonth() + 1).padStart(2, '0');
-                var d = String(startDate.getDate()).padStart(2, '0');
-                
-                endDateInput.value = y + '-' + m + '-' + d;
-                endDateInput.readOnly = true;
-                endDateInput.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-            } else {
-                startDateInput.readOnly = false;
-                startDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
-                endDateInput.readOnly = false;
-                endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+                if (cat.is_fixed_duration && cat.duration_days) {
+                    // Calculate max date
+                    var maxDate = new Date(startDate);
+                    maxDate.setDate(maxDate.getDate() + (cat.duration_days - 1));
+                    
+                    var y = maxDate.getFullYear();
+                    var m = String(maxDate.getMonth() + 1).padStart(2, '0');
+                    var d = String(maxDate.getDate()).padStart(2, '0');
+                    var maxDateStr = y + '-' + m + '-' + d;
+                    
+                    endDateInput.max = maxDateStr;
+                    
+                    // Constrain current value if it's out of bounds
+                    if (endDateInput.value > maxDateStr) {
+                        endDateInput.value = maxDateStr;
+                    } else if (endDateInput.value < minDateStr) {
+                        endDateInput.value = minDateStr;
+                    }
+                } else {
+                    endDateInput.removeAttribute('max');
+                    if (endDateInput.value < minDateStr) {
+                        endDateInput.value = minDateStr;
+                    }
+                }
             }
             calculateDuration();
         }
@@ -346,6 +350,13 @@
             const end = document.getElementById('end_date').value;
             const display = document.getElementById('targetToken');
             const wrapper = document.getElementById('targetTokenWrapper');
+            const catId = document.getElementById('leaveCategorySelect').value;
+            const cat = catId ? categoriesData[catId] : null;
+
+            if (!catId) {
+                wrapper.classList.add('hidden');
+                return;
+            }
 
             if (start && end) {
                 const startDate = new Date(start);
@@ -357,7 +368,13 @@
                 if (diffTime >= 0) {
                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                      wrapper.classList.remove('hidden');
-                     display.innerHTML = `Durasi Izin: <strong class="text-blue-800 dark:text-blue-200">${diffDays} Hari</strong>. <br>Target Hafalan: <strong>Hafalan Hari ke-1 s/d ${Math.min(diffDays, 30)}</strong>`;
+                     
+                     let durationText = `Durasi Izin: Maksimal <strong class="text-blue-800 dark:text-blue-200">${diffDays} Hari</strong>.`;
+                     if (cat && !cat.is_fixed_duration) {
+                         durationText = `Durasi Izin: <strong class="text-blue-800 dark:text-blue-200">${diffDays} Hari</strong>. <span class="text-[12px] italic opacity-80 block mt-1">(Jumlah hari akan disesuaikan berdasarkan kebutuhan dan persetujuan pengurus)</span>`;
+                     }
+                     
+                     display.innerHTML = `${durationText} <br><span class="mt-1 block">Target Hafalan: <strong>Hafalan Hari ke-1 s/d ${Math.min(diffDays, 30)}</strong></span>`;
                 } else {
                     wrapper.classList.remove('hidden');
                     display.innerHTML = `<span class="text-red-500 font-bold">⚠️ Tanggal selesai tidak boleh lebih awal dari tanggal mulai.</span>`;

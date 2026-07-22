@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('job')->nullable();
             $table->enum('relationship', ['father', 'mother', 'guardian', 'sibling'])->default('father');
+            $table->string('avatar')->nullable();
             $table->timestamps();
         });
 

@@ -11,7 +11,7 @@ use App\Http\Controllers\SettingController;
 // Master Data Controllers
 use App\Http\Controllers\Master\StudentController;
 use App\Http\Controllers\Master\AcademicYearController;
-use App\Http\Controllers\Master\PeriodController;
+
 use App\Http\Controllers\Master\RoomController;
 use App\Http\Controllers\Master\RayonController;
 use App\Http\Controllers\Master\EducationLevelController;
@@ -45,6 +45,7 @@ use App\Models\Licensing\StudentMemorizationItem;
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
 
 // Admin Auth Routes
 Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
@@ -106,11 +107,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 
-    // Master Data: Academic Years & Periods
+    // Master Data: Academic Years
     Route::post('/academic-years/{academic_year}/toggle-status', [AcademicYearController::class, 'toggleStatus'])->name('academic-years.toggle-status');
     Route::resource('academic-years', AcademicYearController::class);
-    Route::post('/periods/{period}/activate', [PeriodController::class, 'activate'])->name('periods.activate');
-    Route::resource('periods', PeriodController::class);
 
     // Master Data: Education (Jenjang) & Rooms
     Route::resource('education-levels', EducationLevelController::class);

@@ -32,9 +32,9 @@
                         <div class="flex items-center gap-3 mb-2">
                             <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Catat Pelanggaran
                             </h1>
-                            @if($activePeriod)
+                            @if($activeAcademicYear)
                             <div class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
-                                {{ $activePeriod->name }}
+                                {{ $activeAcademicYear->name }}
                             </div>
                             @endif
                         </div>

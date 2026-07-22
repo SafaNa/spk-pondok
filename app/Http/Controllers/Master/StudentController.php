@@ -85,6 +85,38 @@ class StudentController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        
+        if ($request->filled('region')) {
+            $region = $request->region;
+            
+            if (str_starts_with($region, 'Kec. ')) {
+                $districtName = substr($region, 5);
+                $query->whereHas('district', function($q) use ($districtName) {
+                    $q->where('name', $districtName);
+                })->whereHas('city', function($q) {
+                    $q->where('name', 'like', '%SUMENEP%');
+                });
+            } elseif ($region === 'Kabupaten Pamekasan') {
+                $query->whereHas('city', function($q) {
+                    $q->where('name', 'like', '%PAMEKASAN%');
+                });
+            } elseif ($region === 'Kabupaten Sampang') {
+                $query->whereHas('city', function($q) {
+                    $q->where('name', 'like', '%SAMPANG%');
+                });
+            } elseif ($region === 'Kabupaten Bangkalan') {
+                $query->whereHas('city', function($q) {
+                    $q->where('name', 'like', '%BANGKALAN%');
+                });
+            } elseif ($region === 'Luar Madura') {
+                $query->whereHas('city', function($q) {
+                    $q->where('name', 'not like', '%SUMENEP%')
+                      ->where('name', 'not like', '%PAMEKASAN%')
+                      ->where('name', 'not like', '%SAMPANG%')
+                      ->where('name', 'not like', '%BANGKALAN%');
+                });
+            }
+        }
 
         $students = $query->latest()->paginate(10)->withQueryString();
 
@@ -150,8 +182,10 @@ class StudentController extends Controller
             'labels' => array_keys($finalStats),
             'series' => array_values($finalStats),
         ];
+        
+        $regionOptions = array_keys($finalStats);
 
-        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels', 'stats', 'chartData'));
+        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels', 'stats', 'chartData', 'regionOptions'));
     }
 
     public function create()

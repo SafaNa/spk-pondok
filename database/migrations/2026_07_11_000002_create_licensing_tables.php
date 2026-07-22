@@ -18,8 +18,20 @@ return new class extends Migration {
             $table->foreignUuid('leave_category_id')->nullable()->constrained('leave_categories')->nullOnDelete();
             $table->foreignUuid('leave_reason_id')->nullable()->constrained('leave_reasons')->nullOnDelete();
             $table->boolean('is_emergency')->default(false);
+            $table->date('actual_return_date')->nullable();
+            $table->enum('source', ['admin', 'guardian'])->nullable();
+            $table->string('attachment')->nullable();
             $table->string('description')->nullable();
             $table->text('notes')->nullable();
+            $table->text('return_notes')->nullable();
+            
+            $table->timestamp('submitted_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            
+            $table->string('creator_type')->nullable();
+            $table->string('creator_id')->nullable();
+            
             $table->timestamps();
         });
     }

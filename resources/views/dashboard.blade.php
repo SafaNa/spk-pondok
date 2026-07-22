@@ -18,11 +18,11 @@
                 <h1 class="font-outfit text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Pantau aktivitas validasi izin, pembayaran SPP, dan pencatatan pelanggaran santri.
-                    @if($activePeriod)
+                    @if($activeYear)
                         <span
                             class="ml-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
                             <span class="h-2 w-2 animate-pulse rounded-full bg-green-500"></span>
-                            {{ $activePeriod->nama }}
+                            {{ $activeYear->name }}
                         </span>
                     @endif
                 </p>
@@ -206,8 +206,7 @@
                         <span class="material-symbols-outlined text-[28px] text-white">person_add</span>
                     </div>
                     <h4 class="font-semibold text-white">Tambah Santri Baru</h4>
-                    <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.9);">Daftarkan santri baru ke dalam periode
-                        aktif.</p>
+                    <p class="mt-1 text-sm" style="color: rgba(255, 255, 255, 0.9);">Daftarkan santri baru ke dalam tahun ajaran aktif.</p>
                     <span class="mt-4 inline-flex items-center gap-1 text-sm font-medium text-white">
                         Ke manajemen santri
                         <span
@@ -258,7 +257,7 @@
                                 <p class="font-semibold text-gray-900 dark:text-white">
                                     {{ $assessment->student->name ?? 'N/A' }}
                                 </p>
-                                <p class="truncate text-xs text-gray-500">{{ $assessment->period->name ?? 'N/A' }}</p>
+                                <p class="truncate text-xs text-gray-500">{{ $assessment->academicYear->name ?? 'N/A' }}</p>
                             </div>
                             <div class="flex flex-col items-end">
                                 <span

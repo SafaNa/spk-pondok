@@ -105,7 +105,9 @@
         <div class="p-5 border-b border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900">
             <form action="{{ route('admin.guardians.index') }}" method="GET" class="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
+                    </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, username, atau no HP wali..." 
                         class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 </div>

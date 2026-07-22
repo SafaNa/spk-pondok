@@ -75,7 +75,7 @@
                             <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">
                                 <div class="flex items-center gap-2">
                                     <span class="material-symbols-outlined text-[20px]">calendar_today</span>
-                                    <span>Periode</span>
+                                    <span>Tahun Ajaran</span>
                                 </div>
                             </th>
                             <th class="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">

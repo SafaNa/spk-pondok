@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 use App\Models\Master\Student;
-use App\Models\Master\Period;
+
 use Carbon\Carbon;
 
 class History2023Seeder extends Seeder
@@ -22,15 +22,6 @@ class History2023Seeder extends Seeder
         );
         $academicYearId2023 = $academicYear2023->id;
 
-        // 1. Create or Find Periods for 2023/2024
-        $periodGanjil = Period::firstOrCreate(
-            ['academic_year_id' => $academicYearId2023, 'name' => 'Semester Ganjil 2023/2024'],
-            ['id' => (string) Str::uuid(), 'is_active' => false]
-        );
-        $periodGenap = Period::firstOrCreate(
-            ['academic_year_id' => $academicYearId2023, 'name' => 'Semester Genap 2023/2024'],
-            ['id' => (string) Str::uuid(), 'is_active' => false]
-        );
 
         // 2. Setup Base Data Arrays
         $students = Student::pluck('id')->toArray();
@@ -109,7 +100,6 @@ class History2023Seeder extends Seeder
         $violationData = [];
         for ($i = 0; $i < $violationsCount; $i++) {
             $randomDate = Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
-            $periodId = $randomDate->month >= 7 && $randomDate->month <= 12 ? $periodGanjil->id : $periodGenap->id;
 
             $sanksiDesc = ['Membersihkan halaman asrama', 'Menghafal surat pendek', 'Disita barangnya selama 1 minggu', 'Diberikan peringatan keras', 'Merapikan masjid', 'Panggilan orang tua'];
             $notesDesc = ['Santri mengaku bersalah', 'Terlambat kembali ke asrama', 'Ditemukan barang bukti di lemari', 'Telah diselesaikan secara baik', 'Dilaporkan oleh pengurus keamanan'];
@@ -120,7 +110,7 @@ class History2023Seeder extends Seeder
                 'id' => (string) Str::uuid(),
                 'student_id' => $students[array_rand($students)],
                 'violation_type_id' => $vType ? $vType->id : null,
-                'period_id' => $periodId,
+                'academic_year_id' => $academicYearId2023,
                 'date' => $randomDate->toDateString(),
                 'sanction' => $vType ? $vType->default_sanction : 'Peringatan Lisan',
                 'sanction_status' => rand(1, 10) > 2 ? 'completed' : 'pending',

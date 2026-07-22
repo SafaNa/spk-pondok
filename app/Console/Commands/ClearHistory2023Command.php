@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Models\Master\Period;
 
 class ClearHistory2023Command extends Command
 {
@@ -49,20 +48,11 @@ class ClearHistory2023Command extends Command
             ->delete();
         $this->line("- Deleted {$deletedMems} student memorization records.");
 
-        // 3. Delete Violations based on Periods
-        $periods = Period::where('academic_year_id', $academicYearId2023)->pluck('id')->toArray();
-        if (!empty($periods)) {
-            $deletedViolations = DB::table('violation_records')
-                ->whereIn('period_id', $periods)
-                ->delete();
-            $this->line("- Deleted {$deletedViolations} violation records.");
-
-            // 4. Delete the Periods themselves
-            $deletedPeriods = DB::table('periods')
-                ->whereIn('id', $periods)
-                ->delete();
-            $this->line("- Deleted {$deletedPeriods} period records for 2023/2024.");
-        }
+        // 3. Delete Violations based on Academic Year
+        $deletedViolations = DB::table('violation_records')
+            ->where('academic_year_id', $academicYearId2023)
+            ->delete();
+        $this->line("- Deleted {$deletedViolations} violation records.");
 
         $this->info("Cleanup completed successfully! Your database is now clean from 2023/2024 dummy data.");
     }
