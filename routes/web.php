@@ -153,6 +153,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Licensing Routes
     Route::get('/licenses/reports', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'index'])->name('licenses.reports');
+    
+    // Mass Leaves
+    Route::get('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkout'])->name('mass-leaves.checkout');
+    Route::post('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'processCheckout'])->name('mass-leaves.processCheckout');
+    Route::resource('mass-leaves', \App\Http\Controllers\Licensing\MassLeaveController::class);
+
     Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
     Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');

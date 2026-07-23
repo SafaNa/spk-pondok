@@ -490,6 +490,11 @@
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') && !request()->routeIs('admin.licenses.reports*') && !request()->routeIs('admin.licenses.active*') ? 'fill-1' : '' }}">assignment</span>
                                 <span class="text-sm font-medium">Pengajuan Izin</span>
                             </a>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.mass-leaves.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('admin.mass-leaves.index') }}">
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.mass-leaves.*') ? 'fill-1' : '' }}">groups</span>
+                                <span class="text-sm font-medium">Izin Massal</span>
+                            </a>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.active*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.licenses.active') }}">
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.active*') ? 'fill-1' : '' }}">directions_run</span>

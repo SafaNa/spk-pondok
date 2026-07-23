@@ -143,7 +143,7 @@ class LicenseController extends Controller
     public function show(StudentLicense $license)
     {
         $license->load([
-            'student'      => fn($q) => $q->withCount('pendingViolations'),
+            'student'      => fn($q) => $q->withCount('pendingPrimaryViolations'),
             'student.room',
             'student.rayon',
             'student.district',
@@ -160,7 +160,7 @@ class LicenseController extends Controller
 
         $maxLeaves         = $license->academicYear?->max_leaves;
         $canSkip           = $license->leaveReason?->can_skip_validation ?? false;
-        $violationCount    = $license->student->pending_violations_count;
+        $violationCount    = $license->student->pending_primary_violations_count ?? 0;
 
         $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
             ->where('academic_year_id', $license->academic_year_id)
