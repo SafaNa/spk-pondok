@@ -113,23 +113,27 @@ class SppPaymentController extends Controller
             'user_id' => Auth::id(), // Record who created it
         ]);
 
-        // WhatsApp Notification Link
-        $waRedirectUrl = null;
+        // WhatsApp Notification via Fonnte
         try {
             $student = Student::find($request->student_id);
-            if ($student && $student->notification_phone) {
+            if ($student) {
                 $service = new \App\Services\WhatsAppService();
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
                 $message = "Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diterima (Status: {$request->status}). Terima kasih.";
-                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+                $phone = $student->guardians()->whereNotNull('phone')->value('phone')
+                       ?? $student->notification_phone
+                       ?? $student->phone
+                       ?? null;
+                if ($phone) {
+                    $service->send($phone, $message);
+                }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Failed to send WA SPP: " . $e->getMessage());
         }
 
         return redirect()->route('admin.spp-payments.index')
-            ->with('success', 'Pembayaran SPP berhasil ditambahkan')
-            ->with('wa_url', $waRedirectUrl);
+            ->with('success', 'Pembayaran SPP berhasil ditambahkan');
     }
 
     /**
@@ -191,23 +195,27 @@ class SppPaymentController extends Controller
             // user_id typically not updated on edit, or maybe strictly for creation logging
         ]);
 
-        // WhatsApp Notification Link
-        $waRedirectUrl = null;
+        // WhatsApp Notification via Fonnte
         try {
             $student = Student::find($request->student_id);
-            if ($student && $student->notification_phone) {
+            if ($student) {
                 $service = new \App\Services\WhatsAppService();
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
                 $message = "Update Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
-                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+                $phone = $student->guardians()->whereNotNull('phone')->value('phone')
+                       ?? $student->notification_phone
+                       ?? $student->phone
+                       ?? null;
+                if ($phone) {
+                    $service->send($phone, $message);
+                }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link SPP Update: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Failed to send WA SPP Update: " . $e->getMessage());
         }
 
         return redirect()->route('admin.spp-payments.index')
-            ->with('success', 'Pembayaran SPP berhasil diperbarui')
-            ->with('wa_url', $waRedirectUrl);
+            ->with('success', 'Pembayaran SPP berhasil diperbarui');
     }
 
     /**

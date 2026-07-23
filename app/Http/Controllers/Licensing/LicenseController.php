@@ -107,11 +107,10 @@ class LicenseController extends Controller
             'creator_type' => \App\Models\User::class,
         ]);
 
-        // WhatsApp Notification Link
-        $waRedirectUrl = null;
+        // WhatsApp Notification via Fonnte
         try {
             $student = Student::find($validated['student_id']);
-            if ($student && $student->notification_phone) {
+            if ($student) {
                 $service = new \App\Services\WhatsAppService();
                 $startDate = Carbon::parse($validated['start_date'])->format('d-m-Y');
                 $endDate = Carbon::parse($validated['end_date'])->format('d-m-Y');
@@ -120,15 +119,20 @@ class LicenseController extends Controller
                     "Tanggal: {$startDate} s.d {$endDate}. \n" .
                     "Keterangan: {$validated['description']}. \n" .
                     "Mohon pengawasannya. Terima kasih.";
-                $waRedirectUrl = $service->getRedirectUrl($student->notification_phone, $message);
+                $phone = $student->guardians()->whereNotNull('phone')->value('phone')
+                       ?? $student->notification_phone
+                       ?? $student->phone
+                       ?? null;
+                if ($phone) {
+                    $service->send($phone, $message);
+                }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link License: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Failed to send WA License: " . $e->getMessage());
         }
 
         return redirect()->route('admin.licenses.index')
-            ->with('success', 'Izin individu berhasil dicatat.')
-            ->with('wa_url', $waRedirectUrl);
+            ->with('success', 'Izin individu berhasil dicatat.');
     }
 
     // Detail Page
