@@ -184,4 +184,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('memorization', MemorizationController::class);
     Route::post('memorization-items/{item}/toggle', [MemorizationController::class, 'toggleItem'])->name('memorization-items.toggle');
 
+    // WhatsApp Notification Async
+    Route::post('/whatsapp/send-async', [\App\Http\Controllers\WhatsAppController::class, 'sendAsync'])->name('whatsapp.send-async');
+
 });

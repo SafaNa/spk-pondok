@@ -142,6 +142,7 @@ class ViolationController extends Controller
         ]);
 
         // WhatsApp Notification
+        $waNotification = null;
         try {
             $student = Student::with('guardians')->find($validated['student_id']);
             if ($student) {
@@ -150,20 +151,28 @@ class ViolationController extends Controller
                       ?? null;
                 if ($phone) {
                     $tanggal = \Carbon\Carbon::parse($validated['date'])->format('d-m-Y');
+                    
+                    $isKewajiban = str_contains($violationType->code, '-KW-');
+                    $actionText = $isKewajiban ? "tidak mematuhi tata tertib (Kewajiban)" : "melakukan pelanggaran (Larangan)";
+
                     $message = "PEMBERITAHUAN PELANGGARAN\n" .
-                        "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}.\n" .
+                        "Ananda {$student->name} tercatat {$actionText}: {$violationType->name}.\n" .
                         "Sanksi: {$violationType->default_sanction}.\n" .
                         "Tanggal: {$tanggal}.\n" .
                         "Mohon kerjasamanya. Terima kasih.";
-                    (new \App\Services\WhatsAppService())->send($phone, $message);
+                    $waNotification = [
+                        'phone' => $phone,
+                        'message' => $message
+                    ];
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("WhatsApp send failed (violation): " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("WhatsApp prepare failed (violation): " . $e->getMessage());
         }
 
         return redirect()->route('admin.violations.index')
-            ->with('success', 'Pelanggaran berhasil dicatat');
+            ->with('success', 'Pelanggaran berhasil dicatat')
+            ->with('wa_notification', $waNotification);
     }
 
     /**

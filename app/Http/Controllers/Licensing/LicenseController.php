@@ -107,11 +107,11 @@ class LicenseController extends Controller
             'creator_type' => \App\Models\User::class,
         ]);
 
-        // WhatsApp Notification via Fonnte
+        // WhatsApp Notification
+        $waNotification = null;
         try {
             $student = Student::find($validated['student_id']);
             if ($student) {
-                $service = new \App\Services\WhatsAppService();
                 $startDate = Carbon::parse($validated['start_date'])->format('d-m-Y');
                 $endDate = Carbon::parse($validated['end_date'])->format('d-m-Y');
                 $message = "IZIN PULANG: \n" .
@@ -124,15 +124,19 @@ class LicenseController extends Controller
                        ?? $student->phone
                        ?? null;
                 if ($phone) {
-                    $service->send($phone, $message);
+                    $waNotification = [
+                        'phone' => $phone,
+                        'message' => $message
+                    ];
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to send WA License: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Failed to prepare WA License: " . $e->getMessage());
         }
 
         return redirect()->route('admin.licenses.index')
-            ->with('success', 'Izin individu berhasil dicatat.');
+            ->with('success', 'Izin individu berhasil dicatat.')
+            ->with('wa_notification', $waNotification);
     }
 
     // Detail Page

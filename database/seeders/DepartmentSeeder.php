@@ -32,7 +32,7 @@ class DepartmentSeeder extends Seeder
             [
                 'code' => 'DEPT_004',
                 'name' => 'Departemen Pengajian Kitab dan SKIA',
-                'acronym' => 'TAZKIA',
+                'acronym' => 'TASKIA',
                 'description' => 'Mengatur ibadah dan kegiatan SKIA',
             ],
             [

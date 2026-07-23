@@ -77,4 +77,32 @@ class WhatsAppService
             return false;
         }
     }
+
+    /**
+     * Get a WhatsApp "Click to Chat" URL.
+     */
+    public function getRedirectUrl(string $phone, string $message): ?string
+    {
+        $phone = $this->normalizePhone($phone);
+        if (strlen($phone) < 10) return null;
+        
+        $encodedMessage = urlencode($message);
+        return "https://wa.me/{$phone}?text={$encodedMessage}";
+    }
+
+    /**
+     * Process WhatsApp notification based on WA_TYPE (.env).
+     * Returns the redirect URL if WA_TYPE is 'chat', otherwise null.
+     */
+    public function process(string $phone, string $message): ?string
+    {
+        $waType = env('WA_TYPE', 'fonnte');
+
+        if ($waType === 'chat') {
+            return $this->getRedirectUrl($phone, $message);
+        }
+
+        $this->send($phone, $message);
+        return null;
+    }
 }

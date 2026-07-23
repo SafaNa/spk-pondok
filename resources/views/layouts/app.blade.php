@@ -839,15 +839,46 @@
         <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
 
         <!-- WhatsApp Notification Popup -->
-        @if(session('wa_url'))
+        @if(session('wa_notification'))
+            @php $waNotif = session('wa_notification'); @endphp
             <div x-data="{ 
-                                                                    open: true, 
-                                                                    url: '{{ session('wa_url') }}' 
-                                                                 }" x-show="open" x-cloak
+                    open: true, 
+                    loading: false,
+                    phone: '{{ $waNotif['phone'] }}',
+                    message: {{ json_encode($waNotif['message']) }},
+                    sendWa() {
+                        this.loading = true;
+                        fetch('{{ route('admin.whatsapp.send-async') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ phone: this.phone, message: this.message })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            this.loading = false;
+                            this.open = false;
+                            if (data.type === 'chat' && data.url) {
+                                window.open(data.url, '_blank');
+                            } else if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 3000, showConfirmButton: false });
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message || 'Gagal mengirim pesan.' });
+                            }
+                        })
+                        .catch(err => {
+                            this.loading = false;
+                            this.open = false;
+                            Swal.fire({ icon: 'error', title: 'Error sistem', text: 'Terjadi kesalahan saat mengirim pesan.' });
+                        });
+                    }
+                }" x-show="open" x-cloak
                 class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
 
                 <!-- Backdrop -->
-                <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
+                <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="if(!loading) open = false"></div>
 
                 <!-- Modal -->
                 <div class="flex min-h-full items-center justify-center p-4">
@@ -864,15 +895,16 @@
                             mengirim notifikasi ke Orang Tua?</p>
 
                         <div class="flex gap-3">
-                            <button @click="open = false"
-                                class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <button @click="open = false" :disabled="loading"
+                                class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50">
                                 Nanti Saja
                             </button>
-                            <a :href="url" target="_blank" @click="open = false"
-                                class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                                <span>Kirim</span>
-                                <span class="material-symbols-outlined text-[18px]">send</span>
-                            </a>
+                            <button @click="sendWa()" :disabled="loading"
+                                class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span x-text="loading ? 'Mengirim...' : 'Kirim'"></span>
+                                <span x-show="!loading" class="material-symbols-outlined text-[18px]">send</span>
+                                <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
