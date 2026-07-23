@@ -135,10 +135,11 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                     <span class="material-symbols-outlined">key</span>
                                 </div>
-                                <input type="password" name="password" required
+                                <input type="password" name="password" id="password" required
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                                     placeholder="Min. 8 karakter">
                             </div>
+                            <x-password-strength input-id="password" />
                             @error('password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
                         </div>
                         <div class="space-y-2">

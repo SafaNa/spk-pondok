@@ -250,7 +250,7 @@ class StudentController extends Controller
             // Wali
             'wali_name'         => 'nullable|string|max:100',
             'wali_username'     => 'required_with:wali_name|nullable|string|max:50|unique:guardians,username',
-            'wali_password'     => 'required_with:wali_name|nullable|string|min:6',
+            'wali_password'     => ['required_with:wali_name', 'nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
             'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
@@ -349,7 +349,7 @@ class StudentController extends Controller
                 'required_with:wali_name', 'nullable', 'string', 'max:50',
                 Rule::unique('guardians', 'username')->ignore($existingWaliId),
             ],
-            'wali_password'     => 'nullable|string|min:6',
+            'wali_password'     => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
             'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',

@@ -50,7 +50,7 @@ class GuardianController extends Controller
         $request->validate([
             'name'          => 'required|string|max:100',
             'username'      => 'required|string|max:100|unique:guardians,username',
-            'password'      => 'required|string|min:6',
+            'password'      => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'relationship'  => 'required|in:father,mother,guardian,sibling',
             'phone'         => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
@@ -113,7 +113,7 @@ class GuardianController extends Controller
         $request->validate([
             'name'          => 'required|string|max:100',
             'username'      => ['required', 'string', 'max:100', Rule::unique('guardians', 'username')->ignore($guardian->id)],
-            'password'      => 'nullable|string|min:6',
+            'password'      => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'relationship'  => 'required|in:father,mother,guardian,sibling',
             'phone'         => 'nullable|string|max:20',
             'email'         => 'nullable|email|max:100',
@@ -182,7 +182,7 @@ class GuardianController extends Controller
     public function resetPassword(Request $request, Guardian $guardian)
     {
         $request->validate([
-            'new_password' => 'required|string|min:6',
+            'new_password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
         ]);
 
         $plainPassword = $request->new_password;

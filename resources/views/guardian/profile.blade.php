@@ -163,9 +163,10 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Password Baru <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" required
+                    <input type="password" name="password" id="new_password" required
                         class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                        placeholder="Minimal 6 karakter">
+                        placeholder="Minimal 8 karakter">
+                    <x-password-strength input-id="new_password" />
                     @error('password')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 

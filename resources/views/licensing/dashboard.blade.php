@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="rounded-2xl p-5 sm:p-6 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 60%, #ede9fe 100%); border: 1px solid #bfdbfe;">
         <div>
-            <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus Perizinan</h1>
+            <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus</h1>
             <p class="text-[#3b5f8a] text-sm font-normal max-w-2xl">
                 Kelola seluruh sistem validasi izin dan kepulangan santri secara terpusat, monitor proses persetujuan lintas departemen, serta atur hak akses pengguna.
             </p>

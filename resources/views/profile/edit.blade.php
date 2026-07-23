@@ -124,68 +124,26 @@
             </form>
         </div>
 
-        {{-- Ganti Password --}}
+        {{-- Ganti Password (Link ke halaman terpisah) --}}
         <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            <form action="{{ route('admin.profile.password') }}" method="POST"
-                class="p-6 sm:p-10 flex flex-col gap-10">
-                @csrf
-                @method('PUT')
-
-                <div class="space-y-6">
+            <div class="p-6 sm:p-10 flex flex-col gap-6">
+                <div class="space-y-2">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-primary">lock_reset</span>
-                        Ganti Password
+                        Keamanan Akun
                     </h3>
-
-                    {{-- Password Saat Ini --}}
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Password Saat Ini <span class="text-red-500">*</span></label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                <span class="material-symbols-outlined">key</span>
-                            </div>
-                            <input type="password" name="current_password" required
-                                class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
-                                placeholder="Password lama">
-                        </div>
-                        @error('current_password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Password Baru <span class="text-red-500">*</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-symbols-outlined">lock</span>
-                                </div>
-                                <input type="password" name="password" required
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
-                                    placeholder="Min. 8 karakter">
-                            </div>
-                            @error('password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Konfirmasi Password Baru <span class="text-red-500">*</span></label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-                                    <span class="material-symbols-outlined">lock_reset</span>
-                                </div>
-                                <input type="password" name="password_confirmation" required
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
-                                    placeholder="Ulangi password baru">
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">
+                        Untuk menjaga keamanan akun Anda, ganti password secara berkala. Klik tombol di bawah ini untuk menuju halaman ganti password.
+                    </p>
                 </div>
-
-                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-slate-200 dark:border-slate-800">
-                    <button type="submit"
-                        class="flex-1 px-8 py-4 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-3">
+                <div>
+                    <a href="{{ route('admin.password.change') }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold transition-all duration-200">
                         <span class="material-symbols-outlined">lock_reset</span>
                         Ganti Password
-                    </button>
+                    </a>
                 </div>
-            </form>
+            </div>
         </div>
 
     </div>
