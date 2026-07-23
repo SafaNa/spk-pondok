@@ -238,14 +238,14 @@ class LicenseController extends Controller
         return redirect()->route('admin.licenses.index')->with('success', 'Data izin berhasil diperbarui.');
     }
 
-    private function waUrl(StudentLicense $license, string $message): ?string
+    private function sendWaNotification(StudentLicense $license, string $message): void
     {
         $student = $license->student;
         $phone   = $student->guardians()->whereNotNull('phone')->value('phone')
                 ?? $student->phone
                 ?? null;
-        if (!$phone) return null;
-        return (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+        if (!$phone) return;
+        (new \App\Services\WhatsAppService())->send($phone, $message);
     }
 
     public function approve(Request $request, StudentLicense $license)
@@ -256,55 +256,35 @@ class LicenseController extends Controller
             $data['notes'] = 'Diloloskan paksa: ' . $request->override_reason;
         }
         $license->update($data);
-        
-        $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
-            ->where('academic_year_id', $license->academic_year_id)
-            ->where('status', 'completed')
-            ->where('is_used', false)
-            ->first();
-            
-        if ($memorization) {
-            $memorization->update(['is_used' => true]);
-        }
 
         $license->load('student.guardians');
         $start = $license->start_date->format('d-m-Y');
         $end   = $license->end_date->format('d-m-Y');
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "IZIN PULANG DISETUJUI\n" .
             "Ananda {$license->student->name} telah mendapat izin pulang.\n" .
             "Tanggal: {$start} s.d {$end}.\n" .
             "Harap jaga dan awasi kepulangan ananda. Terima kasih."
         );
 
-        return back()->with('success', 'Izin berhasil disetujui.')->with('wa_url', $waUrl);
+        return back()->with('success', 'Izin berhasil disetujui.');
     }
 
     public function forceApprove(StudentLicense $license)
     {
         $license->update(['status' => 'approved', 'is_emergency' => true, 'approved_at' => now()]);
 
-        $memorization = \App\Models\Licensing\StudentMemorization::where('student_id', $license->student_id)
-            ->where('academic_year_id', $license->academic_year_id)
-            ->where('status', 'completed')
-            ->where('is_used', false)
-            ->first();
-
-        if ($memorization) {
-            $memorization->update(['is_used' => true]);
-        }
-
         $license->load('student.guardians');
         $start = $license->start_date->format('d-m-Y');
         $end   = $license->end_date->format('d-m-Y');
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "IZIN PULANG DISETUJUI (DARURAT)\n" .
             "Ananda {$license->student->name} mendapat izin pulang atas pertimbangan darurat.\n" .
             "Tanggal: {$start} s.d {$end}.\n" .
             "Harap jaga dan awasi kepulangan ananda. Terima kasih."
         );
 
-        return back()->with('success', 'Izin disetujui sebagai kasus darurat.')->with('wa_url', $waUrl);
+        return back()->with('success', 'Izin disetujui sebagai kasus darurat.');
     }
 
     public function reject(Request $request, StudentLicense $license)
@@ -318,16 +298,15 @@ class LicenseController extends Controller
         $license->update($data);
 
         $license->load('student.guardians');
-        
+
         $reasonText = $request->filled('rejection_reason') ? "\nAlasan: " . $request->rejection_reason : "";
-        
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "IZIN PULANG DITOLAK\n" .
             "Pengajuan izin pulang Ananda {$license->student->name} tidak dapat disetujui saat ini.{$reasonText}\n" .
             "Silakan hubungi pihak pesantren untuk informasi lebih lanjut. Terima kasih."
         );
 
-        return back()->with('success', 'Izin berhasil ditolak.')->with('wa_url', $waUrl);
+        return back()->with('success', 'Izin berhasil ditolak.');
     }
 
     public function destroy(StudentLicense $license)
@@ -354,16 +333,14 @@ class LicenseController extends Controller
 
         $license->load('student.guardians');
         $returnDate = \Carbon\Carbon::parse($request->actual_return_date)->format('d-m-Y');
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "SANTRI KEMBALI KE PESANTREN\n" .
             "Ananda {$license->student->name} telah kembali ke pesantren.\n" .
             "Tanggal kembali: {$returnDate}. Status: {$status}.\n" .
             "Terima kasih atas kerjasamanya."
         );
 
-        return back()
-            ->with('success', "Kepulangan santri berhasil dicatat. Status: {$status}.")
-            ->with('wa_url', $waUrl);
+        return back()->with('success', "Kepulangan santri berhasil dicatat. Status: {$status}.");
     }
 
     public function active(Request $request)
@@ -442,25 +419,25 @@ class LicenseController extends Controller
             
             $license->load('student.guardians');
             $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
-            $waUrl = $this->waUrl($license,
+            $this->sendWaNotification($license,
                 "PERPANJANGAN IZIN DISETUJUI\n" .
                 "Perpanjangan izin Ananda {$license->student->name} telah dicatat dan disetujui.\n" .
                 "Tanggal kembali yang baru: {$newDateStr}.\n" .
                 "Harap jadikan periksa. Terima kasih."
             );
-            
-            return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.')->with('wa_url', $waUrl);
+
+            return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.');
         }
 
         $license->load('student.guardians');
         $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "PENGAJUAN PERPANJANGAN IZIN\n" .
             "Pengajuan perpanjangan izin Ananda {$license->student->name} hingga {$newDateStr} telah dicatat dan sedang menunggu persetujuan.\n" .
             "Terima kasih."
         );
 
-        return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.')->with('wa_url', $waUrl);
+        return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.');
     }
 
     /**
@@ -493,7 +470,7 @@ class LicenseController extends Controller
 
         $license->load('student.guardians');
         $newDateStr = $newDate->format('d-m-Y');
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "PERPANJANGAN IZIN DISETUJUI\n" .
             "Pengajuan perpanjangan izin Ananda {$license->student->name} telah disetujui.\n" .
             "Tanggal kembali yang baru: {$newDateStr}.\n" .
@@ -501,7 +478,7 @@ class LicenseController extends Controller
         );
 
         return back()->with('success', 'Perpanjangan disetujui. Tanggal kembali diperbarui ke ' .
-            $newDate->format('d F Y') . '.')->with('wa_url', $waUrl);
+            $newDate->format('d F Y') . '.');
     }
 
     /**
@@ -525,15 +502,14 @@ class LicenseController extends Controller
 
         $license = $extension->studentLicense;
         $license->load('student.guardians');
-        
+
         $reasonText = $request->filled('admin_notes') ? "\nAlasan: " . $request->admin_notes : "";
-        
-        $waUrl = $this->waUrl($license,
+        $this->sendWaNotification($license,
             "PERPANJANGAN IZIN DITOLAK\n" .
             "Mohon maaf, pengajuan perpanjangan izin Ananda {$license->student->name} tidak dapat disetujui.{$reasonText}\n" .
             "Harap santri kembali sesuai jadwal semula. Terima kasih."
         );
 
-        return back()->with('success', 'Perpanjangan berhasil ditolak.')->with('wa_url', $waUrl);
+        return back()->with('success', 'Perpanjangan berhasil ditolak.');
     }
 }

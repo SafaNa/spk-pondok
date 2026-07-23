@@ -141,8 +141,7 @@ class ViolationController extends Controller
             'created_by' => Auth::id()
         ]);
 
-        // WhatsApp Notification Link
-        $waRedirectUrl = null;
+        // WhatsApp Notification
         try {
             $student = Student::with('guardians')->find($validated['student_id']);
             if ($student) {
@@ -156,16 +155,15 @@ class ViolationController extends Controller
                         "Sanksi: {$violationType->default_sanction}.\n" .
                         "Tanggal: {$tanggal}.\n" .
                         "Mohon kerjasamanya. Terima kasih.";
-                    $waRedirectUrl = (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+                    (new \App\Services\WhatsAppService())->send($phone, $message);
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link Violation: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("WhatsApp send failed (violation): " . $e->getMessage());
         }
 
         return redirect()->route('admin.violations.index')
-            ->with('success', 'Pelanggaran berhasil dicatat')
-            ->with('wa_url', $waRedirectUrl);
+            ->with('success', 'Pelanggaran berhasil dicatat');
     }
 
     /**

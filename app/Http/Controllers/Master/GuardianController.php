@@ -96,6 +96,12 @@ class GuardianController extends Controller
             ->with('created_guardian_password', $plainPassword);
     }
 
+    public function show(Guardian $guardian)
+    {
+        $guardian->load(['students.room', 'students.rayon']);
+        return view('guardians.show', compact('guardian'));
+    }
+
     public function edit(Guardian $guardian)
     {
         $guardian->load('students.room');

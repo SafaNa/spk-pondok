@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'fonnte' => [
+        'url'   => env('WA_GATEWAY_URL', 'https://api.fonnte.com/send'),
+        'token' => env('WA_API_KEY'),
+    ],
+
 ];

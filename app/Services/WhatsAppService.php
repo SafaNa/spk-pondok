@@ -7,29 +7,74 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
-    /**
-     * Get a WhatsApp "Click to Chat" URL.
-     *
-     * @param string $targetPhone The recipient's phone number.
-     * @param string $message The message content.
-     * @return string|null The whatsapp redirection URL or null if phone is invalid.
-     */
-    public function getRedirectUrl(string $targetPhone, string $message): ?string
+    private string $url;
+    private ?string $token;
+
+    public function __construct()
     {
-        // Format phone number: Replace 08 with 628
-        if (str_starts_with($targetPhone, '0')) {
-            $targetPhone = '62' . substr($targetPhone, 1);
+        $this->url   = config('services.fonnte.url', 'https://api.fonnte.com/send');
+        $this->token = config('services.fonnte.token');
+    }
+
+    /**
+     * Normalize phone to Indonesian format (628xxx).
+     */
+    private function normalizePhone(string $phone): string
+    {
+        $phone = preg_replace('/\D/', '', $phone);
+
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        } elseif (!str_starts_with($phone, '62')) {
+            $phone = '62' . $phone;
         }
 
-        // Basic validation
-        if (empty($targetPhone)) {
-            return null;
+        return $phone;
+    }
+
+    /**
+     * Send a WhatsApp message via Fonnte API.
+     * Returns true on success, false on failure.
+     */
+    public function send(string $phone, string $message): bool
+    {
+        if (empty($this->token)) {
+            Log::warning('WhatsAppService: WA_API_KEY belum diisi di .env');
+            return false;
         }
 
-        // WhatsApp Click to Chat URL format
-        // https://wa.me/62812345678?text=Hello%20World
-        $encodedMessage = urlencode($message);
+        $phone = $this->normalizePhone($phone);
 
-        return "https://wa.me/{$targetPhone}?text={$encodedMessage}";
+        if (strlen($phone) < 10) {
+            Log::warning("WhatsAppService: Nomor tidak valid — {$phone}");
+            return false;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => $this->token,
+            ])->asForm()->post($this->url, [
+                'target'      => $phone,
+                'message'     => $message,
+                'countryCode' => '62',
+            ]);
+
+            $body = $response->json();
+
+            if ($response->successful() && ($body['status'] ?? false) === true) {
+                return true;
+            }
+
+            Log::warning('WhatsAppService: Fonnte response gagal', [
+                'status' => $response->status(),
+                'body'   => $body,
+            ]);
+            return false;
+        } catch (\Throwable $e) {
+            Log::error('WhatsAppService: Exception saat kirim WA', [
+                'message' => $e->getMessage(),
+            ]);
+            return false;
+        }
     }
 }

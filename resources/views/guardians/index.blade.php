@@ -188,11 +188,6 @@
                             </td>
                             <td class="px-5 py-3">
                                 <div class="flex items-center justify-center gap-2">
-                                    <a href="{{ route('admin.guardians.edit', $guardian) }}"
-                                        class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
-                                        <span class="material-symbols-outlined text-[15px]">edit</span>
-                                        Edit
-                                    </a>
                                     {{-- Tombol Reset Password --}}
                                     <button type="button"
                                         onclick="openResetModal('{{ $guardian->id }}', '{{ addslashes($guardian->name) }}', '{{ addslashes($guardian->username) }}')"
@@ -200,13 +195,23 @@
                                         <span class="material-symbols-outlined text-[15px]">lock_reset</span>
                                         Reset PW
                                     </button>
+                                    <a href="{{ route('admin.guardians.show', $guardian) }}"
+                                        title="Detail"
+                                        class="flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 border border-blue-200 hover:bg-blue-50 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </a>
+                                    <a href="{{ route('admin.guardians.edit', $guardian) }}"
+                                        title="Edit"
+                                        class="flex items-center justify-center w-8 h-8 rounded-lg text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </a>
                                     <form action="{{ route('admin.guardians.destroy', $guardian) }}" method="POST">
                                         @csrf @method('DELETE')
                                         <button type="submit"
+                                            title="Hapus"
                                             onclick="return confirm('Hapus data wali {{ addslashes($guardian->name) }}? Semua hubungan dengan santri akan ikut dihapus.')"
-                                            class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
-                                            <span class="material-symbols-outlined text-[15px]">delete</span>
-                                            Hapus
+                                            class="flex items-center justify-center w-8 h-8 rounded-lg text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     </form>
                                 </div>
