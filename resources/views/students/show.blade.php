@@ -39,7 +39,7 @@
                         <div>
                             <h1 class="text-2xl font-bold mb-1 text-slate-900 dark:text-white tracking-tight">{{ $student->name }}</h1>
                             <p class="text-slate-500 text-sm">{{ $student->identifier_label ?? 'NIS' }}: {{ $student->nis }}</p>
-                            <div class="mt-2">
+                            <div class="mt-2 flex flex-wrap items-center gap-2">
                                 @if($student->status == 'active')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">Aktif</span>
                                 @elseif($student->status == 'inactive')
@@ -48,6 +48,20 @@
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">Lulus</span>
                                 @elseif($student->status == 'dropped_out')
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">Keluar</span>
+                                @endif
+                                
+                                @if(isset($activeAcademicYear))
+                                    @if($activeAcademicYear->max_leaves)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold {{ $approved_leaves_count >= $activeAcademicYear->max_leaves ? 'bg-red-100 text-red-700 border-red-200' : 'bg-slate-100 text-slate-700 border-slate-200' }} border shadow-sm">
+                                            <span class="material-symbols-outlined text-[14px]">confirmation_number</span>
+                                            Poin Kepulangan: {{ $approved_leaves_count }}/{{ $activeAcademicYear->max_leaves }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 shadow-sm">
+                                            <span class="material-symbols-outlined text-[14px]">confirmation_number</span>
+                                            Poin Kepulangan: {{ $approved_leaves_count }} kali
+                                        </span>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -290,6 +304,111 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        {{-- Riwayat Card --}}
+        <div x-data="{ activeTab: 'kepulangan' }" class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
+            <div class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 overflow-x-auto hide-scrollbar">
+                <button @click="activeTab = 'kepulangan'" :class="{ 'border-b-2 border-primary text-primary font-bold bg-white dark:bg-slate-800': activeTab === 'kepulangan', 'text-slate-500 hover:text-slate-700 font-medium': activeTab !== 'kepulangan' }" class="px-6 py-4 text-sm outline-none transition-colors whitespace-nowrap">
+                    Riwayat Kepulangan
+                </button>
+                <button @click="activeTab = 'pelanggaran'" :class="{ 'border-b-2 border-primary text-primary font-bold bg-white dark:bg-slate-800': activeTab === 'pelanggaran', 'text-slate-500 hover:text-slate-700 font-medium': activeTab !== 'pelanggaran' }" class="px-6 py-4 text-sm outline-none transition-colors whitespace-nowrap">
+                    Riwayat Pelanggaran
+                </button>
+            </div>
+            
+            <div class="p-6 sm:p-10">
+                {{-- Kepulangan Tab --}}
+                <div x-show="activeTab === 'kepulangan'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4">Riwayat Kepulangan</h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+                        <table class="w-full text-sm text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                    <th class="px-4 py-3">Tanggal Izin</th>
+                                    <th class="px-4 py-3">Tanggal Harus Kembali</th>
+                                    <th class="px-4 py-3">Kategori</th>
+                                    <th class="px-4 py-3">Alasan</th>
+                                    <th class="px-4 py-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                @forelse($student->licenses as $license)
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                        <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ $license->start_date ? $license->start_date->isoFormat('D MMM Y') : '-' }}</td>
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{{ $license->end_date ? $license->end_date->isoFormat('D MMM Y') : '-' }}</td>
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400">{{ $license->leaveCategory?->name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400">{{ $license->leaveReason?->reason ?? '-' }}</td>
+                                        <td class="px-4 py-3">
+                                            @if($license->status == 'approved')
+                                                <span class="inline-flex px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700">Disetujui</span>
+                                            @elseif($license->status == 'rejected')
+                                                <span class="inline-flex px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700">Ditolak</span>
+                                            @elseif(in_array($license->status, ['pending', 'pending_extension']))
+                                                <span class="inline-flex px-2 py-1 rounded text-xs font-semibold bg-amber-100 text-amber-700">Menunggu</span>
+                                            @else
+                                                <span class="inline-flex px-2 py-1 rounded text-xs font-semibold bg-slate-100 text-slate-700">{{ ucfirst($license->status) }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-8 text-center text-slate-500 italic">Belum ada riwayat kepulangan</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Pelanggaran Tab --}}
+                <div x-show="activeTab === 'pelanggaran'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">Riwayat Pelanggaran</h3>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+                        <table class="w-full text-sm text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                    <th class="px-4 py-3">Tanggal</th>
+                                    <th class="px-4 py-3">Kategori</th>
+                                    <th class="px-4 py-3">Jenis Pelanggaran</th>
+                                    <th class="px-4 py-3 text-center">Poin</th>
+                                    <th class="px-4 py-3">Status Sanksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                                @forelse($student->violationRecords as $violation)
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                        <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ $violation->date ? \Carbon\Carbon::parse($violation->date)->isoFormat('D MMM Y') : '-' }}</td>
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400">{{ $violation->violationType?->category?->name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400">{{ $violation->violationType?->name ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            @php $pts = $violation->violationType?->category?->points ?? 0; @endphp
+                                            <span class="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full font-bold text-xs {{ $pts > 0 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600' }}">{{ $pts }}</span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @if($violation->sanction_status == 'completed')
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">
+                                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Selesai
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                                                    <span class="material-symbols-outlined text-[14px]">pending</span> Menunggu
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-8 text-center text-slate-500 italic">Belum ada riwayat pelanggaran</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

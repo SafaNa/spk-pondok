@@ -212,7 +212,7 @@
 
     <script>
         function openEditModal(id, nama, bobot) {
-            document.getElementById('editForm').action = '/violation-categories/' + id;
+            document.getElementById('editForm').action = '/admin/violation-categories/' + id;
             document.getElementById('edit_nama').value = nama;
             document.getElementById('edit_bobot_poin').value = bobot;
             openModal('editModal');

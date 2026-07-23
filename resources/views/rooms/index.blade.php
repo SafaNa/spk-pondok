@@ -134,8 +134,8 @@
                             placeholder="Contoh: Kamar 1">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-[#0d141b] dark:text-white mb-1">Rayon</label>
-                        <select name="rayon_id"
+                        <label class="block text-sm font-medium text-[#0d141b] dark:text-white mb-1">Rayon <span class="text-red-500">*</span></label>
+                        <select name="rayon_id" required
                             class="w-full rounded-lg border-[#e7edf3] dark:border-slate-600 bg-white dark:bg-slate-700 text-[#0d141b] dark:text-white focus:border-primary focus:ring-primary">
                             <option value="">Pilih Rayon</option>
                             @foreach ($rayons as $rayon)
@@ -182,8 +182,8 @@
                             class="w-full rounded-lg border-[#e7edf3] dark:border-slate-600 bg-white dark:bg-slate-700 text-[#0d141b] dark:text-white focus:border-primary focus:ring-primary">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-[#0d141b] dark:text-white mb-1">Rayon</label>
-                        <select name="rayon_id" id="edit_rayon_id"
+                        <label class="block text-sm font-medium text-[#0d141b] dark:text-white mb-1">Rayon <span class="text-red-500">*</span></label>
+                        <select name="rayon_id" id="edit_rayon_id" required
                             class="w-full rounded-lg border-[#e7edf3] dark:border-slate-600 bg-white dark:bg-slate-700 text-[#0d141b] dark:text-white focus:border-primary focus:ring-primary">
                             <option value="">Pilih Rayon</option>
                             @foreach ($rayons as $rayon)
@@ -221,7 +221,7 @@
         }
 
         function openEditModal(id, name, rayon_id, capacity) {
-            document.getElementById('editForm').action = '/rooms/' + id;
+            document.getElementById('editForm').action = '/admin/rooms/' + id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_rayon_id').value = rayon_id || '';
             document.getElementById('edit_capacity').value = capacity;

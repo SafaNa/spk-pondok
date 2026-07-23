@@ -35,6 +35,12 @@ class ViolationController extends Controller
             });
         }
 
+        // Filter by active academic year
+        $activeYear = AcademicYear::where('status', 'active')->first();
+        if ($activeYear) {
+            $query->where('academic_year_id', $activeYear->id);
+        }
+
         $violations = $query->paginate(20);
 
         // Prepare stats query with same filter
@@ -43,6 +49,9 @@ class ViolationController extends Controller
             $statsQuery->whereHas('violationType', function ($q) use ($user) {
                 $q->where('department_id', $user->department_id);
             });
+        }
+        if ($activeYear) {
+            $statsQuery->where('academic_year_id', $activeYear->id);
         }
 
         // Get summary stats

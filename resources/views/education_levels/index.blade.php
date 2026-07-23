@@ -202,7 +202,7 @@
         }
 
         function openEditModal(id, name, type) {
-            document.getElementById('editForm').action = '/education-levels/' + id;
+            document.getElementById('editForm').action = '/admin/education-levels/' + id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_type').value = type;
             openModal('editModal');

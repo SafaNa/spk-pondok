@@ -303,6 +303,7 @@
                         <th class="border border-gray-200 p-3 text-left font-bold">Rayon & Kamar</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Pendidikan</th>
                         <th class="border border-gray-200 p-3 text-center font-bold">Status</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">Poin Kepulangan</th>
                         <th class="border border-gray-200 p-3 text-center font-bold w-36">Aksi</th>
                     </tr>
                 </thead>
@@ -388,6 +389,17 @@
                                     <span class="inline-flex items-center px-3 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">{{ ucfirst($s->status) }}</span>
                                 @endif
                             </td>
+                            <td class="border border-gray-200 p-3 text-center whitespace-nowrap">
+                                @if(isset($activeAcademicYear) && $activeAcademicYear->max_leaves)
+                                    <div class="inline-flex items-center gap-1">
+                                        <span class="font-bold {{ $s->approved_leaves_count >= $activeAcademicYear->max_leaves ? 'text-red-600' : 'text-[#0d141b] dark:text-white' }}">{{ $s->approved_leaves_count }}</span>
+                                        <span class="text-slate-400">/</span>
+                                        <span class="text-sm font-medium text-slate-500">{{ $activeAcademicYear->max_leaves }}</span>
+                                    </div>
+                                @else
+                                    <span class="font-bold text-[#0d141b] dark:text-white">{{ $s->approved_leaves_count ?? 0 }} <span class="text-xs font-normal text-slate-500">kali</span></span>
+                                @endif
+                            </td>
                             <td class="border border-gray-200 p-3 text-center">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <a href="{{ route('admin.students.show', $s) }}"
@@ -417,7 +429,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="border border-gray-200 p-8 text-center text-gray-500">
+                            <td colspan="9" class="border border-gray-200 p-8 text-center text-gray-500">
                                 <span class="material-symbols-outlined text-4xl mb-2">person_off</span>
                                 <p>Belum ada data santri</p>
                             </td>

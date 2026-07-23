@@ -114,7 +114,7 @@
 
                 {{-- Rincian Alasan --}}
                 <div class="space-y-6"
-                    x-data="reasonList(@json($leaveCategory->reasons->map(fn($r) => ['reason' => $r->reason, 'can_skip' => $r->can_skip_validation])->toArray()))">
+                    x-data='reasonList(@json($leaveCategory->reasons->map(fn($r) => ['reason' => $r->reason, 'can_skip' => $r->can_skip_validation])->toArray()))'>
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-primary">list</span>
                         Rincian Alasan Kepulangan

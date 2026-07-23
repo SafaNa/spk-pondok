@@ -118,6 +118,7 @@
                         Rincian Alasan Kepulangan
                     </h3>
 
+                    <div class="space-y-3">
                         <template x-for="(item, index) in reasons" :key="index">
                             <div class="flex items-center gap-3">
                                 <div class="relative group flex-[2]">
@@ -140,6 +141,7 @@
                             </div>
                         </template>
                     </div>
+
 
                     <button type="button" @click="add()"
                         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all text-sm font-medium">

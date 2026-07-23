@@ -61,7 +61,15 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-        $query = Student::with(['rayon', 'room', 'formalEducation', 'religiousEducation']);
+        $activeAcademicYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+        
+        $query = Student::with(['rayon', 'room', 'formalEducation', 'religiousEducation'])
+            ->withCount(['licenses as approved_leaves_count' => function ($q) use ($activeAcademicYear) {
+                $q->where('status', 'approved');
+                if ($activeAcademicYear) {
+                    $q->where('academic_year_id', $activeAcademicYear->id);
+                }
+            }]);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -185,7 +193,10 @@ class StudentController extends Controller
         
         $regionOptions = array_keys($finalStats);
 
-        return view('students.index', compact('students', 'rayons', 'rooms', 'educationLevels', 'stats', 'chartData', 'regionOptions'));
+        return view('students.index', compact(
+            'students', 'rayons', 'rooms', 'educationLevels', 
+            'stats', 'chartData', 'activeAcademicYear', 'regionOptions'
+        ));
     }
 
     public function create()
@@ -215,8 +226,28 @@ class StudentController extends Controller
 
     public function show(Student $student)
     {
-        $student->load(['formalEducation', 'religiousEducation', 'rayon', 'room']);
-        return view('students.show', compact('student'));
+        $student->load([
+            'formalEducation', 
+            'religiousEducation', 
+            'rayon', 
+            'room',
+            'guardians',
+            'violationRecords.violationType.category',
+            'licenses.leaveCategory',
+            'licenses.leaveReason'
+        ]);
+
+        $activeAcademicYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
+        
+        $approved_leaves_count = 0;
+        if ($activeAcademicYear) {
+            $approved_leaves_count = $student->licenses
+                ->where('status', 'approved')
+                ->where('academic_year_id', $activeAcademicYear->id)
+                ->count();
+        }
+
+        return view('students.show', compact('student', 'activeAcademicYear', 'approved_leaves_count'));
     }
 
     public function store(Request $request)

@@ -176,7 +176,7 @@
         }
 
         function openEditModal(id, name) {
-            document.getElementById('editForm').action = '/rayons/' + id;
+            document.getElementById('editForm').action = '/admin/rayons/' + id;
             document.getElementById('edit_name').value = name;
             openModal('editModal');
         }
