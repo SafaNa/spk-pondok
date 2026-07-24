@@ -25,7 +25,8 @@ class SantriSeeder extends Seeder
 
         $rayons = Rayon::pluck('id')->toArray();
         $rooms = Room::pluck('id')->toArray();
-        $educationLevels = \App\Models\Master\EducationLevel::pluck('id')->toArray();
+        $formalEducationLevels = \App\Models\Master\EducationLevel::where('type', 'formal')->pluck('id')->toArray();
+        $religiousEducationLevels = \App\Models\Master\EducationLevel::where('type', 'religious')->pluck('id')->toArray();
         $defaultPassword = Hash::make('password');
 
         $studentCount = 200;
@@ -92,8 +93,8 @@ class SantriSeeder extends Seeder
         for ($i = 0; $i < $studentCount; $i++) {
             $rayonId = count($rayons) > 0 ? $rayons[array_rand($rayons)] : null;
             $roomId = count($rooms) > 0 ? $rooms[array_rand($rooms)] : null;
-            $religiousEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
-            $formalEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
+            $religiousEdId = count($religiousEducationLevels) > 0 ? $religiousEducationLevels[array_rand($religiousEducationLevels)] : null;
+            $formalEdId = count($formalEducationLevels) > 0 ? $formalEducationLevels[array_rand($formalEducationLevels)] : null;
 
             if ($i < $luarMaduraTarget) {
                 $village = $luarMaduraVillages->random();

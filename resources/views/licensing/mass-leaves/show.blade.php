@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Detail Liburan Massal')
-
+@section('breadcrumb', 'Detail Liburan')
+@section('breadcrumb_parent', 'Libur Massal')
+@section('breadcrumb_parent_route', 'admin.mass-leaves.index')
 @section('content')
 <div class="space-y-6">
     <!-- Header -->

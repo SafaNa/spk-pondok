@@ -108,7 +108,7 @@
                             </td>
                             <td class="border border-gray-200 p-3 text-center">
                                 <div class="flex items-center justify-center gap-1.5">
-                                    <a href="#" class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors" title="Lihat">
+                                    <a href="{{ route('admin.users.show', $user) }}" class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors" title="Lihat">
                                         <span class="material-symbols-outlined text-[16px]">visibility</span>
                                     </a>
                                     <a href="{{ route('admin.users.edit', $user) }}" class="w-8 h-8 rounded flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors" title="Edit">

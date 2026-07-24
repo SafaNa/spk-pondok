@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Buat Event Liburan Serentak')
-
+@section('breadcrumb', 'Buat Event')
+@section('breadcrumb_parent', 'Libur Massal')
+@section('breadcrumb_parent_route', 'admin.mass-leaves.index')
 @section('content')
 <div class="flex flex-col gap-6 w-full mx-auto pb-10">
     {{-- Main Card --}}

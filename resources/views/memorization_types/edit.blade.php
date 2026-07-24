@@ -6,7 +6,7 @@
 @section('breadcrumb_parent_route', 'admin.memorization-types.index')
 
 @section('content')
-    <div class="flex flex-col gap-6 w-full mx-auto max-w-2xl pb-10">
+    <div class="flex flex-col gap-6 w-full mx-auto pb-10">
         <div
             class="bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-800">
             <div

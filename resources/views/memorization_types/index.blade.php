@@ -2,8 +2,6 @@
 
 @section('title', 'Ketentuan Hafalan')
 @section('breadcrumb', 'Ketentuan Hafalan')
-@section('breadcrumb_parent', 'Data Master')
-@section('breadcrumb_parent_route', 'admin.dashboard')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">

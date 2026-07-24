@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Checkout Liburan Serentak')
-
+@section('breadcrumb', 'Checkout')
+@section('breadcrumb_parent', 'Libur Massal')
+@section('breadcrumb_parent_route', 'admin.mass-leaves.index')
 @push('styles')
 <!-- Select2 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
