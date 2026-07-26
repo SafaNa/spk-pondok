@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->date('start_date');
             $table->date('end_date');
-            $table->boolean('is_active')->default(true);
+            $table->string('status')->default('active'); // active, inactive, completed
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

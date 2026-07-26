@@ -18,15 +18,48 @@ class MassLeave extends Model
         'title',
         'start_date',
         'end_date',
-        'is_active',
+        'status',
         'created_by',
+        'bulk_checkout_at',
+        'bulk_checkout_by',
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'is_active' => 'boolean',
+        'start_date'       => 'date',
+        'end_date'         => 'date',
+        'bulk_checkout_at' => 'datetime',
     ];
+
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public static function closeExpiredEvents(): void
+    {
+        self::where('status', '!=', 'completed')
+            ->whereDate('end_date', '<', now()->startOfDay())
+            ->update(['status' => 'completed']);
+    }
+
+    public function isOngoing(): bool
+    {
+        if ($this->status === 'completed') {
+            return false;
+        }
+        $hMinusOne = \Carbon\Carbon::parse($this->start_date)->subDay()->startOfDay();
+        $endOfDay = \Carbon\Carbon::parse($this->end_date)->endOfDay();
+        return now()->betweenIncluded($hMinusOne, $endOfDay);
+    }
+
+    public function canBeFinishedManually(): bool
+    {
+        if ($this->status === 'completed') {
+            return false;
+        }
+        $hDay1800 = \Carbon\Carbon::parse($this->end_date)->setTime(18, 0, 0);
+        return now()->gte($hDay1800);
+    }
 
     public function academicYear(): BelongsTo
     {

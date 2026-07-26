@@ -56,8 +56,11 @@
                             <span class="material-symbols-outlined text-[18px] text-slate-400">lock</span>
                         </div>
                         <input type="password" name="password" required
-                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            class="w-full pl-10 pr-10 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
                             placeholder="Masukkan password">
+                        <button type="button" onclick="let inp=this.previousElementSibling; if(inp.type==='password'){inp.type='text'; this.firstElementChild.innerText='visibility_off';}else{inp.type='password'; this.firstElementChild.innerText='visibility';}" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        </button>
                     </div>
                 </div>
 

@@ -15,7 +15,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Liburan Serentak</h1>
-                        <p class="text-slate-500 dark:text-slate-400 mt-1 max-w-xl">Kelola event kepulangan massal santri</p>
+                        <p class="text-slate-500 dark:text-slate-400 mt-1">Kelola event kepulangan massal santri</p>
                     </div>
                 </div>
                 <a href="{{ route('admin.mass-leaves.create') }}"
@@ -51,18 +51,40 @@
                     <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ $leave->title }}</h3>
                     <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
                         <span class="material-symbols-outlined text-[14px]">calendar_month</span>
-                        {{ \Carbon\Carbon::parse($leave->start_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}
+                        {{ \Carbon\Carbon::parse($leave->start_date)->locale('id')->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->locale('id')->translatedFormat('d M Y') }}
                     </div>
                 </div>
                 <div>
-                    @if($leave->is_active)
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                        Aktif
-                    </span>
-                    @else
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400">
+                    @if($leave->status === 'completed')
+                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
                         Selesai
                     </span>
+                    @else
+                    <div class="flex items-center gap-2">
+                        @if($leave->canBeFinishedManually())
+                        <form action="{{ route('admin.mass-leaves.finish', $leave->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="button" @click.prevent="$store.confirmModal.open($el.closest('form'), 'Akhiri Event', 'Apakah Anda yakin ingin menyudahi event liburan ini dan mengubah statusnya menjadi Selesai permanen?', 'Ya, Akhiri Sekarang', 'Batal', 'warning')"
+                                class="px-2.5 py-1 text-xs font-bold rounded-lg bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 transition-colors"
+                                title="Tutup / Akhiri Event">
+                                Akhiri Event
+                            </button>
+                        </form>
+                        @endif
+
+                        <form action="{{ route('admin.mass-leaves.toggle-status', $leave->id) }}" method="POST" class="inline flex items-center">
+                            @csrf
+                            <button type="button" @click.prevent="$store.confirmModal.open($el.closest('form'), 'Konfirmasi Ubah Status', 'Apakah Anda yakin ingin {{ $leave->status === 'active' ? 'menonaktifkan' : 'mengaktifkan' }} event liburan ini?', 'Ya, Lanjutkan', 'Batal', 'primary')"
+                                class="group/toggle flex items-center gap-2 transition-all cursor-pointer" title="Ubah Status (On/Off)">
+                                <span class="text-xs font-semibold {{ $leave->status === 'active' ? 'text-primary dark:text-blue-400' : 'text-slate-400' }}">
+                                    {{ $leave->status === 'active' ? 'On' : 'Off' }}
+                                </span>
+                                <div class="w-11 h-6 rounded-full p-1 flex items-center transition-colors duration-300 {{ $leave->status === 'active' ? 'bg-primary justify-end' : 'bg-slate-300 dark:bg-slate-600 justify-start group-hover/toggle:bg-slate-400' }}">
+                                    <div class="bg-white w-4 h-4 rounded-full shadow-sm"></div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -72,18 +94,29 @@
                 <span class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Santri Pulang</span>
             </div>
 
-            <div class="flex gap-2 mt-auto">
+            <div class="flex items-center gap-2 mt-auto">
                 <a href="{{ route('admin.mass-leaves.show', $leave->id) }}"
-                    class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">group</span>
-                    Data
+                    class="flex-1 inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 font-bold text-xs rounded-xl transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    Detail
                 </a>
-                @if($leave->is_active)
-                <a href="{{ route('admin.mass-leaves.checkout', $leave->id) }}"
-                    class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
-                    Checkout
+                @if(\Carbon\Carbon::now()->startOfDay()->lt(\Carbon\Carbon::parse($leave->start_date)->subDay()->startOfDay()))
+                <a href="{{ route('admin.mass-leaves.edit', $leave->id) }}"
+                    class="inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 font-bold text-xs rounded-xl transition-colors"
+                    title="Edit Event">
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Edit
                 </a>
+                <form action="{{ route('admin.mass-leaves.destroy', $leave->id) }}" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" @click.prevent="$store.deleteModal.open($el.closest('form'), 'Apakah Anda yakin ingin menghapus event liburan ini? Data santri yang terkait juga akan dihapus.')"
+                        class="inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 font-bold text-xs rounded-xl transition-colors"
+                        title="Hapus Event">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                        Hapus
+                    </button>
+                </form>
                 @endif
             </div>
         </div>

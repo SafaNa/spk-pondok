@@ -209,9 +209,16 @@
                 cancelText: 'Batal',
                 type: 'primary',
                 form: null,
+                callback: null,
 
-                open(form, title = 'Konfirmasi', message = 'Apakah Anda yakin?', confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', type = 'primary') {
-                    this.form = form;
+                open(formOrCallback, title = 'Konfirmasi', message = 'Apakah Anda yakin?', confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', type = 'primary') {
+                    if (typeof formOrCallback === 'function') {
+                        this.callback = formOrCallback;
+                        this.form = null;
+                    } else {
+                        this.form = formOrCallback;
+                        this.callback = null;
+                    }
                     this.title = title;
                     this.message = message;
                     this.confirmText = confirmText;
@@ -221,13 +228,15 @@
                 },
 
                 confirm() {
-                    if (this.form) this.form.submit();
+                    if (this.callback) this.callback();
+                    else if (this.form) this.form.submit();
                     this.show = false;
                 },
 
                 cancel() {
                     this.show = false;
                     this.form = null;
+                    this.callback = null;
                 }
             });
 
@@ -914,6 +923,55 @@
                     </div>
                 </div>
             </div>
+        @endif
+
+        <!-- Global Flash Messages -->
+        @if(session('success') && !session('wa_notification'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: '{{ session('success') }}',
+                        timer: 3000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: '{{ session('error') }}',
+                        timer: 5000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
+        @endif
+
+        @if($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Validasi Gagal',
+                        text: 'Silakan periksa kembali form isian Anda.',
+                        timer: 4000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
         @endif
 
         <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>

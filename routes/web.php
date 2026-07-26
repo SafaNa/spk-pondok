@@ -157,7 +157,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Mass Leaves
     Route::get('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkout'])->name('mass-leaves.checkout');
     Route::post('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'processCheckout'])->name('mass-leaves.processCheckout');
-    Route::resource('mass-leaves', \App\Http\Controllers\Licensing\MassLeaveController::class);
+    Route::post('/mass-leaves/{mass_leaf}/force-checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'forceCheckoutWithSanction'])->name('mass-leaves.forceCheckoutWithSanction');
+    Route::post('/mass-leaves/{mass_leaf}/bulk-checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'bulkCheckout'])->name('mass-leaves.bulkCheckout');
+    Route::get('/mass-leaves/{mass_leaf}/checkin', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkin'])->name('mass-leaves.checkin');
+    Route::post('/mass-leaves/{mass_leaf}/checkin', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'processCheckin'])->name('mass-leaves.processCheckin');
+    Route::post('/mass-leaves/{mass_leaf}/toggle-status', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'toggleStatus'])->name('mass-leaves.toggle-status');
+    Route::post('/mass-leaves/{mass_leaf}/finish', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'finishEvent'])->name('mass-leaves.finish');
+    Route::resource('mass-leaves', \App\Http\Controllers\Licensing\MassLeaveController::class)->parameters(['mass-leaves' => 'mass_leaf']);
 
     Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
     Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');

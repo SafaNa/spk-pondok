@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Guardian;
 use App\Http\Controllers\Controller;
 use App\Models\Guardian;
 use App\Models\Licensing\StudentLicense;
+use App\Models\Licensing\MassLeave;
+use App\Models\Licensing\MassLeaveStudent;
+use App\Models\Violation\ViolationRecord;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -41,10 +44,31 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // Active Mass Leave Event for Guardian
+        MassLeave::closeExpiredEvents();
+        $activeMassLeave = MassLeave::where('status', 'active')->first();
+        $blockedMassLeaveStudents = collect();
+        $checkedOutMassLeaveStudents = collect();
+
+        if ($activeMassLeave) {
+            $blockedMassLeaveStudents = $students->filter(function ($student) {
+                return ViolationRecord::where('student_id', $student->id)
+                    ->where('sanction_status', 'pending')
+                    ->exists();
+            });
+
+            $checkedOutMassLeaveStudents = $students->filter(function ($student) use ($activeMassLeave) {
+                return MassLeaveStudent::where('mass_leave_id', $activeMassLeave->id)
+                    ->where('student_id', $student->id)
+                    ->exists();
+            });
+        }
+
         return view('guardian.dashboard', compact(
             'guardian', 'students', 'recentLicenses',
             'totalLicenses', 'approvedCount', 'pendingCount', 'rejectedCount',
-            'extTotal', 'extApproved', 'extPending', 'extRejected'
+            'extTotal', 'extApproved', 'extPending', 'extRejected',
+            'activeMassLeave', 'blockedMassLeaveStudents', 'checkedOutMassLeaveStudents'
         ));
     }
 }

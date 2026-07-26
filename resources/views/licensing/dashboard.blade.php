@@ -25,6 +25,110 @@
         </form>
     </div>
 
+    @if(isset($activeMassLeave) && $activeMassLeave && isset($massLeaveStats))
+    {{-- Widget Liburan Serentak (Libur Massal Aktif) --}}
+    <div class="bg-[#162032] bg-gradient-to-br from-[#1a263b] to-[#111827] rounded-2xl p-4 sm:p-5 mb-5 text-white shadow-lg relative overflow-hidden border border-slate-700/80">
+        {{-- 1. Pola Geometris Islami / Pesantren Accent (Digeser ke kanan & di-masking agar kiri bersih) --}}
+        <div class="absolute top-0 bottom-0 right-0 w-full sm:w-1/2 opacity-[0.035] pointer-events-none flex items-center justify-end overflow-hidden [mask-image:linear-gradient(to_left,white_40%,transparent_100%)]">
+            <svg class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="currentColor">
+                <pattern id="islamic-pattern-licensing" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M20 0 L25 15 L40 20 L25 25 L20 40 L15 25 L0 20 L15 15 Z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                    <rect x="10" y="10" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1" transform="rotate(45 20 20)"/>
+                    <circle cx="20" cy="20" r="3" fill="none" stroke="currentColor" stroke-width="0.8"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#islamic-pattern-licensing)" />
+            </svg>
+        </div>
+        {{-- 2. Siluet Kubah Masjid Halus di Pojok Kanan Bawah (Opacity 4%) --}}
+        <div class="absolute -right-4 -bottom-6 w-60 h-60 opacity-[0.04] pointer-events-none text-white overflow-hidden">
+            <svg viewBox="0 0 200 200" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 20 C100 20 135 60 145 90 C155 120 160 130 160 160 L40 160 C40 130 45 120 55 90 C65 60 100 20 100 20 Z"/>
+                <path d="M100 0 L100 20 M95 10 L105 10"/>
+                <circle cx="100" cy="70" r="12" fill="none" stroke="currentColor" stroke-width="4"/>
+            </svg>
+        </div>
+        
+        @php
+            $nowDate = \Carbon\Carbon::now()->startOfDay();
+            $endDate = \Carbon\Carbon::parse($activeMassLeave->end_date)->startOfDay();
+            $daysRemaining = $nowDate->diffInDays($endDate, false);
+        @endphp
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold tracking-wide mb-2 shadow-inner">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Event Aktif
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">{{ $activeMassLeave->title }}</h2>
+                <div class="inline-flex items-center gap-2 text-slate-300 font-medium text-xs mt-2 bg-slate-800/80 px-3 py-1 rounded-md border border-slate-700/60 shadow-sm">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-400">calendar_month</span>
+                    <span>Periode: <strong class="text-white">{{ \Carbon\Carbon::parse($activeMassLeave->start_date)->locale('id')->translatedFormat('d F Y') }}</strong> s/d <strong class="text-white">{{ \Carbon\Carbon::parse($activeMassLeave->end_date)->locale('id')->translatedFormat('d F Y') }}</strong></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-white/10 sm:border-transparent">
+                <div class="flex items-center gap-3 pr-2 sm:border-r sm:border-white/10 sm:py-1">
+                    <div>
+                        <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Aktif
+                        </span>
+                    </div>
+                    @if($daysRemaining >= 0)
+                    <div class="pl-3 border-l border-white/10">
+                        <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sisa Waktu</span>
+                        <span class="text-xs font-bold text-white mt-0.5 block">{{ $daysRemaining > 0 ? $daysRemaining . ' Hari Lagi' : 'Hari Ini' }}</span>
+                    </div>
+                    @endif
+                </div>
+                <a href="{{ route('admin.mass-leaves.show', $activeMassLeave->id) }}" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-all shadow-sm hover:shadow shadow-emerald-600/20 hover:shadow-emerald-600/30 border border-emerald-400/30 flex items-center justify-center gap-1.5 shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">dashboard</span>
+                    Detail Event
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-700/70 relative z-10">
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-emerald-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Siap Pulang (Bersih)</span>
+                    <div class="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">verified</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->eligibleCount) }} <span class="text-[11px] font-semibold text-emerald-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-rose-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Tertahan (Kasus)</span>
+                    <div class="w-6 h-6 rounded-md bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">gavel</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->blockedCount) }} <span class="text-[11px] font-semibold text-rose-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-blue-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Sudah ACC Pulang</span>
+                    <div class="w-6 h-6 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">logout</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->checkedOutCount) }} <span class="text-[11px] font-semibold text-blue-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-amber-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Sudah Kembali</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">home</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->returnedCount) }} <span class="text-[11px] font-semibold text-amber-400 ml-0.5">Santri</span></p>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- KPI Cards --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
 
