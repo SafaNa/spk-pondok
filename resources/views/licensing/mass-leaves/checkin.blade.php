@@ -169,6 +169,19 @@
                 </div>
 
                 <div class="w-full sm:w-40 relative">
+                    <select x-model="selectedRoom" style="background-image:none;"
+                        class="w-full pl-3 pr-8 py-1.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 appearance-none transition-all">
+                        <option value="">Semua Kamar</option>
+                        <template x-for="room in roomList" :key="room">
+                            <option :value="room" x-text="room"></option>
+                        </template>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                        <span class="material-symbols-outlined text-[16px] text-slate-400">expand_more</span>
+                    </div>
+                </div>
+
+                <div class="w-full sm:w-40 relative">
                     <select x-model="selectedStatus" style="background-image:none;"
                         class="w-full pl-3 pr-8 py-1.5 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 appearance-none transition-all">
                         <option value="">Semua Status</option>
@@ -325,18 +338,27 @@
             allRecords: @json($notReturnedStudents),
             searchQuery: '',
             selectedRayon: '',
+            selectedRoom: '',
             selectedStatus: '',
             currentPage: 1,
             itemsPerPage: 10,
 
             get rayonCreateList() {
-                const rayNames = new Set();
+                const names = new Set();
                 this.allRecords.forEach(r => {
-                    if (r.student && r.student.rayon && r.student.rayon.name) {
-                        rayNames.add(r.student.rayon.name);
-                    }
+                    if (r.student?.rayon?.name) names.add(r.student.rayon.name);
                 });
-                return Array.from(rayNames).sort();
+                return Array.from(names).sort();
+            },
+
+            get roomList() {
+                const rooms = new Set();
+                this.allRecords.forEach(r => {
+                    if (!r.student?.room?.name) return;
+                    if (this.selectedRayon && r.student?.room?.rayon?.name !== this.selectedRayon) return;
+                    rooms.add(r.student.room.name);
+                });
+                return Array.from(rooms).sort();
             },
 
             get filteredRecords() {
@@ -349,13 +371,14 @@
                     const matchSearch = q === '' || matchName || matchRayon || matchRoom;
 
                     const matchRayonFilter = this.selectedRayon === '' || (s.rayon && s.rayon.name === this.selectedRayon);
+                    const matchRoomFilter  = this.selectedRoom === '' || (s.room && s.room.name === this.selectedRoom);
 
                     const isReturned = !!r.actual_return_date;
                     let matchStatus = true;
                     if (this.selectedStatus === 'returned') matchStatus = isReturned;
                     if (this.selectedStatus === 'not_returned') matchStatus = !isReturned;
 
-                    return matchSearch && matchRayonFilter && matchStatus;
+                    return matchSearch && matchRayonFilter && matchRoomFilter && matchStatus;
                 });
             },
 
@@ -388,10 +411,11 @@
             },
             
             init() {
-                this.$watch('searchQuery', () => this.currentPage = 1);
-                this.$watch('selectedRayon', () => this.currentPage = 1);
-                this.$watch('selectedStatus', () => this.currentPage = 1);
-                this.$watch('itemsPerPage', () => this.currentPage = 1);
+                this.$watch('searchQuery',   () => this.currentPage = 1);
+                this.$watch('selectedRayon', () => { this.selectedRoom = ''; this.currentPage = 1; });
+                this.$watch('selectedRoom',  () => this.currentPage = 1);
+                this.$watch('selectedStatus',() => this.currentPage = 1);
+                this.$watch('itemsPerPage',  () => this.currentPage = 1);
             },
 
             quickCheckin(studentId, name) {

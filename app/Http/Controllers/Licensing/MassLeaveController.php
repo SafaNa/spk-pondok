@@ -289,7 +289,7 @@ class MassLeaveController extends Controller
             return redirect()->route('admin.mass-leaves.index')->with('error', 'Event ini sudah tidak aktif.');
         }
 
-        $allCheckedOut = MassLeaveStudent::with('student.rayon', 'student.room')
+        $allCheckedOut = MassLeaveStudent::with('student.rayon', 'student.room.rayon')
             ->where('mass_leave_id', $mass_leaf->id)
             ->orderByDesc('checked_out_at')
             ->get();
