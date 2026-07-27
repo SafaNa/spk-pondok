@@ -67,9 +67,9 @@
                         </div>
                     </div>
                     @if(Auth::user()->isAdmin())
-                    <div class="flex flex-wrap gap-3">
+                    <div class="flex flex-wrap gap-2 sm:gap-3">
                         <a href="{{ route('admin.students.edit', $student->id) }}"
-                            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                            class="flex items-center gap-2 min-h-[44px] px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
                             <span class="material-symbols-outlined text-[20px]">edit</span>
                             Ubah
                         </a>
@@ -77,7 +77,7 @@
                             @csrf
                             @method('DELETE')
                             <button @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus santri {{ $student->name }}?')" type="button"
-                                class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                                class="flex items-center gap-2 min-h-[44px] px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                 Hapus
                             </button>

@@ -154,10 +154,9 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <div
-                                        class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-center gap-1.5">
                                         <a href="{{ route('admin.spp-payments.edit', $payment->id) }}"
-                                            class="p-2 text-[#4c739a] hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                            class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
@@ -167,7 +166,7 @@
                                             @method('DELETE')
                                             <button type="button"
                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Hapus pembayaran ini?')"
-                                                class="p-2 text-[#4c739a] hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                                                class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                                 title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>

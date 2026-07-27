@@ -41,10 +41,10 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[44px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">search</span> Cari
                 </button>
-                <a href="{{ route('admin.licenses.active') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                <a href="{{ route('admin.licenses.active') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[44px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">refresh</span> Reset
                 </a>
             </div>
@@ -98,7 +98,7 @@
                             <td class="px-4 py-4">
                                 <div class="flex items-center justify-center gap-1">
                                     <a href="{{ route('admin.licenses.active.show', $license->id) }}"
-                                        class="rounded-lg px-3 py-1.5 bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition-colors text-xs flex items-center gap-1">
+                                        class="rounded-lg min-h-[36px] px-3 py-1.5 bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition-colors text-xs flex items-center gap-1">
                                         Detail & Check-in
                                     </a>
                                 </div>

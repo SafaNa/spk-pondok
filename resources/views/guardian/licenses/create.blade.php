@@ -171,11 +171,11 @@
             {{-- Actions --}}
             <div class="flex gap-3 pt-2">
                 <a href="{{ route('guardian.dashboard') }}"
-                    class="flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 text-sm font-semibold text-center hover:bg-slate-50 transition-all">
+                    class="flex-1 min-h-[44px] py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 text-sm font-semibold text-center hover:bg-slate-50 transition-all flex items-center justify-center">
                     Batal
                 </a>
                 <button type="submit" @if(!$activeYear) disabled @endif
-                    class="flex-[2] py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="flex-[2] min-h-[44px] py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                     Kirim Pengajuan
                 </button>
             </div>

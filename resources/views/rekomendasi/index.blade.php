@@ -23,7 +23,7 @@
                 </p>
             </div>
             <a href="{{ route('perhitungan.cetak') }}" target="_blank"
-                class="group flex items-center gap-2 bg-white dark:bg-slate-800 border border-[#e7edf3] dark:border-slate-700 text-[#0d141b] dark:text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+                class="group flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto bg-white dark:bg-slate-800 border border-[#e7edf3] dark:border-slate-700 text-[#0d141b] dark:text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <span
                     class="material-symbols-outlined text-[20px] text-blue-600 group-hover:scale-110 transition-transform">print</span>
                 Cetak Laporan
@@ -170,7 +170,7 @@
                             </td>
                             <td class="p-4 text-center">
                                 <a href="{{ route('perhitungan.hasil', $r->santri_id) }}"
-                                    class="inline-flex items-center justify-center p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                    class="w-9 h-9 inline-flex items-center justify-center text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                     title="Lihat Detail">
                                     <span class="material-symbols-outlined text-[20px]">visibility</span>
                                 </a>

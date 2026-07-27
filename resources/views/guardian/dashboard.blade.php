@@ -344,17 +344,17 @@
                             @endif
                         </td>
                         <td class="px-5 py-3 text-center">
-                            <div class="flex items-center justify-center gap-1.5">
+                            <div class="flex items-center justify-center gap-1">
                                 {{-- Tombol Detail (Muncul untuk semua status) --}}
                                 <a href="{{ route('guardian.licenses.show', $license) }}" title="Lihat Detail"
-                                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors">
+                                    class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors">
                                     <span class="material-symbols-outlined text-[18px]">visibility</span>
                                 </a>
 
                                 @if($license->status === 'pending')
                                     {{-- Tombol Edit (Hanya jika Menunggu) --}}
                                     <a href="{{ route('guardian.licenses.edit', $license) }}" title="Edit Pengajuan"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+                                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </a>
                                     
@@ -364,7 +364,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" title="Batalkan Pengajuan"
-                                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
                                             <span class="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     </form>
@@ -372,7 +372,7 @@
 
                                 @if($license->status === 'approved' && !$license->actual_return_date)
                                     <a href="{{ route('guardian.licenses.extend', $license) }}" title="Tambah Perpanjangan"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">more_time</span>
                                     </a>
                                 @endif

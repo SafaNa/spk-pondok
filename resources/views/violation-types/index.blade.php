@@ -113,12 +113,12 @@
                     <div class="w-full sm:w-auto flex-1 min-w-[200px]">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode/nama..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm" />
                     </div>
-                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors text-sm">
+                    <button type="submit" class="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors text-sm">
                         <span class="material-symbols-outlined text-[18px]">search</span>
                         <span class="sm:hidden">Cari</span>
                     </button>
                     @if(request()->anyFilled(['search', 'category_id', 'ruleset', 'department_id']))
-                        <a href="{{ route('admin.violation-types.index') }}" class="w-full sm:w-auto flex items-center justify-center px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors text-sm" title="Reset Filter">
+                        <a href="{{ route('admin.violation-types.index') }}" class="w-full sm:w-auto min-h-[44px] flex items-center justify-center px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors text-sm" title="Reset Filter">
                             <span class="material-symbols-outlined text-[18px]">close</span>
                             <span class="sm:hidden">Reset</span>
                         </a>
@@ -169,10 +169,9 @@
                                         class="font-bold text-[#0d141b] dark:text-white">{{ $violationType->category->points }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacit-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('admin.violation-types.edit', $violationType->id) }}"
-                                            class="p-2 text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
@@ -183,7 +182,7 @@
                                             <button
                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus jenis pelanggaran {{ $violationType->name }}?')"
                                                 type="button"
-                                                class="p-2 text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>

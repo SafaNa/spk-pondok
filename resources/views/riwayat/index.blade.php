@@ -45,13 +45,13 @@
                 </div>
             </div>
             <button type="submit"
-                class="h-[42px] px-4 bg-primary text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                class="min-h-[44px] justify-center w-full sm:w-auto px-5 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
                 <span class="material-symbols-outlined text-[20px]">filter_list</span>
                 Filter
             </button>
             @if(request('search') || request('periode_filter'))
                 <a href="{{ route('perhitungan.history') }}"
-                    class="h-[42px] px-4 bg-slate-100 dark:bg-slate-700 text-[#4c739a] rounded-lg text-sm font-medium flex items-center gap-2">
+                    class="min-h-[44px] justify-center w-full sm:w-auto px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-[#4c739a] rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
                     <span class="material-symbols-outlined text-[20px]">clear</span>
                     Reset
                 </a>
