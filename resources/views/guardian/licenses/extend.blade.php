@@ -175,13 +175,13 @@
                 </div>
 
                 {{-- Actions --}}
-                <div class="flex gap-3 pt-2">
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
                     <a href="{{ route('guardian.licenses.index') }}"
-                        class="flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 text-sm font-semibold text-center hover:bg-slate-50 transition-all">
+                        class="min-h-[44px] flex items-center justify-center order-2 sm:order-1 flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 text-sm font-semibold text-center hover:bg-slate-50 transition-all">
                         Batal
                     </a>
                     <button type="submit"
-                        class="flex-[2] py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
+                        class="min-h-[44px] flex items-center justify-center order-1 sm:order-2 flex-[2] py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
                         Kirim Pengajuan Perpanjangan
                     </button>
                 </div>

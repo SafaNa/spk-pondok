@@ -125,15 +125,14 @@
                                     class="font-bold text-[#0d141b] dark:text-white">{{ $p->nilai ?? $p->subkriteria->nilai ?? '-' }}</span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div
-                                    class="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <button
-                                        class="p-2 text-[#4c739a] hover:text-primary bg-transparent hover:bg-primary/10 rounded-lg transition-colors"
+                                        class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-primary bg-transparent hover:bg-primary/10 rounded-lg transition-colors"
                                         title="Ubah">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </button>
                                     <button
-                                        class="p-2 text-[#4c739a] hover:text-red-600 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                        class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-red-600 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                         title="Hapus">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
                                     </button>

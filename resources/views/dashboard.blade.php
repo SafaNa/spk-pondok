@@ -7,46 +7,47 @@
 @section('content')
     {{-- Page Heading with Gradient --}}
     <div
-        class="mb-8 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 p-8 dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-800/50">
+        class="mb-6 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 p-5 sm:p-8 dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-800/50">
         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-            <div>
+            <div class="min-w-0">
                 <div
                     class="mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-primary backdrop-blur-sm dark:bg-slate-700/80">
                     <span class="material-symbols-outlined text-[16px]">dashboard</span>
                     Overview
                 </div>
-                <h1 class="font-outfit text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                <h1 class="font-outfit text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Pantau aktivitas validasi izin, pembayaran SPP, dan pencatatan pelanggaran santri.
                     @if($activeYear)
                         <span
-                            class="ml-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
+                            class="ml-1 sm:ml-2 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 sm:px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
                             <span class="h-2 w-2 animate-pulse rounded-full bg-green-500"></span>
                             {{ $activeYear->name }}
                         </span>
                     @endif
                 </p>
             </div>
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2 sm:gap-3">
                 <a href="#"
-                    class="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300 dark:bg-slate-800 dark:text-gray-200 dark:ring-slate-700 dark:hover:ring-slate-600">
+                    class="group inline-flex items-center gap-2 rounded-xl bg-white px-4 sm:px-5 py-2.5 sm:py-3 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-gray-200 transition-all hover:shadow-md hover:ring-gray-300 dark:bg-slate-800 dark:text-gray-200 dark:ring-slate-700 dark:hover:ring-slate-600 min-h-[44px]">
                     <span
-                        class="material-symbols-outlined text-[22px] transition-transform group-hover:rotate-90">settings</span>
-                    Konfigurasi
+                        class="material-symbols-outlined text-[20px] transition-transform group-hover:rotate-90">settings</span>
+                    <span class="hidden sm:inline">Konfigurasi</span>
+                    <span class="sm:hidden">Setting</span>
                 </a>
                 <a href="{{ route('admin.licenses.index') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all">
-                    <span class="material-symbols-outlined text-[22px]">assignment_turned_in</span>
-                    Validasi Pulang
+                    class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 sm:px-5 py-2.5 sm:py-3 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all min-h-[44px]">
+                    <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+                    <span>Validasi Pulang</span>
                 </a>
             </div>
         </div>
     </div>
 
     {{-- KPI Cards Grid with Vibrant Gradients --}}
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+    <div class="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4 mb-6">
         {{-- Card 1: Total Santri --}}
-        <div class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
+        <div class="group relative overflow-hidden rounded-2xl p-4 sm:p-6 shadow-lg transition-all hover:shadow-xl"
             style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);">
             <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full" style="background: rgba(255, 255, 255, 0.1);">
             </div>
@@ -55,7 +56,7 @@
                     style="background: rgba(255, 255, 255, 0.2);">
                     <span class="material-symbols-outlined text-[28px]">groups</span>
                 </div>
-                <div class="text-3xl font-bold">{{ number_format($totalStudents) }}</div>
+                <div class="text-2xl sm:text-3xl font-bold">{{ number_format($totalStudents) }}</div>
                 <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Total Santri</div>
             </div>
         </div>
@@ -70,7 +71,7 @@
                     style="background: rgba(255, 255, 255, 0.2);">
                     <span class="material-symbols-outlined text-[28px]">payments</span>
                 </div>
-                <div class="text-3xl font-bold">{{ isset($totalPayments) ? number_format($totalPayments) : '0' }}</div>
+                <div class="text-2xl sm:text-3xl font-bold">{{ isset($totalPayments) ? number_format($totalPayments) : '0' }}</div>
                 <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Pembayaran SPP</div>
             </div>
         </div>
@@ -85,7 +86,7 @@
                     style="background: rgba(255, 255, 255, 0.2);">
                     <span class="material-symbols-outlined text-[28px]">assignment_turned_in</span>
                 </div>
-                <div class="text-3xl font-bold">{{ isset($approvedLicenses) ? number_format($approvedLicenses) : '0' }}
+                <div class="text-2xl sm:text-3xl font-bold">{{ isset($approvedLicenses) ? number_format($approvedLicenses) : '0' }}
                 </div>
                 <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Izin Disetujui</div>
             </div>
@@ -101,20 +102,20 @@
                     style="background: rgba(255, 255, 255, 0.2);">
                     <span class="material-symbols-outlined text-[28px]">gavel</span>
                 </div>
-                <div class="text-3xl font-bold">{{ isset($totalViolations) ? number_format($totalViolations) : '0' }}</div>
+                <div class="text-2xl sm:text-3xl font-bold">{{ isset($totalViolations) ? number_format($totalViolations) : '0' }}</div>
                 <div class="text-sm" style="color: rgba(255, 255, 255, 0.9);">Total Pelanggaran</div>
             </div>
         </div>
     </div>
 
     {{-- Completion Rate Bar --}}
-    <div class="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
-        <div class="flex items-center justify-between mb-3">
-            <div>
+    <div class="mb-6 rounded-2xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700">
+        <div class="flex items-center justify-between mb-3 gap-3">
+            <div class="min-w-0">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Tingkat Validasi Izin</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Persentase izin yang telah divalidasi bulan ini</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Persentase izin yang telah divalidasi bulan ini</p>
             </div>
-            <span class="text-2xl font-bold text-primary">{{ isset($completionRate) ? $completionRate : '0' }}%</span>
+            <span class="text-xl sm:text-2xl font-bold text-primary shrink-0">{{ isset($completionRate) ? $completionRate : '0' }}%</span>
         </div>
         <div class="h-3 w-full rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
             <div class="h-3 rounded-full bg-gradient-to-r from-primary to-blue-600 transition-all duration-500"
@@ -123,7 +124,7 @@
     </div>
 
     {{-- Charts & Analytics Section --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 mb-6">
         {{-- Left Column: Top 5 Santri (Placeholder) --}}
         <div
             class="lg:col-span-2 rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-slate-800 dark:ring-slate-700 p-6">
@@ -193,7 +194,7 @@
     </div>
 
     {{-- Bottom Section: Quick Actions & Recent Activity --}}
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-5 sm:gap-6">
         {{-- Quick Action Grid --}}
         <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <a class="group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl"
@@ -248,9 +249,9 @@
                 @if(isset($recentAssessments) && count($recentAssessments) > 0)
                     @foreach($recentAssessments as $assessment)
                         <li
-                            class="group flex items-center gap-x-4 px-6 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer">
+                    class="group flex items-center gap-x-4 px-4 sm:px-6 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer">
                             <div
-                                class="h-12 w-12 flex-none rounded-full {{ ($assessment->total_score ?? 0) >= 0.6 ? 'bg-gradient-to-br from-primary to-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-600' }} flex items-center justify-center text-sm font-bold shadow-sm">
+                                class="h-10 w-10 sm:h-12 sm:w-12 flex-none rounded-full {{ ($assessment->total_score ?? 0) >= 0.6 ? 'bg-gradient-to-br from-primary to-blue-600 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-600' }} flex items-center justify-center text-xs sm:text-sm font-bold shadow-sm shrink-0">
                                 {{ strtoupper(substr($assessment->student->name ?? 'NA', 0, 2)) }}
                             </div>
                             <div class="min-w-0 flex-auto">

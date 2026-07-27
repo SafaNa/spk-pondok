@@ -94,7 +94,7 @@
 
             </div>
             <div class="p-6 md:p-8 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-6 rounded-xl flex items-center transition-colors">
+                <button type="submit" class="min-h-[44px] w-full sm:w-auto justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-6 rounded-xl flex items-center transition-colors shadow-sm">
                     <span class="material-symbols-outlined mr-2">save</span>
                     Simpan Pengaturan
                 </button>

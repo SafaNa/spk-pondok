@@ -7,13 +7,13 @@
 
     <div class="rounded-2xl p-5 border border-blue-100 mb-6"
         style="background: linear-gradient(135deg, #eff6ffff 20%, #eef2ffb3 50%, #faf5ff99 80%);">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-black text-[#0d141b] dark:text-white mb-0.5">Riwayat Izin</h1>
                 <p class="text-sm text-[#4c739a]">Semua pengajuan izin untuk santri Anda.</p>
             </div>
             <a href="{{ route('guardian.licenses.create') }}"
-                class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
+                class="flex items-center justify-center gap-2 min-h-[44px] px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all w-full sm:w-auto">
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Ajukan Baru
             </a>
@@ -67,17 +67,17 @@
                                 @endif
                             </td>
                             <td class="px-5 py-3 text-center">
-                                <div class="flex items-center justify-center gap-1.5">
+                                <div class="flex items-center justify-center gap-1">
                                     {{-- Tombol Detail (Muncul untuk semua status) --}}
                                     <a href="{{ route('guardian.licenses.show', $license) }}" title="Lihat Detail"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors">
+                                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors">
                                         <span class="material-symbols-outlined text-[18px]">visibility</span>
                                     </a>
 
                                     @if($license->status === 'pending')
                                         {{-- Tombol Edit (Hanya jika Menunggu) --}}
                                         <a href="{{ route('guardian.licenses.edit', $license) }}" title="Edit Pengajuan"
-                                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+                                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
                                             <span class="material-symbols-outlined text-[18px]">edit</span>
                                         </a>
                                         
@@ -87,7 +87,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" title="Batalkan Pengajuan"
-                                                class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </form>
@@ -95,7 +95,7 @@
 
                                     @if($license->status === 'approved' && !$license->actual_return_date)
                                         <a href="{{ route('guardian.licenses.extend', $license) }}" title="Ajukan Perpanjangan"
-                                            class="flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-xs transition-colors border border-blue-200">
+                                            class="flex items-center justify-center gap-1 min-h-[36px] px-2.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-xs transition-colors border border-blue-200">
                                             <span class="material-symbols-outlined text-[16px]">more_time</span>
                                             <span class="hidden sm:inline">Perpanjang</span>
                                         </a>

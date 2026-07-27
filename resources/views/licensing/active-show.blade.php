@@ -44,7 +44,7 @@
                     </p>
                 </div>
             </div>
-            <a href="{{ route('admin.licenses.show', $license->id) }}" class="flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-emerald-700 bg-white hover:bg-emerald-50 border border-emerald-200 transition-all">
+            <a href="{{ route('admin.licenses.show', $license->id) }}" class="min-h-[44px] justify-center w-full sm:w-auto flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-emerald-700 bg-white hover:bg-emerald-50 border border-emerald-200 transition-all">
                 <span class="material-symbols-outlined text-[20px]">visibility</span>
                 Lihat Detail Lengkap
             </a>
@@ -75,7 +75,7 @@
                     'Ya, Sudah Kembali',
                     'bg-emerald-600 hover:bg-emerald-700'
                 )"
-                class="flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all">
+                class="min-h-[44px] justify-center w-full sm:w-auto flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all">
                 <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
                 Tandai Kembali
             </button>
@@ -106,7 +106,7 @@
                     'Ya, Sudah Kembali',
                     'bg-emerald-600 hover:bg-emerald-700'
                 )"
-                class="flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all">
+                class="min-h-[44px] justify-center w-full sm:w-auto flex shrink-0 items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20 transition-all">
                 <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
                 Tandai Kembali
             </button>

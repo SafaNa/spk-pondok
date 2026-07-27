@@ -30,7 +30,7 @@
                     <p class="text-sm text-[#4c739a]">Kelola dan pantau seluruh pengajuan izin santri</p>
                 </div>
                 <a href="{{ route('admin.licenses.create') }}"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-primary/90 transition-colors w-full sm:w-auto">
+                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary min-h-[44px] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-primary/90 transition-colors w-full sm:w-auto">
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     Ajukan Izin
                 </a>
@@ -139,12 +139,12 @@
             {{-- Buttons --}}
             <div class="flex gap-2">
                 <button type="submit"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[44px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">filter_alt</span>
                     Filter
                 </button>
                 <a href="{{ route('admin.licenses.index', ['academic_year_id' => $selectedYearId]) }}"
-                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[44px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">refresh</span>
                     Reset
                 </a>
@@ -251,15 +251,14 @@
                                 </div>
                             </td>
 
-                            {{-- Aksi --}}
                             <td class="px-4 py-4">
                                 <div class="flex items-center justify-center gap-1">
                                     <a href="{{ route('admin.licenses.show', $license->id) }}"
-                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Detail">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Detail">
                                         <span class="material-symbols-outlined text-[20px]">visibility</span>
                                     </a>
                                     <a href="{{ route('admin.licenses.edit', $license->id) }}"
-                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
                                     <form id="form-delete-license-{{ $license->id }}" action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="hidden">
@@ -271,7 +270,7 @@
                                             document.getElementById('form-delete-license-{{ $license->id }}'),
                                             'Yakin ingin menghapus pengajuan izin {{ addslashes($license->student->name ?? '') }}?'
                                         )"
-                                        class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
                                     </button>
                                 </div>
@@ -291,8 +290,8 @@
 
         {{-- Pagination --}}
         @if($recentLicenses->hasPages())
-            <div class="flex items-center justify-between border-t border-[#e7edf3] px-5 py-3.5">
-                <p class="text-xs text-[#4c739a]">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-[#e7edf3] px-5 py-3.5">
+                <p class="text-xs text-[#4c739a] shrink-0">
                     Menampilkan {{ $recentLicenses->firstItem() }}–{{ $recentLicenses->lastItem() }} dari {{ number_format($recentLicenses->total()) }} pengajuan
                 </p>
                 {{ $recentLicenses->links() }}

@@ -85,29 +85,28 @@
         </div>
 
         <!-- Right Section: Login Form -->
-        <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 md:p-12 relative">
+        <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-5 py-10 sm:p-8 md:p-12 relative">
             <!-- Mobile Header Logo (Visible only on small screens) -->
-            <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2 text-primary">
+            <div class="lg:hidden flex items-center gap-2 text-primary mb-8 self-start">
                 @if(isset($appSetting) && $appSetting->logo)
                     <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="h-10 w-10 object-contain">
                 @else
                     <img src="{{ asset('favicon.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                 @endif
-                <span class="font-bold text-lg text-[#0d141b] dark:text-white">{{ $appSetting->pesantren_name ?? 'Annuqayah Latee II' }}</span>
+                <span class="font-bold text-lg text-[#0d141b] dark:text-white truncate max-w-[240px] sm:max-w-none">{{ $appSetting->pesantren_name ?? 'Annuqayah Latee II' }}</span>
             </div>
 
-            <div class="w-full max-w-[480px] flex flex-col gap-6">
+            <div class="w-full max-w-[480px] flex flex-col gap-5">
                 <!-- Back to landing -->
                 <a href="{{ route('landing') }}" class="flex items-center gap-1.5 text-sm text-[#4c739a] hover:text-primary transition-colors w-fit -mb-2">
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                     Kembali
                 </a>
-                
                 <!-- Page Heading (LOGIN & Rata Tengah) -->
                 <div class="flex flex-col gap-2 mb-2 text-center items-center">
-                    <h2 class="text-[#0d141b] dark:text-white tracking-tight text-[32px] font-extrabold leading-tight uppercase">
+                    <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-extrabold leading-tight uppercase">
                         LOGIN</h2>
-                    <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal max-w-sm">
+                    <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal max-w-sm px-2 sm:px-0">
                         Selamat datang kembali! Silakan masukkan kredensial Anda untuk mengakses dasbor.
                     </p>
                 </div>
@@ -145,7 +144,7 @@
                             for="username">Username</label>
                         <div class="relative">
                             <input
-                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('username') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-14 placeholder:text-[#4c739a] p-[15px] text-base font-normal leading-normal transition-all"
+                                class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('username') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-12 sm:h-14 placeholder:text-[#4c739a] px-4 text-sm sm:text-base font-normal leading-normal transition-all"
                                 id="username" name="username" placeholder="masukkan username" required type="text"
                                 value="admin" autocomplete="username" />
                             @if($errors->has('username'))
@@ -167,7 +166,7 @@
                         </div>
                         <div class="flex w-full items-stretch rounded-lg relative group">
                             <input
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('password') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 focus:border-primary h-14 placeholder:text-[#4c739a] p-[15px] pr-12 text-base font-normal leading-normal transition-all"
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('password') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 focus:border-primary h-12 sm:h-14 placeholder:text-[#4c739a] px-4 pr-12 text-sm sm:text-base font-normal leading-normal transition-all"
                                 id="password" name="password" placeholder="masukkan password" required type="password"
                                 value="password" />
                             <button
@@ -204,7 +203,7 @@
                     <!-- Submit Button -->
                     <button
                         id="submitBtn"
-                        class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-4 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-md hover:shadow-lg mt-4 gap-2"
+                        class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg min-h-[48px] px-4 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-base font-bold leading-normal tracking-[0.015em] transition-all shadow-md hover:shadow-lg mt-2 gap-2"
                         type="submit">
                         <span id="submitBtnIcon" class="material-symbols-outlined text-[20px]">login</span>
                         <span id="submitBtnText" class="truncate">Masuk</span>

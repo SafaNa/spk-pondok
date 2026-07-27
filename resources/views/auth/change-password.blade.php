@@ -114,13 +114,13 @@
                     </div>
                     <!-- Footer Actions -->
                     <div
-                        class="px-6 py-4 bg-[#f6f7f8] dark:bg-slate-800/50 border-t border-[#e7edf3] dark:border-slate-800 flex items-center justify-end gap-3">
+                        class="px-6 py-4 bg-[#f6f7f8] dark:bg-slate-800/50 border-t border-[#e7edf3] dark:border-slate-800 flex flex-col sm:flex-row items-center justify-end gap-3">
                         <a href="{{ route('admin.dashboard') }}"
-                            class="px-4 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-sm transition-colors">
+                            class="min-h-[44px] w-full sm:w-auto px-5 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-sm transition-colors flex items-center justify-center">
                             Batal
                         </a>
                         <button
-                            class="px-4 py-2.5 rounded-lg border border-transparent bg-primary hover:bg-blue-600 text-white font-medium text-sm shadow-sm transition-colors flex items-center gap-2"
+                            class="min-h-[44px] w-full sm:w-auto px-5 py-2.5 rounded-lg border border-transparent bg-primary hover:bg-blue-600 text-white font-medium text-sm shadow-sm transition-colors flex items-center justify-center gap-2"
                             type="submit">
                             Simpan Password
                         </button>

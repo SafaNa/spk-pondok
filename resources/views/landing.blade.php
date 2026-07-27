@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Santri — Pondok Pesantren Annuqayah Latee II</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -78,11 +80,12 @@
             transition: opacity 0.2s ease;
         }
         .landing-card:hover .landing-card-arrow { opacity: 1; }
+
     </style>
 </head>
 <body>
 
-<div style="position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:0;font-family:'Inter',system-ui,sans-serif;">
+<div style="position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;gap:0;font-family:'Inter',system-ui,sans-serif;">
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:2.5rem;">
@@ -119,7 +122,7 @@
     </div>
 
     <!-- Cards (Keduanya Beraksen Hijau) -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;width:100%;max-width:520px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:1.25rem;width:100%;max-width:520px;">
 
         <a href="{{ route('admin.login') }}" class="landing-card" style="text-decoration:none;">
             <div class="landing-card-icon" style="background:rgba(110,231,183,0.25);">

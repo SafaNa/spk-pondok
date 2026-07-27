@@ -19,7 +19,7 @@
                 </div>
                 @if(!Auth::user()->isLicensingOfficer())
                     <a href="{{ route('admin.violations.create') }}"
-                        class="group flex items-center justify-center gap-2 rounded-xl px-5 h-11 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
+                        class="group flex items-center justify-center gap-2 rounded-xl min-h-[44px] px-4 sm:px-5 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
                         <span
                             class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
                         <span>Catat Pelanggaran</span>
@@ -150,16 +150,16 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-row sm:flex-col gap-1.5 flex-shrink-0">
+                            <div class="flex flex-row gap-1.5 flex-shrink-0 flex-wrap">
                                 <a href="{{ route('admin.violations.show', $violation->id) }}"
-                                    class="px-3 py-1.5 text-xs sm:text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
+                                    class="inline-flex items-center min-h-[36px] px-3 py-1.5 text-xs text-primary hover:bg-primary/10 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
                                     Detail
                                 </a>
 
                                 @if(Auth::user()->isAdmin() || (Auth::user()->isDepartmentOfficer() && $violation->violationType->department_id == Auth::user()->department_id))
                                     @if(Route::has('admin.violations.edit') && $violation->sanction_status !== 'completed')
                                         <a href="{{ route('admin.violations.edit', $violation->id) }}"
-                                            class="px-3 py-1.5 text-xs sm:text-sm bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
+                                            class="inline-flex items-center min-h-[36px] px-3 py-1.5 text-xs bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 rounded-lg transition-colors text-center font-medium whitespace-nowrap">
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.violations.destroy', $violation->id) }}" method="POST">
@@ -167,7 +167,7 @@
                                             @method('DELETE')
                                             <button type="button"
                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus pelanggaran {{ $violation->student->name }}?')"
-                                                class="w-full px-3 py-1.5 text-xs sm:text-sm bg-red-500/10 text-red-600 hover:bg-red-500/20 rounded-lg transition-colors font-medium">
+                                                class="inline-flex items-center min-h-[36px] w-full px-3 py-1.5 text-xs bg-red-500/10 text-red-600 hover:bg-red-500/20 rounded-lg transition-colors font-medium">
                                                 Hapus
                                             </button>
                                         </form>
@@ -176,7 +176,7 @@
                                     @if($violation->sanction_status === 'pending')
                                         <button type="button"
                                             @click="verifyActionUrl = '{{ route('admin.violations.verify-sanction', $violation->id) }}'; showVerifyModal = true"
-                                            class="px-3 py-1.5 text-xs sm:text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium whitespace-nowrap">
+                                            class="inline-flex items-center min-h-[36px] px-3 py-1.5 text-xs bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium whitespace-nowrap">
                                             Verifikasi
                                         </button>
                                     @endif
@@ -209,7 +209,7 @@
                 class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="flex min-h-full items-end justify-center p-3 sm:p-4 text-center sm:items-center">
                     <div x-show="showVerifyModal" x-transition:enter="ease-out duration-300"
                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"

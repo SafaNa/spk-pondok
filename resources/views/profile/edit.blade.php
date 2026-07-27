@@ -138,7 +138,7 @@
                 </div>
                 <div>
                     <a href="{{ route('admin.password.change') }}"
-                        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold transition-all duration-200">
+                        class="min-h-[44px] justify-center w-full sm:w-auto inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold transition-all duration-200">
                         <span class="material-symbols-outlined">lock_reset</span>
                         Ganti Password
                     </a>

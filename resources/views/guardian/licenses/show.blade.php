@@ -8,7 +8,7 @@
     <div class="rounded-2xl p-5 border border-blue-100 mb-6"
         style="background: linear-gradient(135deg, #eff6ffff 20%, #eef2ffb3 50%, #faf5ff99 80%);">
         <div class="flex items-center gap-4">
-            <a href="{{ route('guardian.licenses.index') }}" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#4c739a] shadow-sm hover:text-primary transition-colors">
+            <a href="{{ route('guardian.licenses.index') }}" class="flex min-h-[44px] min-w-[44px] w-11 h-11 items-center justify-center rounded-xl bg-white text-[#4c739a] shadow-sm hover:text-primary transition-colors">
                 <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             </a>
             <div>

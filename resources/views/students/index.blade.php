@@ -14,23 +14,23 @@
                 <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data santri untuk rekomendasi pemulangan
                 </p>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                 @if(Auth::user()->isAdmin())
                 <button onclick="toggleImportModal()"
-                    class="hidden items-center gap-2 h-10 sm:h-11 px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
+                    class="hidden items-center gap-2 min-h-[44px] px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
                     <span class="material-symbols-outlined text-[20px]">upload_file</span>
                     <span>Impor</span>
                 </button>
                 <a href="#" {{-- {{ route('admin.students.export') }} --}}
-                    class="hidden items-center gap-2 h-10 sm:h-11 px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
+                    class="hidden items-center gap-2 min-h-[44px] px-4 rounded-xl border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm flex-1 sm:flex-none justify-center">
                     <span class="material-symbols-outlined text-[20px]">file_download</span>
                     <span>Ekspor</span>
                 </a>
                 <a href="{{ route('admin.students.create') }}"
-                    class="group flex items-center gap-2 h-10 sm:h-11 px-5 rounded-xl bg-primary hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 text-white text-sm font-bold shadow-lg transition-all transform hover:-translate-y-0.5 flex-1 sm:flex-none justify-center">
+                    class="group flex items-center gap-2 min-h-[44px] px-4 sm:px-5 rounded-xl bg-primary hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30 text-white text-sm font-bold shadow-lg transition-all transform hover:-translate-y-0.5 flex-1 sm:flex-none justify-center">
                     <span
                         class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">add</span>
-                    <span class="whitespace-nowrap">Tambah Santri Baru</span>
+                    <span>Tambah Santri</span>
                 </a>
                 @endif
             </div>
@@ -272,13 +272,13 @@
                     {{-- Tombol sejajar dengan selects --}}
                     <div class="flex items-center gap-2 shrink-0">
                         <button type="submit"
-                            class="flex items-center gap-1.5 h-[42px] px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors whitespace-nowrap">
+                            class="flex items-center gap-1.5 min-h-[44px] px-4 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-medium transition-colors whitespace-nowrap">
                             <span class="material-symbols-outlined text-[18px]">filter_alt</span>
                             Filter
                         </button>
                         @if(request()->hasAny(['search','education_level','rayon','room','status']))
                             <a href="{{ route('admin.students.index') }}"
-                                class="flex items-center gap-1.5 h-[42px] px-4 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#4c739a] hover:text-red-500 hover:border-red-200 text-sm font-medium transition-colors whitespace-nowrap">
+                                class="flex items-center gap-1.5 min-h-[44px] px-4 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#4c739a] hover:text-red-500 hover:border-red-200 text-sm font-medium transition-colors whitespace-nowrap">
                                 <span class="material-symbols-outlined text-[18px]">close</span>
                                 Reset
                             </a>
@@ -401,15 +401,15 @@
                                 @endif
                             </td>
                             <td class="border border-gray-200 p-3 text-center">
-                                <div class="flex items-center justify-center gap-1.5">
+                                <div class="flex items-center justify-center gap-1">
                                     <a href="{{ route('admin.students.show', $s) }}"
-                                        class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                                        class="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors"
                                         title="Lihat Detail">
                                         <span class="material-symbols-outlined text-[16px]">visibility</span>
                                     </a>
                                     @if(Auth::user()->isAdmin())
                                     <a href="{{ route('admin.students.edit', $s) }}"
-                                        class="w-8 h-8 rounded flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors"
+                                        class="w-9 h-9 rounded-lg flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors"
                                         title="Edit">
                                         <span class="material-symbols-outlined text-[16px]">edit</span>
                                     </a>
@@ -418,7 +418,7 @@
                                         @method('DELETE')
                                         <button type="button"
                                             @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus santri {{ $s->name }}?')"
-                                            class="w-8 h-8 rounded flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                            class="w-9 h-9 rounded-lg flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors"
                                             title="Hapus">
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>

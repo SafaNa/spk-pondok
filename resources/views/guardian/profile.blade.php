@@ -126,7 +126,7 @@
 
             <div class="flex justify-end pt-2">
                 <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
+                    class="min-h-[44px] justify-center w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
                     Simpan Perubahan
                 </button>
             </div>
@@ -195,7 +195,7 @@
 
             <div class="flex justify-end pt-2">
                 <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-all">
+                    class="min-h-[44px] justify-center w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-all">
                     Ubah Password
                 </button>
             </div>
