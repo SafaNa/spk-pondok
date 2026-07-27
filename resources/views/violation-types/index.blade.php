@@ -134,7 +134,6 @@
                             <th class="px-6 py-4 font-semibold whitespace-nowrap">Nama Pelanggaran</th>
                             <th class="px-6 py-4 font-semibold whitespace-nowrap">Kategori</th>
                             <th class="px-6 py-4 font-semibold whitespace-nowrap">Departemen</th>
-                            <th class="px-6 py-4 font-semibold whitespace-nowrap text-center">Poin</th>
                             <th class="px-6 py-4 font-semibold whitespace-nowrap text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -164,10 +163,7 @@
                                 <td class="px-6 py-4">
                                     <span class="text-sm text-[#4c739a]">{{ $violationType->department->name }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span
-                                        class="font-bold text-[#0d141b] dark:text-white">{{ $violationType->category->points }}</span>
-                                </td>
+                                
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('admin.violation-types.edit', $violationType->id) }}"

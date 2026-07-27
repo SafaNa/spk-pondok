@@ -40,41 +40,47 @@
 <body class="bg-background-light dark:bg-background-dark text-[#0d141b] dark:text-slate-200 font-display antialiased">
     <div class="min-h-screen flex w-full">
         <!-- Left Section: Visual / Context (Desktop Only) -->
-        <div class="hidden lg:flex w-1/2 relative bg-primary overflow-hidden flex-col justify-between p-12 text-white">
-            <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary via-blue-600 to-blue-800"></div>
-                <div class="absolute inset-0 opacity-10">
-                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <defs>
-                            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" />
-                            </pattern>
-                        </defs>
-                        <rect width="100" height="100" fill="url(#grid)" />
-                    </svg>
+        <div class="hidden lg:flex w-1/2 relative bg-cover bg-center overflow-hidden flex-col justify-between p-12 text-white"
+             style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('{{ asset('docs/images/pondok.png') }}');">
+            
+            <!-- Header Logo & Nama Pesantren (Teks Diperkecil & Center) -->
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <!-- Logo Bundar -->
+                <div class="h-24 w-24 flex items-center justify-center overflow-hidden mb-2">
+                    @if(isset($appSetting) && $appSetting->logo)
+                        <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain filter drop-shadow-lg">
+                    @else
+                        <img src="{{ asset('favicon.png') }}" alt="Logo" class="w-full h-full object-contain filter drop-shadow-lg">
+                    @endif
                 </div>
+
+                <!-- Tulisan Nama Pesantren Utama (Diperkecil) -->
+                <h2 class="text-lg md:text-xl font-bold tracking-wider uppercase text-white drop-shadow-md">
+                    {{ $appSetting->pesantren_name ?? 'PONDOK PESANTREN ANNUQAYAH LATEE' }}
+                </h2>
+
+                <!-- Sub-teks Lokasi (Diperkecil) -->
+                <p class="text-xs md:text-sm font-medium text-white/90 drop-shadow-md mt-0.5">
+                    Guluk-Guluk Sumenep Jawa Timur
+                </p>
             </div>
-            <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 bg-white/20 backdrop-blur-sm rounded-lg flex h-10 w-10 items-center justify-center overflow-hidden">
-                        @if(isset($appSetting) && $appSetting->logo)
-                            <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain">
-                        @else
-                            <span class="material-symbols-outlined text-3xl">school</span>
-                        @endif
-                    </div>
-                    <span class="text-xl font-bold tracking-wide uppercase">{{ $appSetting->pesantren_name ?? 'Pesantren Administration System' }}</span>
-                </div>
-            </div>
-            <div class="relative z-10 max-w-lg">
-                <h1 class="text-2xl md:text-3xl font-bold leading-tight mb-6">{{ $appSetting->app_name ?? 'SISTEM VALIDASI IZIN DAN KEPULANGAN SANTRI' }}
+
+            <!-- Spacer untuk mendorong judul & deskripsi ke bawah -->
+            <div class="flex-1"></div>
+
+            <!-- Judul Aplikasi & Penjelasan (Posisi Bawah) -->
+            <div class="relative z-10 max-w-lg mb-6">
+                <h1 class="text-xl md:text-2xl font-extrabold leading-tight mb-2 text-white drop-shadow-md">
+                    {{ $appSetting->app_name ?? 'SISTEM VALIDASI IZIN DAN KEPULANGAN SANTRI' }}
                 </h1>
-                <p class="text-lg text-blue-50 leading-relaxed opacity-90">
+                <p class="text-xs md:text-sm text-white/90 leading-relaxed font-normal drop-shadow-md">
                     {{ $appSetting->description ?? 'Sistem informasi terintegrasi untuk mengelola validasi perizinan kepulangan santri, pembayaran SPP, dan pencatatan pelanggaran dalam satu platform yang terpadu dan efisien.' }}
                 </p>
             </div>
-            <div class="relative z-10 text-sm text-blue-100 opacity-60">
-                © {{ date('Y') }} {{ $appSetting->pesantren_name ?? 'Pesantren Administration System' }}.
+
+            <!-- Footer Hak Cipta -->
+            <div class="relative z-10 text-xs font-semibold text-white/80 drop-shadow-md">
+                © {{ date('Y') }} {{ $appSetting->pesantren_name ?? 'Pondok Pesantren Annuqayah Latee II' }}.
             </div>
         </div>
 
@@ -83,11 +89,11 @@
             <!-- Mobile Header Logo (Visible only on small screens) -->
             <div class="lg:hidden flex items-center gap-2 text-primary mb-8 self-start">
                 @if(isset($appSetting) && $appSetting->logo)
-                    <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="h-8 w-8 object-contain">
+                    <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="h-10 w-10 object-contain">
                 @else
-                    <span class="material-symbols-outlined text-3xl">school</span>
+                    <img src="{{ asset('favicon.png') }}" alt="Logo" class="h-10 w-10 object-contain">
                 @endif
-                <span class="font-bold text-lg text-[#0d141b] dark:text-white truncate">{{ $appSetting->pesantren_name ?? 'Pesantren' }}</span>
+                <span class="font-bold text-lg text-[#0d141b] dark:text-white truncate max-w-[240px] sm:max-w-none">{{ $appSetting->pesantren_name ?? 'Annuqayah Latee II' }}</span>
             </div>
 
             <div class="w-full max-w-[480px] flex flex-col gap-5">
@@ -96,19 +102,18 @@
                     <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                     Kembali
                 </a>
-                <!-- Page Heading -->
-                <div class="flex flex-col gap-1.5 mb-1">
-                    <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-bold leading-tight">
-                        Login Administrator</h2>
-                    <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal">
-                        Selamat datang kembali! Silakan masukkan kredensial Anda.
+                <!-- Page Heading (LOGIN & Rata Tengah) -->
+                <div class="flex flex-col gap-2 mb-2 text-center items-center">
+                    <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-extrabold leading-tight uppercase">
+                        LOGIN</h2>
+                    <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal max-w-sm px-2 sm:px-0">
+                        Selamat datang kembali! Silakan masukkan kredensial Anda untuk mengakses dasbor.
                     </p>
                 </div>
 
                 <!-- Session Flash Message -->
                 @if(session('error'))
-                    <div
-                        class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
+                    <div class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
                         <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
                         <div class="flex-1">
                             <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Autentikasi Gagal</h3>
@@ -118,8 +123,7 @@
                 @endif
 
                 @if($errors->any())
-                    <div
-                        class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
+                    <div class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-4 flex gap-3 items-start">
                         <span class="material-symbols-outlined text-red-600 dark:text-red-400 mt-0.5 text-xl">error</span>
                         <div class="flex-1">
                             <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Autentikasi Gagal</h3>
@@ -227,10 +231,7 @@
             const btnText = document.getElementById('submitBtnText');
             const btnIcon = document.getElementById('submitBtnIcon');
 
-            // Prevent multiple clicks
             btn.classList.add('opacity-75', 'cursor-wait');
-            
-            // Change text and icon
             btnText.textContent = 'Memproses...';
             btnIcon.textContent = 'sync';
             btnIcon.classList.add('animate-spin');
