@@ -21,6 +21,14 @@ class ImageService
      */
     public static function processAndSaveAvatar(UploadedFile $file, string $directory, int $size = 500, int $quality = 80): string
     {
+        // Fallback: jika GD & Imagick tidak tersedia (misal di Vercel), simpan langsung tanpa processing
+        if (!extension_loaded('gd') && !extension_loaded('imagick')) {
+            $filename = \Illuminate\Support\Str::random(40) . '.' . $file->getClientOriginalExtension();
+            $path = trim($directory, '/') . '/' . $filename;
+            Storage::disk('public')->put($path, file_get_contents($file->getRealPath()));
+            return $path;
+        }
+
         // Auto-detect available driver: prefer Imagick, fallback to GD
         if (extension_loaded('imagick')) {
             $driver = new ImagickDriver();
