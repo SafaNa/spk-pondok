@@ -41,7 +41,7 @@
     <div class="min-h-screen flex w-full">
         <!-- Left Section: Visual / Context (Desktop Only) -->
         <div class="hidden lg:flex w-1/2 relative bg-cover bg-center overflow-hidden flex-col justify-between p-12 text-white"
-             style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('{{ asset('docs/images/pondok.png') }}');">
+             style="background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('{{ asset('assets/images/pondok.png') }}');">
             
             <!-- Header Logo & Nama Pesantren (Teks Diperkecil & Center) -->
             <div class="relative z-10 flex flex-col items-center text-center">
