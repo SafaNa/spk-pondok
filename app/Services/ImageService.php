@@ -5,7 +5,8 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 
 class ImageService
 {
@@ -20,8 +21,15 @@ class ImageService
      */
     public static function processAndSaveAvatar(UploadedFile $file, string $directory, int $size = 500, int $quality = 80): string
     {
-        // Init Intervention Image Manager with GD driver
-        $manager = new ImageManager(new Driver());
+        // Auto-detect available driver: prefer Imagick, fallback to GD
+        if (extension_loaded('imagick')) {
+            $driver = new ImagickDriver();
+        } else {
+            $driver = new GdDriver();
+        }
+
+        // Init Intervention Image Manager
+        $manager = new ImageManager($driver);
 
         // Read the image
         $image = $manager->read($file->getRealPath());
