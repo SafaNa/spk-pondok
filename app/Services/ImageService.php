@@ -19,14 +19,18 @@ class ImageService
      * @param int $quality The WebP compression quality
      * @return string The relative path to the saved image
      */
-    public static function processAndSaveAvatar(UploadedFile $file, string $directory, int $size = 500, int $quality = 80): string
+    public static function processAndSaveAvatar(UploadedFile $file, string $directory, int $size = 500, int $quality = 80): ?string
     {
-        // Fallback: jika GD & Imagick tidak tersedia (misal di Vercel), simpan langsung tanpa processing
+        // Fallback: jika GD & Imagick tidak tersedia (misal di Vercel), skip upload
         if (!extension_loaded('gd') && !extension_loaded('imagick')) {
-            $filename = \Illuminate\Support\Str::random(40) . '.' . $file->getClientOriginalExtension();
-            $path = trim($directory, '/') . '/' . $filename;
-            Storage::disk('public')->put($path, file_get_contents($file->getRealPath()));
-            return $path;
+            return null;
+        }
+
+        // Fallback: jika storage tidak bisa ditulis (Vercel read-only filesystem)
+        try {
+            Storage::disk('public')->makeDirectory(trim($directory, '/'));
+        } catch (\Throwable $e) {
+            return null;
         }
 
         // Auto-detect available driver: prefer Imagick, fallback to GD
