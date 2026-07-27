@@ -12,7 +12,7 @@
                 <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola kategori dan rincian alasan kepulangan santri.</p>
             </div>
             <a href="{{ route('admin.leave-categories.create') }}"
-                class="group flex items-center gap-2 h-10 px-5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all transform hover:-translate-y-0.5 w-fit">
+                class="group flex items-center gap-2 min-h-[44px] h-11 px-5 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all transform hover:-translate-y-0.5 w-fit">
                 <span class="material-symbols-outlined text-[18px] group-hover:rotate-90 transition-transform duration-300">add</span>
                 <span class="whitespace-nowrap">Tambah Kategori</span>
             </a>
@@ -70,15 +70,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 flex-shrink-0">
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
                         <a href="{{ route('admin.leave-categories.edit', $category) }}"
-                            class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-primary transition-colors" title="Edit">
+                            class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-primary transition-colors" title="Edit">
                             <span class="material-symbols-outlined text-[20px]">edit</span>
                         </a>
                         <form action="{{ route('admin.leave-categories.destroy', $category) }}" method="POST"
                             onsubmit="return confirm('Hapus kategori {{ $category->name }}? Semua rincian alasan juga akan dihapus.');">
                             @csrf @method('DELETE')
-                            <button type="submit" class="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600 transition-colors" title="Hapus">
+                            <button type="submit" class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600 transition-colors" title="Hapus">
                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                             </button>
                         </form>

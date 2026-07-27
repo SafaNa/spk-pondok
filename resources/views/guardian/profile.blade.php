@@ -126,7 +126,7 @@
 
             <div class="flex justify-end pt-2">
                 <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
+                    class="min-h-[44px] justify-center w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all">
                     Simpan Perubahan
                 </button>
             </div>
@@ -154,32 +154,48 @@
 
             <div class="space-y-1.5">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Password Saat Ini <span class="text-red-500">*</span></label>
-                <input type="password" name="current_password" required
-                    class="w-full px-3 py-2.5 rounded-xl border-2 {{ $errors->has('current_password') ? 'border-red-400' : 'border-slate-200 dark:border-slate-700' }} bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                    placeholder="Masukkan password saat ini">
+                <div class="relative">
+                    <input type="password" name="current_password" required
+                        class="w-full pl-3 pr-10 py-2.5 rounded-xl border-2 {{ $errors->has('current_password') ? 'border-red-400' : 'border-slate-200 dark:border-slate-700' }} bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                        placeholder="Masukkan password saat ini">
+                    <button type="button" onclick="let inp=this.previousElementSibling; if(inp.type==='password'){inp.type='text'; this.firstElementChild.innerText='visibility_off';}else{inp.type='password'; this.firstElementChild.innerText='visibility';}" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    </button>
+                </div>
                 @error('current_password')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Password Baru <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" required
-                        class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                        placeholder="Minimal 6 karakter">
+                    <div class="relative">
+                        <input type="password" name="password" id="new_password" required
+                            class="w-full pl-3 pr-10 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            placeholder="Minimal 8 karakter">
+                        <button type="button" onclick="let inp=this.previousElementSibling; if(inp.type==='password'){inp.type='text'; this.firstElementChild.innerText='visibility_off';}else{inp.type='password'; this.firstElementChild.innerText='visibility';}" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        </button>
+                    </div>
+                    <x-password-strength input-id="new_password" />
                     @error('password')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Konfirmasi Password <span class="text-red-500">*</span></label>
-                    <input type="password" name="password_confirmation" required
-                        class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
-                        placeholder="Ulangi password baru">
+                    <div class="relative">
+                        <input type="password" name="password_confirmation" required
+                            class="w-full pl-3 pr-10 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                            placeholder="Ulangi password baru">
+                        <button type="button" onclick="let inp=this.previousElementSibling; if(inp.type==='password'){inp.type='text'; this.firstElementChild.innerText='visibility_off';}else{inp.type='password'; this.firstElementChild.innerText='visibility';}" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div class="flex justify-end pt-2">
                 <button type="submit"
-                    class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-all">
+                    class="min-h-[44px] justify-center w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-all">
                     Ubah Password
                 </button>
             </div>

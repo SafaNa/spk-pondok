@@ -9,7 +9,7 @@
     {{-- Page Header --}}
     <div class="rounded-2xl p-5 sm:p-6 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 60%, #ede9fe 100%); border: 1px solid #bfdbfe;">
         <div>
-            <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus Perizinan</h1>
+            <h1 class="text-[#1e3a5f] text-lg sm:text-xl font-black tracking-tight mb-1">Dashboard Pengurus</h1>
             <p class="text-[#3b5f8a] text-sm font-normal max-w-2xl">
                 Kelola seluruh sistem validasi izin dan kepulangan santri secara terpusat, monitor proses persetujuan lintas departemen, serta atur hak akses pengguna.
             </p>
@@ -25,125 +25,249 @@
         </form>
     </div>
 
+    @if(isset($activeMassLeave) && $activeMassLeave && isset($massLeaveStats))
+    {{-- Widget Liburan Serentak (Libur Massal Aktif) --}}
+    <div class="bg-[#162032] bg-gradient-to-br from-[#1a263b] to-[#111827] rounded-2xl p-4 sm:p-5 mb-5 text-white shadow-lg relative overflow-hidden border border-slate-700/80">
+        {{-- 1. Pola Geometris Islami / Pesantren Accent (Digeser ke kanan & di-masking agar kiri bersih) --}}
+        <div class="absolute top-0 bottom-0 right-0 w-full sm:w-1/2 opacity-[0.035] pointer-events-none flex items-center justify-end overflow-hidden [mask-image:linear-gradient(to_left,white_40%,transparent_100%)]">
+            <svg class="w-full h-full object-cover" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="currentColor">
+                <pattern id="islamic-pattern-licensing" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M20 0 L25 15 L40 20 L25 25 L20 40 L15 25 L0 20 L15 15 Z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                    <rect x="10" y="10" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1" transform="rotate(45 20 20)"/>
+                    <circle cx="20" cy="20" r="3" fill="none" stroke="currentColor" stroke-width="0.8"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#islamic-pattern-licensing)" />
+            </svg>
+        </div>
+        {{-- 2. Siluet Kubah Masjid Halus di Pojok Kanan Bawah (Opacity 4%) --}}
+        <div class="absolute -right-4 -bottom-6 w-60 h-60 opacity-[0.04] pointer-events-none text-white overflow-hidden">
+            <svg viewBox="0 0 200 200" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 20 C100 20 135 60 145 90 C155 120 160 130 160 160 L40 160 C40 130 45 120 55 90 C65 60 100 20 100 20 Z"/>
+                <path d="M100 0 L100 20 M95 10 L105 10"/>
+                <circle cx="100" cy="70" r="12" fill="none" stroke="currentColor" stroke-width="4"/>
+            </svg>
+        </div>
+        
+        @php
+            $nowDate = \Carbon\Carbon::now()->startOfDay();
+            $endDate = \Carbon\Carbon::parse($activeMassLeave->end_date)->startOfDay();
+            $daysRemaining = $nowDate->diffInDays($endDate, false);
+        @endphp
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold tracking-wide mb-2 shadow-inner">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Event Aktif
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">{{ $activeMassLeave->title }}</h2>
+                <div class="inline-flex items-center gap-2 text-slate-300 font-medium text-xs mt-2 bg-slate-800/80 px-3 py-1 rounded-md border border-slate-700/60 shadow-sm">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-400">calendar_month</span>
+                    <span>Periode: <strong class="text-white">{{ \Carbon\Carbon::parse($activeMassLeave->start_date)->locale('id')->translatedFormat('d F Y') }}</strong> s/d <strong class="text-white">{{ \Carbon\Carbon::parse($activeMassLeave->end_date)->locale('id')->translatedFormat('d F Y') }}</strong></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-white/10 sm:border-transparent">
+                <div class="flex items-center gap-3 pr-2 sm:border-r sm:border-white/10 sm:py-1">
+                    <div>
+                        <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Aktif
+                        </span>
+                    </div>
+                    @if($daysRemaining >= 0)
+                    <div class="pl-3 border-l border-white/10">
+                        <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sisa Waktu</span>
+                        <span class="text-xs font-bold text-white mt-0.5 block">{{ $daysRemaining > 0 ? $daysRemaining . ' Hari Lagi' : 'Hari Ini' }}</span>
+                    </div>
+                    @endif
+                </div>
+                <a href="{{ route('admin.mass-leaves.show', $activeMassLeave->id) }}" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg transition-all shadow-sm hover:shadow shadow-emerald-600/20 hover:shadow-emerald-600/30 border border-emerald-400/30 flex items-center justify-center gap-1.5 shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">dashboard</span>
+                    Detail Event
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-700/70 relative z-10">
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-emerald-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Siap Pulang (Bersih)</span>
+                    <div class="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">verified</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->eligibleCount) }} <span class="text-[11px] font-semibold text-emerald-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-rose-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Tertahan (Kasus)</span>
+                    <div class="w-6 h-6 rounded-md bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">gavel</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->blockedCount) }} <span class="text-[11px] font-semibold text-rose-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-blue-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Sudah ACC Pulang</span>
+                    <div class="w-6 h-6 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">logout</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->checkedOutCount) }} <span class="text-[11px] font-semibold text-blue-400 ml-0.5">Santri</span></p>
+            </div>
+            <div class="bg-white/[0.07] hover:bg-white/[0.12] backdrop-blur-md rounded-xl p-3.5 border border-white/[0.12] hover:border-amber-500/50 shadow-lg transition-all duration-200 group">
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-300 transition-colors">Sudah Kembali</span>
+                    <div class="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">home</span>
+                    </div>
+                </div>
+                <p class="text-xl sm:text-2xl font-black text-white leading-none">{{ number_format($massLeaveStats->returnedCount) }} <span class="text-[11px] font-semibold text-amber-400 ml-0.5">Santri</span></p>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- KPI Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 mb-6">
 
         {{-- Jumlah Santri --}}
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-blue-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <span class="material-symbols-outlined text-[20px]">groups</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-blue-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($totalStudents) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <span class="material-symbols-outlined text-[18px]">groups</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($totalStudents) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Jumlah Santri</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Total Santri Aktif</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Jumlah Santri</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Total Santri Aktif</p>
             </div>
         </div>
 
         {{-- Kepulangan --}}
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-indigo-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-                <span class="material-symbols-outlined text-[20px]">home</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-indigo-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($kepulangan) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                    <span class="material-symbols-outlined text-[18px]">home</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($kepulangan) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Izin Berjalan</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Hari ini</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Berjalan</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Hari ini</p>
             </div>
         </div>
 
         {{-- Disetujui --}}
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-emerald-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                <span class="material-symbols-outlined text-[20px]">check_circle</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-emerald-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($izinDisetujui) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($izinDisetujui) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Izin Disetujui</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Telah disetujui</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Disetujui</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah disetujui</p>
             </div>
         </div>
 
         {{-- Pending --}}
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-amber-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                <span class="material-symbols-outlined text-[20px]">schedule</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-amber-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($izinPending) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                    <span class="material-symbols-outlined text-[18px]">schedule</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($izinPending) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Izin Dipending</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Menunggu Validasi</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Dipending</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Menunggu Validasi</p>
             </div>
         </div>
 
         {{-- Ditolak --}}
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-red-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
-                <span class="material-symbols-outlined text-[20px]">cancel</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-red-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($izinDitolak) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                    <span class="material-symbols-outlined text-[18px]">cancel</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($izinDitolak) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Izin Ditolak</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Telah ditolak</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Ditolak</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah ditolak</p>
             </div>
         </div>
 
         {{-- Kasus Darurat --}}
-        <div class="bg-red-50 rounded-xl border border-red-200 border-l-4 border-l-red-600 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
-                <span class="material-symbols-outlined text-[20px]">warning</span>
+        <div class="bg-red-50 rounded-xl border border-red-200 border-l-4 border-l-red-600 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-red-900 leading-none">{{ number_format($kasusDarurat) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600">
+                    <span class="material-symbols-outlined text-[18px]">warning</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-red-900 leading-none">{{ number_format($kasusDarurat) }}</p>
-                <p class="text-[11px] font-semibold text-red-900 leading-tight mt-0.5">Kasus Darurat</p>
-                <p class="text-[10px] text-red-700 leading-tight">Butuh respon cepat</p>
+            <div>
+                <p class="text-xs font-bold text-red-900 leading-tight truncate">Kasus Darurat</p>
+                <p class="text-[10px] text-red-700 leading-tight mt-0.5 truncate">Butuh respon cepat</p>
             </div>
         </div>
     </div>
 
     {{-- Perpanjangan Izin KPI Cards --}}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-blue-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <span class="material-symbols-outlined text-[20px]">assignment</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-blue-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($extTotal) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <span class="material-symbols-outlined text-[18px]">assignment</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($extTotal) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Total Perpanjangan</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Semua Pengajuan</p>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-emerald-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-                <span class="material-symbols-outlined text-[20px]">check_circle</span>
-            </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($extApproved) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Perpanjangan Disetujui</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Telah disetujui</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Total Perpanjangan</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Semua Pengajuan</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-amber-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                <span class="material-symbols-outlined text-[20px]">schedule</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-emerald-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($extApproved) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($extPending) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Perpanjangan Pending</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Menunggu Validasi</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Disetujui</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah disetujui</p>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-red-500 shadow-sm p-3 flex items-center gap-3 hover:shadow-md transition-shadow">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
-                <span class="material-symbols-outlined text-[20px]">cancel</span>
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-amber-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($extPending) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                    <span class="material-symbols-outlined text-[18px]">schedule</span>
+                </div>
             </div>
-            <div class="min-w-0">
-                <p class="text-lg font-black text-[#0d141b] leading-none">{{ number_format($extRejected) }}</p>
-                <p class="text-[11px] font-semibold text-[#0d141b] leading-tight mt-0.5">Perpanjangan Ditolak</p>
-                <p class="text-[10px] text-[#4c739a] leading-tight">Telah ditolak</p>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Pending</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Menunggu Validasi</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-[#e7edf3] border-l-4 border-l-red-500 shadow-sm p-3.5 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <p class="text-xl sm:text-2xl font-black text-[#0d141b] leading-none">{{ number_format($extRejected) }}</p>
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                    <span class="material-symbols-outlined text-[18px]">cancel</span>
+                </div>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Ditolak</p>
+                <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah ditolak</p>
             </div>
         </div>
     </div>

@@ -23,9 +23,14 @@ class SantriSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        $rayons = Rayon::pluck('id')->toArray();
-        $rooms = Room::pluck('id')->toArray();
-        $educationLevels = \App\Models\Master\EducationLevel::pluck('id')->toArray();
+        // Load rayons and group rooms by rayon for consistent round-robin assignment
+        $rayonList    = Rayon::orderBy('name')->get();
+        $roomsByRayon = Room::all()->groupBy('rayon_id');
+        $rayonIndex   = 0;
+        $roomIndexes  = []; // round-robin counter per rayon
+
+        $formalEducationLevels = \App\Models\Master\EducationLevel::where('type', 'formal')->pluck('id')->toArray();
+        $religiousEducationLevels = \App\Models\Master\EducationLevel::where('type', 'religious')->pluck('id')->toArray();
         $defaultPassword = Hash::make('password');
 
         $studentCount = 200;
@@ -90,10 +95,19 @@ class SantriSeeder extends Seeder
 
 
         for ($i = 0; $i < $studentCount; $i++) {
-            $rayonId = count($rayons) > 0 ? $rayons[array_rand($rayons)] : null;
-            $roomId = count($rooms) > 0 ? $rooms[array_rand($rooms)] : null;
-            $religiousEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
-            $formalEdId = count($educationLevels) > 0 ? $educationLevels[array_rand($educationLevels)] : null;
+            // Pick rayon round-robin, then pick room round-robin within that rayon
+            $rayon   = $rayonList->count() > 0 ? $rayonList[$rayonIndex % $rayonList->count()] : null;
+            $rayonIndex++;
+            $rayonId = $rayon?->id;
+            $roomId  = null;
+            if ($rayon && $roomsByRayon->has($rayon->id)) {
+                $rooms  = $roomsByRayon->get($rayon->id);
+                $rIdx   = $roomIndexes[$rayon->id] ?? 0;
+                $roomId = $rooms[$rIdx % $rooms->count()]->id;
+                $roomIndexes[$rayon->id] = $rIdx + 1;
+            }
+            $religiousEdId = count($religiousEducationLevels) > 0 ? $religiousEducationLevels[array_rand($religiousEducationLevels)] : null;
+            $formalEdId = count($formalEducationLevels) > 0 ? $formalEducationLevels[array_rand($formalEducationLevels)] : null;
 
             if ($i < $luarMaduraTarget) {
                 $village = $luarMaduraVillages->random();

@@ -20,75 +20,75 @@
     @endif
 
     {{-- Header --}}
-    <div class="rounded-2xl border border-blue-100 px-6 py-5" style="background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 55%, #faf5ff 100%);">
-        <div class="flex flex-wrap items-center gap-4">
+    <div class="rounded-2xl border border-blue-100 p-5 sm:p-6" style="background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 55%, #faf5ff 100%);">
+        <div class="flex flex-col gap-5">
 
-            {{-- Title --}}
-            <div class="min-w-0 shrink-0">
-                <h1 class="text-lg font-black text-[#0d141b]">Pengajuan Izin Santri</h1>
-                <p class="text-sm text-[#4c739a]">Kelola dan pantau seluruh pengajuan izin santri</p>
+            {{-- Top Row: Title and Button --}}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <h1 class="text-lg sm:text-xl font-black text-[#0d141b]">Pengajuan Izin Santri</h1>
+                    <p class="text-sm text-[#4c739a]">Kelola dan pantau seluruh pengajuan izin santri</p>
+                </div>
+                <a href="{{ route('admin.licenses.create') }}"
+                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary min-h-[44px] px-5 py-2.5 text-sm font-bold text-white shadow-md hover:bg-primary/90 transition-colors w-full sm:w-auto">
+                    <span class="material-symbols-outlined text-[18px]">add</span>
+                    Ajukan Izin
+                </a>
             </div>
 
-            {{-- KPI Cards --}}
-            <div class="flex flex-wrap gap-3 ml-auto">
-                <div class="flex items-center gap-3 rounded-xl border border-[#e7edf3] bg-white px-4 py-3 shadow-sm min-w-[130px]">
+            {{-- Bottom Row: KPI Cards --}}
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div class="flex items-center gap-3 rounded-xl border border-[#e7edf3] bg-white px-3 sm:px-4 py-3 shadow-sm">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                        <span class="material-symbols-outlined text-[22px]">assignment</span>
+                        <span class="material-symbols-outlined text-[20px] sm:text-[22px]">assignment</span>
                     </div>
-                    <div>
-                        <p class="text-xl font-black text-[#0d141b] leading-none">{{ number_format($totalAll) }}</p>
-                        <p class="text-xs font-semibold text-[#0d141b] mt-0.5">Total Pengajuan</p>
-                        <p class="text-[10px] text-[#4c739a]">Semua status</p>
+                    <div class="min-w-0">
+                        <p class="text-lg sm:text-xl font-black text-[#0d141b] leading-none">{{ number_format($totalAll) }}</p>
+                        <p class="text-xs font-semibold text-[#0d141b] mt-0.5 truncate">Total Pengajuan</p>
+                        <p class="text-[10px] text-[#4c739a] truncate">Semua status</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 shadow-sm min-w-[120px]">
+                <div class="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50 px-3 sm:px-4 py-3 shadow-sm">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-                        <span class="material-symbols-outlined text-[22px]">schedule</span>
+                        <span class="material-symbols-outlined text-[20px] sm:text-[22px]">schedule</span>
                     </div>
-                    <div>
-                        <p class="text-xl font-black text-amber-900 leading-none">{{ number_format($totalPending) }}</p>
-                        <p class="text-xs font-semibold text-amber-800 mt-0.5">Menunggu</p>
-                        <p class="text-[10px] text-amber-600">Perlu validasi</p>
+                    <div class="min-w-0">
+                        <p class="text-lg sm:text-xl font-black text-amber-900 leading-none">{{ number_format($totalPending) }}</p>
+                        <p class="text-xs font-semibold text-amber-800 mt-0.5 truncate">Menunggu</p>
+                        <p class="text-[10px] text-amber-600 truncate">Perlu validasi</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50 px-4 py-3 shadow-sm min-w-[120px]">
+                <div class="flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50 px-3 sm:px-4 py-3 shadow-sm">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
-                        <span class="material-symbols-outlined text-[22px]">more_time</span>
+                        <span class="material-symbols-outlined text-[20px] sm:text-[22px]">more_time</span>
                     </div>
-                    <div>
-                        <p class="text-xl font-black text-violet-900 leading-none">{{ number_format($totalPendingExt) }}</p>
-                        <p class="text-xs font-semibold text-violet-800 mt-0.5">Perpanjangan</p>
-                        <p class="text-[10px] text-violet-600">Menunggu validasi</p>
+                    <div class="min-w-0">
+                        <p class="text-lg sm:text-xl font-black text-violet-900 leading-none">{{ number_format($totalPendingExt) }}</p>
+                        <p class="text-xs font-semibold text-violet-800 mt-0.5 truncate">Perpanjangan</p>
+                        <p class="text-[10px] text-violet-600 truncate">Menunggu validasi</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 shadow-sm min-w-[120px]">
+                <div class="flex items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-3 sm:px-4 py-3 shadow-sm">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
-                        <span class="material-symbols-outlined text-[22px]">check_circle</span>
+                        <span class="material-symbols-outlined text-[20px] sm:text-[22px]">check_circle</span>
                     </div>
-                    <div>
-                        <p class="text-xl font-black text-emerald-900 leading-none">{{ number_format($totalApproved) }}</p>
-                        <p class="text-xs font-semibold text-emerald-800 mt-0.5">Disetujui</p>
-                        <p class="text-[10px] text-emerald-600">Pengajuan disetujui</p>
+                    <div class="min-w-0">
+                        <p class="text-lg sm:text-xl font-black text-emerald-900 leading-none">{{ number_format($totalApproved) }}</p>
+                        <p class="text-xs font-semibold text-emerald-800 mt-0.5 truncate">Disetujui</p>
+                        <p class="text-[10px] text-emerald-600 truncate">Telah disetujui</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 shadow-sm min-w-[110px]">
+                <div class="flex items-center gap-3 rounded-xl border border-rose-100 bg-rose-50 px-3 sm:px-4 py-3 shadow-sm">
                     <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-600">
-                        <span class="material-symbols-outlined text-[22px]">cancel</span>
+                        <span class="material-symbols-outlined text-[20px] sm:text-[22px]">cancel</span>
                     </div>
-                    <div>
-                        <p class="text-xl font-black text-rose-900 leading-none">{{ number_format($totalRejected) }}</p>
-                        <p class="text-xs font-semibold text-rose-800 mt-0.5">Ditolak</p>
-                        <p class="text-[10px] text-rose-600">Pengajuan ditolak</p>
+                    <div class="min-w-0">
+                        <p class="text-lg sm:text-xl font-black text-rose-900 leading-none">{{ number_format($totalRejected) }}</p>
+                        <p class="text-xs font-semibold text-rose-800 mt-0.5 truncate">Ditolak</p>
+                        <p class="text-[10px] text-rose-600 truncate">Telah ditolak</p>
                     </div>
                 </div>
             </div>
-
-            {{-- Button --}}
-            <a href="{{ route('admin.licenses.create') }}"
-                class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-md hover:bg-primary/90 transition-colors">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                Ajukan Izin
-            </a>
         </div>
     </div>
 
@@ -139,12 +139,12 @@
             {{-- Buttons --}}
             <div class="flex gap-2">
                 <button type="submit"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[44px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">filter_alt</span>
                     Filter
                 </button>
                 <a href="{{ route('admin.licenses.index', ['academic_year_id' => $selectedYearId]) }}"
-                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[44px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">refresh</span>
                     Reset
                 </a>
@@ -251,15 +251,14 @@
                                 </div>
                             </td>
 
-                            {{-- Aksi --}}
                             <td class="px-4 py-4">
                                 <div class="flex items-center justify-center gap-1">
                                     <a href="{{ route('admin.licenses.show', $license->id) }}"
-                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Detail">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Detail">
                                         <span class="material-symbols-outlined text-[20px]">visibility</span>
                                     </a>
                                     <a href="{{ route('admin.licenses.edit', $license->id) }}"
-                                        class="rounded-lg p-1.5 text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-[#4c739a] hover:bg-slate-100 hover:text-primary transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>
                                     </a>
                                     <form id="form-delete-license-{{ $license->id }}" action="{{ route('admin.licenses.destroy', $license->id) }}" method="POST" class="hidden">
@@ -271,7 +270,7 @@
                                             document.getElementById('form-delete-license-{{ $license->id }}'),
                                             'Yakin ingin menghapus pengajuan izin {{ addslashes($license->student->name ?? '') }}?'
                                         )"
-                                        class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 transition-colors">
+                                        class="rounded-lg w-9 h-9 flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-colors">
                                         <span class="material-symbols-outlined text-[20px]">delete</span>
                                     </button>
                                 </div>
@@ -291,8 +290,8 @@
 
         {{-- Pagination --}}
         @if($recentLicenses->hasPages())
-            <div class="flex items-center justify-between border-t border-[#e7edf3] px-5 py-3.5">
-                <p class="text-xs text-[#4c739a]">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-[#e7edf3] px-5 py-3.5">
+                <p class="text-xs text-[#4c739a] shrink-0">
                     Menampilkan {{ $recentLicenses->firstItem() }}–{{ $recentLicenses->lastItem() }} dari {{ number_format($recentLicenses->total()) }} pengajuan
                 </p>
                 {{ $recentLicenses->links() }}

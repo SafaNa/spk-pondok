@@ -182,7 +182,7 @@
                             <p class="flex-1 text-sm {{ $item->is_checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300' }} transition-all duration-200 item-text">
                                 {{ $item->memorizationType->target_description }}
                             </p>
-                            <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 text-slate-300">
+                            <div class="flex-shrink-0 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 text-slate-300">
                                 <span class="material-symbols-outlined text-[18px]">touch_app</span>
                             </div>
                         </div>

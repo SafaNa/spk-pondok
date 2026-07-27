@@ -26,6 +26,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Cropper.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -145,27 +149,7 @@
         localStorage.removeItem("theme");
         document.documentElement.classList.remove("dark");
     </script>
-    <style>
-        .material-symbols-outlined.fill-1 {
-            font-variation-settings: 'FILL' 1;
-        }
-
-        /* Hide Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            /* IE and Edge */
-            scrollbar-width: none;
-            /* Firefox */
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
+</style>
     <!-- Alpine.js Store Setup (Head - Synchronous) -->
     <script>
         document.addEventListener('alpine:init', () => {
@@ -209,9 +193,16 @@
                 cancelText: 'Batal',
                 type: 'primary',
                 form: null,
+                callback: null,
 
-                open(form, title = 'Konfirmasi', message = 'Apakah Anda yakin?', confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', type = 'primary') {
-                    this.form = form;
+                open(formOrCallback, title = 'Konfirmasi', message = 'Apakah Anda yakin?', confirmText = 'Ya, Lanjutkan', cancelText = 'Batal', type = 'primary') {
+                    if (typeof formOrCallback === 'function') {
+                        this.callback = formOrCallback;
+                        this.form = null;
+                    } else {
+                        this.form = formOrCallback;
+                        this.callback = null;
+                    }
                     this.title = title;
                     this.message = message;
                     this.confirmText = confirmText;
@@ -221,13 +212,15 @@
                 },
 
                 confirm() {
-                    if (this.form) this.form.submit();
+                    if (this.callback) this.callback();
+                    else if (this.form) this.form.submit();
                     this.show = false;
                 },
 
                 cancel() {
                     this.show = false;
                     this.form = null;
+                    this.callback = null;
                 }
             });
 
@@ -272,27 +265,6 @@
             },
         }
     </script>
-    <style>
-        .material-symbols-outlined.fill-1 {
-            font-variation-settings: 'FILL' 1;
-        }
-
-        /* Hide Scrollbar */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            /* IE and Edge */
-            scrollbar-width: none;
-            /* Firefox */
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
 </head>
 
 <body x-data
@@ -300,35 +272,35 @@
     <div class="flex h-screen w-full overflow-hidden">
         <!-- Mobile Overlay -->
         <div id="sidebarOverlay" onclick="toggleSidebar()"
-            class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity opacity-0 pointer-events-none md:hidden backdrop-blur-sm">
+            class="fixed inset-0 bg-black/50 z-40 hidden transition-all duration-300 opacity-0 pointer-events-none md:hidden backdrop-blur-sm">
         </div>
 
         <!-- Side Navigation -->
         <aside id="sidebar"
-            class="fixed inset-y-0 left-0 z-50 w-64 flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 shadow-2xl md:shadow-none">
+            class="fixed inset-y-0 left-0 z-50 w-[16.5rem] max-w-[85vw] flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none shadow-2xl md:shadow-none">
 
             <!-- Logo / Brand (Fixed at top) -->
             <div class="p-6 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary overflow-hidden">
+                    <!-- Logo tanpa kotak latar belakang -->
+                    <div class="flex h-10 w-10 items-center justify-center overflow-hidden">
                         @if(isset($appSetting) && $appSetting->logo)
                             <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain">
                         @else
-                            <span class="material-symbols-outlined">school</span>
+                            <span class="material-symbols-outlined text-primary text-2xl">school</span>
                         @endif
                     </div>
                     <div class="flex flex-col">
-                        <h1 class="text-[#0d141b] dark:text-white text-base font-bold leading-normal">Santri Admin</h1>
-                        <p class="text-[#4c739a] text-xs font-normal leading-normal">Management System</p>
+                        <h1 class="text-[#0d141b] dark:text-white text-base font-bold leading-normal">SIMVI-KS</h1>
+                        <p class="text-[#4c739a] text-xs font-normal leading-normal">PP. Annuqoyah Latee II</p>
                     </div>
                 </div>
                 <!-- Mobile Close Button -->
                 <button onclick="toggleSidebar()"
-                    class="md:hidden text-[#4c739a] hover:text-[#0d141b] dark:hover:text-white">
+                    class="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-[#4c739a] hover:text-[#0d141b] hover:bg-[#e7edf3] dark:hover:text-white dark:hover:bg-slate-800 transition-colors" aria-label="Tutup Menu">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-
             <!-- Nav Items (Scrollable area) -->
             <div class="flex-1 overflow-y-auto px-3 py-2 scroll-smooth no-scrollbar">
                 <nav class="flex flex-col gap-2">
@@ -386,34 +358,34 @@
                             </button>
 
                             <div x-show="open" x-collapse style="display: none;"
-                                class="flex flex-col gap-1 mt-1 pl-3 border-l-2 border-slate-100 dark:border-slate-800 ml-5">
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.academic-years.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                class="flex flex-col gap-1 mt-1 pl-2.5 border-l-2 border-slate-100 dark:border-slate-800 ml-3.5">
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.academic-years.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.academic-years.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">event_note</span>
                                     <span class="text-sm font-medium">Tahun Ajaran</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">school</span>
                                     <span class="text-sm font-medium">Jenjang</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.departments.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">apartment</span>
                                     <span class="text-sm font-medium">Departemen</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rayons.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rayons.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.rayons.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">domain</span>
                                     <span class="text-sm font-medium">Rayon</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rooms.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rooms.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.rooms.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">meeting_room</span>
                                     <span class="text-sm font-medium">Kamar</span>
                                 </a>
 
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.leave-categories.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.leave-categories.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.leave-categories.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">category</span>
                                     <span class="text-sm font-medium">Kategori Kepulangan</span>
@@ -439,20 +411,19 @@
                     @endif
                     --}}
 
-                    {{-- Menu Pelanggaran (Khusus Admin & Departemen Tertentu) --}}
                     @if(auth()->user()->canManageViolations())
                         <div class="mb-4">
                             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
                             </p>
                             <div class="space-y-1">
                                 <a href="{{ route('admin.violations.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
                                     <span class="material-symbols-outlined text-[20px]">gavel</span>
                                     <span class="text-sm font-medium">Catat Pelanggaran</span>
                                 </a>
 
                                 <a href="{{ route('admin.violation-types.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
                                     <span class="material-symbols-outlined text-[20px]">list_alt</span>
                                     <span class="text-sm font-medium">Jenis Pelanggaran</span>
                                 </a>
@@ -489,6 +460,11 @@
                                 href="{{ route('admin.licenses.index') }}">
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.*') && !request()->routeIs('admin.licenses.reports*') && !request()->routeIs('admin.licenses.active*') ? 'fill-1' : '' }}">assignment</span>
                                 <span class="text-sm font-medium">Pengajuan Izin</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.mass-leaves.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                                href="{{ route('admin.mass-leaves.index') }}">
+                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.mass-leaves.*') ? 'fill-1' : '' }}">groups</span>
+                                <span class="text-sm font-medium">Libur Massal</span>
                             </a>
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.licenses.active*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.licenses.active') }}">
@@ -561,31 +537,31 @@
         <main class="flex-1 flex flex-col h-full relative overflow-hidden">
             <!-- Top Navbar -->
             <header
-                class="flex items-center justify-between whitespace-nowrap border-b border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 shrink-0">
-                <div class="flex items-center gap-4 lg:hidden">
-                    <button onclick="toggleSidebar()" class="text-[#0d141b] dark:text-white">
+                class="flex items-center justify-between border-b border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 px-4 sm:px-6 py-3 shrink-0 gap-3">
+                <div class="flex items-center gap-3 min-w-0 lg:hidden">
+                    <button onclick="toggleSidebar()" class="text-[#0d141b] dark:text-white flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[#e7edf3] dark:hover:bg-slate-800 transition-colors" aria-label="Buka Menu">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
-                    <h2 class="text-[#0d141b] dark:text-white text-lg font-bold leading-tight">
+                    <h2 class="text-[#0d141b] dark:text-white text-base font-bold leading-tight truncate">
                         @yield('mobile_title', 'Santri Management')</h2>
                 </div>
                 <!-- Breadcrumbs -->
-                <div class="hidden lg:flex items-center gap-2">
-                    <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors"
+                <nav class="hidden lg:flex items-center gap-1.5 min-w-0 flex-1" aria-label="Breadcrumb">
+                    <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors shrink-0"
                         href="{{ route('admin.dashboard') }}">Beranda</a>
-                    <span class="text-[#4c739a] text-sm">/</span>
+                    <span class="text-[#4c739a] text-sm shrink-0">/</span>
 
                     @if(View::hasSection('breadcrumb_parent'))
-                        <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors"
+                        <a class="text-[#4c739a] text-sm font-medium hover:text-primary transition-colors truncate"
                             href="{{ route(View::yieldContent('breadcrumb_parent_route')) }}">
                             @yield('breadcrumb_parent')
                         </a>
-                        <span class="text-[#4c739a] text-sm">/</span>
+                        <span class="text-[#4c739a] text-sm shrink-0">/</span>
                     @endif
 
-                    <span class="text-[#0d141b] dark:text-white text-sm font-medium">@yield('breadcrumb', 'Page')</span>
-                </div>
-                <div class="flex flex-1 justify-end gap-3 items-center">
+                    <span class="text-[#0d141b] dark:text-white text-sm font-medium truncate">@yield('breadcrumb', 'Page')</span>
+                </nav>
+                <div class="flex flex-1 justify-end gap-2 items-center min-w-0">
                     {{-- Info Tahun Ajaran Aktif --}}
                     @php
                         $globalActiveYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();
@@ -598,13 +574,13 @@
                     @endif
 
                     <button
-                        class="hidden sm:flex items-center justify-center rounded-full size-10 hover:bg-[#e7edf3] dark:hover:bg-slate-800 text-[#4c739a]">
-                        <span class="material-symbols-outlined">notifications</span>
+                        class="hidden sm:flex items-center justify-center rounded-lg w-10 h-10 hover:bg-[#e7edf3] dark:hover:bg-slate-800 text-[#4c739a] transition-colors" aria-label="Notifikasi">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
                     </button>
 
                     <!-- User Profile Dropdown (DESKTOP ONLY) -->
                     <div class="hidden lg:flex items-center gap-3 pl-3 border-l border-[#e7edf3] dark:border-slate-800"
-                        x-data="{ open: false }">
+                        x-data="{ open: false }" @keydown.escape.window="open = false">
                         <div class="text-right hidden xl:block">
                             <p class="text-sm font-bold text-[#0d141b] dark:text-white">{{ Auth::user()->name }}</p>
                             <p class="text-xs text-[#4c739a]">{{ Auth::user()->username }}</p>
@@ -695,12 +671,12 @@
         </div>
 
         {{-- Modal --}}
-        <div class="flex min-h-full items-center justify-center p-4">
+        <div class="flex min-h-full items-center justify-center p-3 sm:p-4">
             <div x-show="$store.deleteModal.show" x-transition:enter="transition ease-out duration-300"
                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95" @click.stop
-                class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+                class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-5 sm:p-6">
 
                 {{-- Icon --}}
                 <div
@@ -709,22 +685,22 @@
                 </div>
 
                 {{-- Title --}}
-                <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
+                <h3 class="text-base sm:text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
                     x-text="$store.deleteModal.title">
                 </h3>
 
                 {{-- Message --}}
-                <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-6"
+                <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-5 sm:mb-6"
                     x-text="$store.deleteModal.message"></p>
 
                 {{-- Buttons --}}
                 <div class="flex gap-3">
                     <button @click="$store.deleteModal.cancel()" type="button"
-                        class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        class="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm">
                         Batal
                     </button>
                     <button @click="$store.deleteModal.confirm()" type="button"
-                        class="flex-1 px-4 py-2.5 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+                        class="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition-all text-sm"
                         :class="$store.deleteModal.confirmClass"
                         x-text="$store.deleteModal.confirmText">
                     </button>
@@ -745,12 +721,12 @@
             </div>
 
             {{-- Modal --}}
-            <div class="flex min-h-full items-center justify-center p-4">
+            <div class="flex min-h-full items-center justify-center p-3 sm:p-4">
                 <div x-show="$store.confirmModal.show" x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                    @click.stop class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+                    @click.stop class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-5 sm:p-6">
 
                     {{-- Icon --}}
                     <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full" :class="{
@@ -767,22 +743,22 @@
                     </div>
 
                     {{-- Title --}}
-                    <h3 class="text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
+                    <h3 class="text-base sm:text-lg font-bold text-center text-slate-900 dark:text-white mb-2"
                         x-text="$store.confirmModal.title">
                     </h3>
 
                     {{-- Message --}}
-                    <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-6"
+                    <p class="text-sm text-center text-slate-600 dark:text-slate-400 mb-5 sm:mb-6"
                         x-text="$store.confirmModal.message"></p>
 
                     {{-- Buttons --}}
                     <div class="flex gap-3">
                         <button @click="$store.confirmModal.cancel()" type="button"
-                            class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                            class="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm"
                             x-text="$store.confirmModal.cancelText">
                         </button>
                         <button @click="$store.confirmModal.confirm()" type="button"
-                            class="flex-1 px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white"
+                            class="flex-1 min-h-[44px] px-4 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all text-white text-sm"
                             :class="{
                         'bg-primary hover:bg-primary-dark': $store.confirmModal.type === 'primary',
                         'bg-red-600 hover:bg-red-700': $store.confirmModal.type === 'danger',
@@ -839,15 +815,46 @@
         <!-- Alpine.js Setup & Core (Loaded at bottom for performance & stability) -->
 
         <!-- WhatsApp Notification Popup -->
-        @if(session('wa_url'))
+        @if(session('wa_notification'))
+            @php $waNotif = session('wa_notification'); @endphp
             <div x-data="{ 
-                                                                    open: true, 
-                                                                    url: '{{ session('wa_url') }}' 
-                                                                 }" x-show="open" x-cloak
+                    open: true, 
+                    loading: false,
+                    phone: '{{ $waNotif['phone'] }}',
+                    message: {{ json_encode($waNotif['message']) }},
+                    sendWa() {
+                        this.loading = true;
+                        fetch('{{ route('admin.whatsapp.send-async') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ phone: this.phone, message: this.message })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            this.loading = false;
+                            this.open = false;
+                            if (data.type === 'chat' && data.url) {
+                                window.open(data.url, '_blank');
+                            } else if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 3000, showConfirmButton: false });
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message || 'Gagal mengirim pesan.' });
+                            }
+                        })
+                        .catch(err => {
+                            this.loading = false;
+                            this.open = false;
+                            Swal.fire({ icon: 'error', title: 'Error sistem', text: 'Terjadi kesalahan saat mengirim pesan.' });
+                        });
+                    }
+                }" x-show="open" x-cloak
                 class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
 
                 <!-- Backdrop -->
-                <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="open = false"></div>
+                <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" @click="if(!loading) open = false"></div>
 
                 <!-- Modal -->
                 <div class="flex min-h-full items-center justify-center p-4">
@@ -864,19 +871,69 @@
                             mengirim notifikasi ke Orang Tua?</p>
 
                         <div class="flex gap-3">
-                            <button @click="open = false"
-                                class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <button @click="open = false" :disabled="loading"
+                                class="flex-1 px-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50">
                                 Nanti Saja
                             </button>
-                            <a :href="url" target="_blank" @click="open = false"
-                                class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                                <span>Kirim</span>
-                                <span class="material-symbols-outlined text-[18px]">send</span>
-                            </a>
+                            <button @click="sendWa()" :disabled="loading"
+                                class="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span x-text="loading ? 'Mengirim...' : 'Kirim'"></span>
+                                <span x-show="!loading" class="material-symbols-outlined text-[18px]">send</span>
+                                <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+        @endif
+
+        <!-- Global Flash Messages -->
+        @if(session('success') && !session('wa_notification'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: '{{ session('success') }}',
+                        timer: 3000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: '{{ session('error') }}',
+                        timer: 5000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
+        @endif
+
+        @if($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Validasi Gagal',
+                        text: 'Silakan periksa kembali form isian Anda.',
+                        timer: 4000,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+            </script>
         @endif
 
         <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
@@ -884,5 +941,34 @@
 
         <!-- Cropper Modal: HARUS setelah Alpine.js agar listener tidak ditimpa -->
         <x-cropper-modal />
+
+        <!-- Global Form Submit Loading State -->
+        <script>
+            document.addEventListener('submit', function (e) {
+                if (e.target.tagName === 'FORM') {
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    if (submitBtn && !submitBtn.disabled) {
+                        if(submitBtn.classList.contains('no-loading')) return;
+                        
+                        submitBtn.disabled = true;
+                        submitBtn.classList.add('opacity-80', 'cursor-not-allowed', 'pointer-events-none');
+                        
+                        if (!submitBtn.hasAttribute('data-original-html')) {
+                            submitBtn.setAttribute('data-original-html', submitBtn.innerHTML);
+                        }
+
+                        submitBtn.innerHTML = `
+                            <div class="flex items-center justify-center gap-2">
+                                <svg class="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Memproses...</span>
+                            </div>
+                        `;
+                    }
+                }
+            });
+        </script>
     </body>
 </html>

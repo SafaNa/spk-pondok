@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Panduan & Alur Lengkap: Fitur Izin Individu (Pulang/Keluar Pondok)</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background-color: #f7fafc;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 50px 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .action-bar {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3);
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #2b6cb0;
+        }
+        .btn-print {
+            background: #4a5568;
+            box-shadow: 0 2px 4px rgba(74, 85, 104, 0.3);
+        }
+        .btn-print:hover {
+            background: #2d3748;
+        }
+        h1 {
+            color: #1a202c;
+            font-size: 28px;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        h2 {
+            color: #2b6cb0;
+            font-size: 20px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+        }
+        h3 {
+            color: #2d3748;
+            font-size: 17px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14.5px;
+        }
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .callout {
+            background: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .callout-info {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+        }
+        .callout-warning {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-green { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-blue { background: #bee3f8; color: #2b6cb0; }
+        .badge-yellow { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-gray { background: #e2e8f0; color: #4a5568; }
+        .badge-red { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        
+        .validation-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .validation-header {
+            background: #f8fafc;
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: bold;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        .validation-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .validation-item:last-child {
+            border-bottom: none;
+        }
+        .validation-title {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+        .validation-desc {
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; padding: 0; width: 100%; max-width: 100%; }
+            .action-bar { display: none; }
+            h2 { page-break-after: avoid; }
+            table, tr, td, th, .validation-box { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="content-area">
+    <div class="action-bar" id="action-bar">
+        <div>
+            <strong style="color: #2b6cb0;">📄 Mode Panduan & Cetak</strong>
+            <div style="font-size: 13px; color: #4a5568;">Dokumen ini siap di-copy ke Word atau dicetak langsung.</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="copyForWord()" class="btn" id="copyBtn">
+                📋 Salin Semua untuk Word
+            </button>
+            <button onclick="window.print()" class="btn btn-print">
+                🖨️ Cetak / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <h1>Buku Panduan & Alur Lengkap:<br>Fitur Izin Individu (Pulang / Keluar Pondok)</h1>
+    
+    <p>Dokumen ini menyajikan penjelasan menyeluruh mengenai sistem <strong>Perizinan Individu</strong> di pesantren, mulai dari proses pengajuan oleh wali santri atau pengurus, pemeriksaan <strong>4 Pilar Hasil Validasi</strong> (ACC), keberangkatan, aturan perpanjangan masa izin, hingga santri kembali lagi ke pondok pesantren.</p>
+
+    <hr style="border: 0; height: 1px; background: #e2e8f0; margin: 25px 0;">
+
+    <h2>🌟 Apa Itu Fitur Izin Individu?</h2>
+    <p>Berbeda dengan <strong>Libur Massal</strong> di mana seluruh santri pulang secara serentak pada libur panjang, <strong>Izin Individu</strong> diperuntukkan bagi santri yang memiliki keperluan khusus di tengah masa aktif kegiatan pesantren (misalnya: sakit, urusan keluarga penting, pernikahan saudara, atau perlombaan di luar kota).</p>
+    <p>Melalui fitur ini, setiap keluar-masuknya santri tercatat secara digital, terintegrasi dengan pencapaian tahfidz dan catatan pelanggaran, serta langsung memberi kabar kepada wali santri di rumah secara real-time.</p>
+
+    <h2>📝 Tahap 1: Pengajuan Izin (2 Jalur Mudah)</h2>
+    <p>Sistem pesantren memberikan fleksibilitas pengajuan izin melalui 2 jalur yang saling melengkapi:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30%;">Jalur Pengajuan</th>
+                <th>Proses & Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Jalur A: Online via HP</strong><br><em>(Oleh Wali Santri)</em></td>
+                <td>
+                    Wali santri masuk ke aplikasi/dasbor wali, memilih nama anak, lalu mengklik menu <strong>Ajukan Izin</strong>. Wali mengisi kategori izin (Sakit, Urusan Keluarga, dll), tanggal keberangkatan, <strong>Tanggal Wajib Kembali</strong>, serta dapat melampirkan foto bukti (surat dokter atau undangan).<br>
+                    <span class="badge badge-yellow" style="margin-top: 6px;">Status Awal: Menunggu ACC (Pending)</span>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Jalur B: Langsung di Pondok</strong><br><em>(Oleh Pengurus/Ustadz)</em></td>
+                <td>
+                    Jika wali santri datang langsung ke kantor pengasuhan atau dalam situasi darurat, pengurus pesantren dapat membuatkan surat izin secara langsung di sistem komputer kantor.<br>
+                    <span class="badge badge-green" style="margin-top: 6px;">Status Awal: Langsung Disetujui (Approved)</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>🛡️ Tahap 2: Pemeriksaan & ACC (4 Pilar Hasil Validasi)</h2>
+    <p>Sebelum ustadz pengasuhan memberikan persetujuan (ACC) atas pengajuan izin yang masuk, sistem secara otomatis menjalankan pemeriksaan menyeluruh dan menampilkan panel <strong>"Hasil Validasi"</strong> yang terdiri dari <strong>4 Pilar Syarat & Kewajiban Santri</strong>:</p>
+
+    <div class="validation-box">
+        <div class="validation-header">
+            <span>🛡️ Panel Hasil Validasi Sistem (Prasyarat ACC Pulang)</span>
+        </div>
+        
+        <div class="validation-item">
+            <div>
+                <div class="validation-title">1. Poin Kepulangan (Kuota Izin Pulang)</div>
+                <div class="validation-desc">Mengecek batas kuota kepulangan santri dalam periode tertentu (Contoh: Kuota terpakai <em>2/7</em>). Jika kuota masih tersedia, santri dinyatakan lolos.</div>
+            </div>
+            <div>
+                <span class="badge badge-green">Lolos</span>
+            </div>
+        </div>
+
+        <div class="validation-item">
+            <div>
+                <div class="validation-title">2. Status Pelanggaran (Catatan Kedisiplinan)</div>
+                <div class="validation-desc">Memeriksa rekam jejak keamanan santri. Jika santri bersih dari kasus atau tanggungan hukuman yang masih <em>pending</em>, maka sistem menyatakan bersih.</div>
+            </div>
+            <div>
+                <span class="badge badge-green">Lolos (Bersih)</span>
+            </div>
+        </div>
+
+        <div class="validation-item">
+            <div>
+                <div class="validation-title">3. Alasan Kepulangan (Validasi Urgensi & Bukti)</div>
+                <div class="validation-desc">Mengklasifikasikan bobot dan urgensi alasan izin berdasarkan surat bukti yang dilampirkan (Contoh: <em>Santri sakit dengan rekomendasi Dept. Kesehatan</em>).</div>
+            </div>
+            <div>
+                <span class="badge badge-yellow">⚠️ Darurat</span>
+            </div>
+        </div>
+
+        <div class="validation-item">
+            <div>
+                <div class="validation-title">4. Setoran Hafalan (Kewajiban Tahfidz / Akademik)</div>
+                <div class="validation-desc">Memvalidasi apakah santri sudah menuntaskan target dan kewajiban setoran hafalannya sebelum meninggalkan pondok pesantren.</div>
+            </div>
+            <div>
+                <span class="badge badge-green">Lolos (Selesai)</span>
+            </div>
+        </div>
+    </div>
+
+    <h3>Keputusan Pengurus Setelah Mengecek 4 Pilar Validasi:</h3>
+    <ul>
+        <li><span class="badge badge-green">Setujui (ACC)</span> : Jika ke-4 poin validasi di atas terpenuhi atau alasan bersifat darurat yang rasional, izin disahkan oleh pondok. Detik itu juga, wali santri menerima notifikasi di HP bahwa izin anaknya telah disetujui, dan surat izin digital siap digunakan.</li>
+        <li><span class="badge badge-red">Tolak (Reject)</span> : Jika jatah kuota habis, setoran hafalan belum selesai, atau santri sedang menjalani sanksi pelanggaran berat, izin ditolak disertai alasan penolakan dari pengurus agar wali santri memahaminya.</li>
+    </ul>
+
+    <h2>🚪 Tahap 3: Keberangkatan (Check-Out Keluar Pondok)</h2>
+    <p>Ketika santri dijemput oleh wali atau bersiap meninggalkan gerbang pesantren:</p>
+    <ol>
+        <li>Santri / wali santri melapor ke pos satpam atau kantor perizinan dengan menunjukkan surat izin digital di HP atau menyebutkan nama.</li>
+        <li>Petugas gerbang menekan tombol <strong>Check-Out (Mulai Izin)</strong> di sistem pesantren.</li>
+        <li>Status izin resmi berubah menjadi <span class="badge badge-blue">Sedang Berlangsung (Active)</span>.</li>
+        <li><strong>Pantauan Wali:</strong> Di dasbor HP Wali Santri, status anak langsung berubah menjadi <strong>"Sedang Di Luar Pondok (Izin Berlangsung)"</strong>, lengkap dengan hitung mundur masa waktu izin menuju Tanggal Wajib Kembali.</li>
+    </ol>
+
+    <h2>⏳ Tahap 4: Perpanjangan Izin (Aturan Ketat & Batas Wilayah)</h2>
+    <p>Bagaimana jika saat di rumah santri mengalami kendala (misal: sakitnya membutuhkan masa istirahat tambahan dari dokter)? Wali santri dapat mengajukan perpanjangan dengan mematuhi aturan sistem pesantren:</p>
+
+    <h3>1. Pengajuan Perpanjangan Online & Batas Maksimal +3 Hari</h3>
+    <p>Wali santri cukup membuka detail izin anak yang sedang berlangsung di aplikasi, lalu menekan tombol <strong>"Ajukan Perpanjangan Izin"</strong>. Sistem membatasi tanggal kembali baru <strong>maksimal 3 hari (+3 hari)</strong> dari tanggal wajib kembali saat ini, serta wajib mengunggahkan bukti tambahan (contoh: surat dokter lanjutan).</p>
+
+    <div class="callout callout-warning">
+        <strong>⚠️ 2. Aturan Khusus 5 Kecamatan (Wajib Datang Langsung!)</strong><br>
+        Menerapkan kearifan lokal pesantren, untuk santri yang berdomisili di 5 kecamatan dekat pondok, yaitu:
+        <div style="font-weight: bold; margin: 8px 0; color: #742a2a;">
+            📍 Guluk-Guluk &nbsp;|&nbsp; 📍 Ganding &nbsp;|&nbsp; 📍 Pragaan &nbsp;|&nbsp; 📍 Lenteng &nbsp;|&nbsp; 📍 Bluto
+        </div>
+        <strong>Perpanjangan izin TIDAK BISA diajukan secara online via HP!</strong> Tombol perpanjangan online otomatis diblokir oleh sistem. Wali santri atau keluarga dari kelima kecamatan dekat tersebut <strong>wajib datang melapor secara langsung ke kantor pondok</strong>.
+    </div>
+
+    <h3>3. Persetujuan Perpanjangan</h3>
+    <p>Setelah pengurus menyetujui (ACC) pengajuan perpanjangan, maka <strong>Tanggal Wajib Kembali</strong> santri di dalam sistem otomatis diperbarui ke tanggal yang baru. Santri tetap berstatus izin resmi dan tidak akan dianggap terlambat!</p>
+
+    <h2>🏠 Tahap 5: Kedatangan Kembali ke Pondok (Kedatangan Santri)</h2>
+    <p>Keperluan atau masa istirahat telah selesai, dan santri wajib kembali ke pondok pesantren.</p>
+    <ol>
+        <li>Santri tiba di gerbang pondok dan langsung melapor ke petugas satpam / kasir perizinan.</li>
+        <li>Petugas mengetikkan nama santri di sistem lalu menekan tombol <strong>Kedatangan Santri (Mencatat Kedatangan)</strong>.</li>
+        <li>Sistem mencatat tanggal dan jam kedatangan presisi (<em>Actual Return Date</em>), lalu mengakhiri masa izin.</li>
+    </ol>
+
+    <h3>📊 Perhitungan Status Kedatangan & Poin Pelanggaran:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 35%;">Status Kedatangan</th>
+                <th>Keterangan & Efek ke Sistem Pelanggaran</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-green">Selesai Tepat Waktu</span><br><em>(On-Time)</em></td>
+                <td>Santri tiba di pondok sebelum atau tepat pada batas akhir Tanggal Wajib Kembali. Buku catatan perizinan santri bersih, sempurna, dan tidak ada sanksi apa pun.</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-red">Selesai Terlambat</span><br><em>(Late / Overdue)</em></td>
+                <td>
+                    Santri tiba melewati batas Tanggal Wajib Kembali (tanpa perpanjangan resmi yang disetujui). Sistem otomatis menghitung durasi keterlambatan (misal: <em>Terlambat 2 Hari</em>).<br>
+                    <strong>⚡ Automasi Poin Pelanggaran:</strong> Catatan keterlambatan ini secara otomatis terintegrasi dengan sistem <strong>Komisi Disiplin / Keamanan</strong> pesantren untuk dicatat sebagai pelanggaran keterlambatan sesuai aturan poin yang berlaku!
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="background: #e2e8f0; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <h3 style="margin-top: 0; color: #1a202c;">🎉 Kesimpulan Alur Izin Individu:</h3>
+        <p style="margin-bottom: 0;">Dengan adanya 4 pilar validasi awal (Kuota, Pelanggaran, Alasan, dan Hafalan) serta aturan ketat perpanjangan, setiap izin yang keluar terjamin selektif, tertib, dan tidak mengganggu proses tarbiyah santri di pesantren.</p>
+    </div>
+</div>
+
+<script>
+function copyForWord() {
+    // Sembunyikan action bar sementara agar tidak ikut tercopy
+    const actionBar = document.getElementById('action-bar');
+    actionBar.style.display = 'none';
+    
+    const content = document.getElementById('content-area');
+    
+    // Pilih seluruh konten
+    const range = document.createRange();
+    range.selectNode(content);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    try {
+        document.execCommand('copy');
+        const copyBtn = document.getElementById('copyBtn');
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '✅ Berhasil Disalin! Silakan Paste (Ctrl+V) di Word';
+        copyBtn.style.background = '#38a169';
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.style.background = '#3182ce';
+        }, 3000);
+    } catch (err) {
+        alert('Gagal menyalin otomatis. Silakan tekan Ctrl+A lalu Ctrl+C secara manual.');
+    }
+    
+    // Tampilkan kembali action bar dan hapus seleksi
+    actionBar.style.display = 'flex';
+    selection.removeAllRanges();
+}
+</script>
+</body>
+</html>

@@ -12,9 +12,9 @@
                 <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Data Tahun Ajaran</h1>
                 <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Kelola data tahun ajaran akademik.</p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
                 <a href="{{ route('admin.academic-years.create') }}"
-                    class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/25">
+                    class="min-h-[44px] w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/25">
                     <span class="material-symbols-outlined text-[20px]">add</span>
                     Tambah Tahun Ajaran
                 </a>

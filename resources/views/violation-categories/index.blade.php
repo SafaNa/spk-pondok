@@ -106,11 +106,10 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacit-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         <button
                                             onclick="openEditModal('{{ $category->id }}', '{{ $category->name }}', '{{ $category->points }}')"
-                                            class="p-2 text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </button>
@@ -121,7 +120,7 @@
                                             <button
                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus kategori {{ $category->name }}?')"
                                                 type="button"
-                                                class="p-2 text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>
@@ -171,11 +170,11 @@
             </div>
             <div class="flex justify-end gap-3 mt-6">
                 <button type="button" onclick="closeModal('createModal')"
-                    class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700">
+                    class="min-h-[44px] px-5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700">
                     Batal
                 </button>
                 <button type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
+                    class="min-h-[44px] px-5 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
                     Simpan
                 </button>
             </div>
@@ -199,11 +198,11 @@
             </div>
             <div class="flex justify-end gap-3 mt-6">
                 <button type="button" onclick="closeModal('editModal')"
-                    class="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700">
+                    class="min-h-[44px] px-5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 dark:hover:bg-slate-700">
                     Batal
                 </button>
                 <button type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
+                    class="min-h-[44px] px-5 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
                     Update
                 </button>
             </div>
@@ -212,7 +211,7 @@
 
     <script>
         function openEditModal(id, nama, bobot) {
-            document.getElementById('editForm').action = '/violation-categories/' + id;
+            document.getElementById('editForm').action = '/admin/violation-categories/' + id;
             document.getElementById('edit_nama').value = nama;
             document.getElementById('edit_bobot_poin').value = bobot;
             openModal('editModal');

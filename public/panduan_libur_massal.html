@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Panduan & Alur Lengkap: Fitur Libur Massal Pesantren</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background-color: #f7fafc;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 50px 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .action-bar {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3);
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #2b6cb0;
+        }
+        .btn-print {
+            background: #4a5568;
+            box-shadow: 0 2px 4px rgba(74, 85, 104, 0.3);
+        }
+        .btn-print:hover {
+            background: #2d3748;
+        }
+        h1 {
+            color: #1a202c;
+            font-size: 28px;
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        h2 {
+            color: #2b6cb0;
+            font-size: 20px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+        }
+        h3 {
+            color: #2d3748;
+            font-size: 17px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        p, li {
+            font-size: 15px;
+            color: #4a5568;
+        }
+        ul, ol {
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14.5px;
+        }
+        th, td {
+            border: 1px solid #cbd5e0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+        th {
+            background-color: #edf2f7;
+            color: #2d3748;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .callout {
+            background: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .callout-info {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+        }
+        .callout-danger {
+            background: #fff5f5;
+            border-left: 4px solid #e53e3e;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-green { background: #c6f6d5; color: #22543d; }
+        .badge-gray { background: #e2e8f0; color: #4a5568; }
+        .badge-red { background: #fed7d7; color: #742a2a; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; padding: 0; width: 100%; max-width: 100%; }
+            .action-bar { display: none; }
+            h2 { page-break-after: avoid; }
+            table, tr, td, th { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="content-area">
+    <div class="action-bar" id="action-bar">
+        <div>
+            <strong style="color: #2b6cb0;">📄 Mode Panduan & Cetak</strong>
+            <div style="font-size: 13px; color: #4a5568;">Dokumen ini siap di-copy ke Word atau dicetak langsung.</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="copyForWord()" class="btn" id="copyBtn">
+                📋 Salin Semua untuk Word
+            </button>
+            <button onclick="window.print()" class="btn btn-print">
+                🖨️ Cetak / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <h1>Buku Panduan & Alur Lengkap:<br>Fitur Libur Massal Pesantren</h1>
+    
+    <p>Dokumen ini disusun untuk menjelaskan alur kerja, aturan sistem, dan cara penggunaan fitur <strong>Libur Massal</strong> dari awal hingga selesai, menggunakan bahasa yang sederhana dan mudah dipahami oleh seluruh pengurus pondok, ustadz/ustadzah, maupun wali santri.</p>
+
+    <hr style="border: 0; height: 1px; background: #e2e8f0; margin: 25px 0;">
+
+    <h2>🌟 Apa Itu Fitur Libur Massal?</h2>
+    <p>Secara rutin, pesantren memiliki agenda liburan panjang di mana seluruh atau sebagian besar santri pulang ke rumah masing-masing secara serentak (misalnya: <strong>Libur Idul Fitri</strong>, <strong>Libur Semester</strong>, atau <strong>Libur Akhir Tahun Ajaran</strong>).</p>
+    <p>Jika pengurus harus membuatkan surat izin kepulangan satu per satu untuk ratusan atau ribuan santri, tentu akan memakan waktu berhari-hari. <strong>Fitur Libur Massal</strong> hadir sebagai solusi pintar untuk memproses kepulangan dan kedatangan kembali seluruh santri secara cepat, rapi, transparan, dan terintegrasi langsung dengan catatan pelanggaran serta aplikasi/dasbor wali santri di rumah.</p>
+
+    <h2>🛡️ 4 Validasi Wajib Sistem (Proteksi Jadwal & Anti-Bentrok)</h2>
+    <p>Untuk menjaga agar jadwal pesantren tidak kacau dan data absensi selalu akurat, sistem menerapkan <strong>4 Aturan Validasi Ketat</strong> pada saat pengurus membuat (Create) atau mengedit (Edit) event liburan:</p>
+
+    <ol>
+        <li><strong>Validasi Tanggal Masa Lalu (Disable Past Dates):</strong> Pada formulir pembuatan atau pengeditan, pilihan tanggal mulai sebelum hari ini otomatis dinonaktifkan (<i>disable</i>). Pengurus tidak dapat membuat jadwal liburan mundur untuk hari yang sudah terlewati.</li>
+        <li><strong>Validasi Logika Rentang Tanggal (Mulai vs Kembali):</strong> Tanggal Wajib Kembali tidak boleh lebih kecil atau lebih awal daripada Tanggal Mulai Liburan. Sistem akan menolak jika tanggal kembali dimasukkan sebelum tanggal berangkat.</li>
+        <li><strong>Validasi Anti-Bentrok Tanggal (4 Skenario Irrisan):</strong> Pengurus dapat membuat banyak jadwal liburan sekaligus untuk satu tahun ke depan, <strong>NAMUN</strong> tanggal antar event tidak boleh saling bertabrakan.
+            <div class="callout callout-danger" style="margin-top: 10px; margin-bottom: 10px;">
+                <strong>📌 Contoh Ilustrasi 4 Validasi Bentrok:</strong><br>
+                Misalkan di pesantren sudah terdaftar <strong>Event A</strong> dengan jadwal <strong>Tanggal 6 s.d. 15</strong>. Maka, 4 contoh pengajuan jadwal baru berikut ini <strong>AKAN DITOLAK TOTAL</strong> oleh sistem karena bertabrakan:
+                <ul style="margin-top: 8px; margin-bottom: 0;">
+                    <li><strong>Ditolak #1 (Bentrok di Awal):</strong> Mengajukan tanggal <strong>3 s.d. 7</strong> (karena tanggal 6 dan 7 sudah masuk masa Event A).</li>
+                    <li><strong>Ditolak #2 (Berada di Tengah/Dalam):</strong> Mengajukan tanggal <strong>8 s.d. 10</strong> (karena seluruh hari berada di dalam rentang Event A).</li>
+                    <li><strong>Ditolak #3 (Bentrok di Akhir):</strong> Mengajukan tanggal <strong>7 s.d. 18</strong> (karena tanggal 7 sampai 15 masih masa Event A).</li>
+                    <li><strong>Ditolak #4 (Melingkupi Keseluruhan):</strong> Mengajukan tanggal <strong>2 s.d. 20</strong> (karena menabrak dari sebelum hingga sesudah masa Event A).</li>
+                </ul>
+            </div>
+        </li>
+        <li><strong>Validasi Tanggungan Pelanggaran Santri:</strong> Sistem memvalidasi kesiapan setiap santri secara real-time. Santri yang memiliki catatan pelanggaran dengan status sanksi masih <i>Pending</i> (belum dihukum/belum selesai) akan tertahan dan tidak bisa di-ACC pulang sebelum kasusnya diselesaikan dengan bagian keamanan.</li>
+    </ol>
+
+    <h2>📅 Tahap 1: Perencanaan & Pembuatan Jadwal (Oleh Pengurus)</h2>
+    <p>Pada tahap awal, pengurus pesantren (bagian perizinan/pengasuhan) membuat jadwal liburan di dalam sistem.</p>
+    
+    <h3>1. Bisa Membuat Banyak Jadwal Sekaligus</h3>
+    <p>Pengurus tidak perlu menunggu satu liburan selesai untuk membuat jadwal liburan berikutnya. Pengurus bisa menjadwalkan kalender liburan pesantren untuk 1 tahun ke depan sejak awal semester (misalnya: langsung membuat jadwal Libur Semester Ganjil, Libur Awal Ramadhan, dan Libur Idul Fitri sekaligus).</p>
+
+    <div class="callout">
+        <strong>🔒 2. Batas Waktu Edit & Hapus (Kunci Otomatis H-1)</strong><br>
+        Jadwal liburan yang masih lama bebas untuk diedit (misal geser tanggal atau ganti nama liburan) atau dihapus jika batal. <strong>NAMUN</strong>, begitu waktu menunjukkan <strong>H-1 (Satu Hari Sebelum Tanggal Mulai Liburan)</strong>, sistem akan <strong>mengunci jadwal tersebut</strong>. Jadwal yang sudah H-1 atau sedang berlangsung tidak dapat diedit dan tidak dapat dihapus lagi agar data absensi kepulangan santri tidak rusak atau acak-acakan.
+    </div>
+
+    <h2>🔘 Tahap 2: Sakelar Status (Tombol "On / Off")</h2>
+    <p>Di pojok kanan atas setiap kartu liburan terdapat sebuah sakelar atau tombol switch <strong>"On / Off"</strong> (Aktif / Nonaktif).</p>
+
+    <div style="background: #edf2f7; padding: 15px 20px; border-radius: 8px; font-family: monospace; font-size: 14px; margin: 15px 0;">
+        [ Card Libur Idul Fitri 2026 ] &nbsp;&nbsp;-----------> &nbsp;<strong>[ ( O ) On &nbsp;]</strong> &nbsp;&lt;-- Sedang Aktif ke Publik<br>
+        [ Card Libur Semester Ganjil ] -----------> &nbsp;<strong>[ &nbsp;( O ) Off ]</strong> &nbsp;&lt;-- Disimpan / Nonaktif
+    </div>
+
+    <h3>Apa Beda Status On dan Off?</h3>
+    <ul>
+        <li><span class="badge badge-green">On (Aktif)</span> : Artinya jadwal liburan inilah yang sedang <strong>diaktifkan ke publik</strong>. Jadwal yang berstatus "On" akan langsung muncul di <strong>Dasbor Utama Pengurus</strong> dan otomatis tayang di <strong>Dasbor HP Wali Santri</strong>, sehingga orang tua tahu kapan anaknya akan dipulangkan.</li>
+        <li><span class="badge badge-gray">Off (Nonaktif)</span> : Artinya jadwal liburan tersebut disimpan sementara sebagai persiapan dan belum ditampilkan sebagai agenda utama saat ini.</li>
+    </ul>
+
+    <h3>Aturan Ketat Sakelar (Mencegah Kebingungan)</h3>
+    <p>Untuk menjaga ketertiban, sistem menerapkan aturan tegas:</p>
+    <ol>
+        <li><strong>Hanya Boleh 1 Liburan yang Aktif:</strong> Jika pengurus menggeser sakelar liburan B menjadi <strong>"On"</strong>, maka liburan A yang sebelumnya aktif akan otomatis dimatikan menjadi <strong>"Off"</strong> oleh sistem (serupa dengan perilaku sistem Tahun Ajaran).</li>
+        <li><strong>Dilarang Mengganti Saat Liburan Berlangsung:</strong> Jika ada satu liburan yang <strong>sedang berlangsung</strong> (sudah masuk masa H-1 sampai tanggal wajib kembali), pengurus <strong>TIDAK BISA</strong> menghidupkan (On-kan) liburan yang lain. Sistem akan menolak dan meminta pengurus menyelesaikan liburan yang sedang berjalan terlebih dahulu. Ini penting agar satpam di gerbang dan orang tua di rumah tidak bingung dengan data liburan yang ganda.</li>
+    </ol>
+
+    <h2>🔍 Tahap 3: Pemindaian Kesiapan Pulang (Pre-Checkout)</h2>
+    <p>Menjelang hari kepulangan, sistem secara otomatis melakukan pemindaian (<em>scanning</em>) terhadap seluruh santri yang aktif di pondok, dan membaginya ke dalam 2 kelompok besar:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Kelompok Santri</th>
+                <th style="width: 10%; text-align: center;">Ikon</th>
+                <th>Keterangan & Aturan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Santri Memenuhi Syarat</strong><br><em>(Eligible)</em></td>
+                <td style="text-align: center; font-size: 20px;">⚡</td>
+                <td>Santri yang bersih dari tanggungan pelanggaran. Mereka <strong>siap dan diizinkan pulang</strong> begitu hari liburan tiba.</td>
+            </tr>
+            <tr>
+                <td><strong>Santri Tertahan</strong><br><em>(Blocked)</em></td>
+                <td style="text-align: center; font-size: 20px;">🚫</td>
+                <td>Santri yang saat ini memiliki catatan pelanggaran yang belum diselesaikan (status sanksi masih <em>Pending</em>). Santri ini <strong>tertahan dan tidak boleh pulang dulu</strong> sebelum menyelesaikan hukuman atau urusannya dengan bagian keamanan/pengasuhan!</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Statistik ini dapat dilihat secara transparan oleh pengurus di halaman detail liburan, sehingga ustadz/ustadzah bisa jauh-jauh hari memanggil santri yang bermasalah untuk menyelesaikan tanggungannya sebelum hari H kepulangan.</p>
+
+    <h2>🚀 Tahap 4: Hari H Kepulangan (Proses ACC Pulang / Checkout)</h2>
+    <p>Tibalah hari di mana santri mulai dipulangkan. Pengurus tidak perlu mencatat di kertas atau mengecap surat izin satu per satu. Sistem menyediakan 2 cara super cepat:</p>
+
+    <h3>1. Cara Kilat: "ACC Kepulangan" (Satu Klik untuk Semua)</h3>
+    <ul>
+        <li>Pengurus cukup menekan tombol hijau bertuliskan <strong>"ACC Kepulangan"</strong>.</li>
+        <li>Dalam hitungan detik, sistem akan menyetujui kepulangan <strong>seluruh santri yang memenuhi syarat</strong> sekaligus!</li>
+        <li><strong>Bagaimana dengan santri yang tertahan karena pelanggaran?</strong> Sistem sangat pintar, santri yang tertahan akan <strong>otomatis dilewati</strong> (tidak ikut ter-ACC pulang).</li>
+    </ul>
+
+    <h3>2. Cara Manual: "Kasir ACC Pulang" (Per Santri)</h3>
+    <ul>
+        <li>Jika ada santri yang terlambat pulang, atau santri yang tanggungan pelanggarannya <em>baru saja diselesaikan</em> di hari H, pengurus bisa membuka halaman <strong>Kasir ACC Pulang</strong>.</li>
+        <li>Pengurus tinggal mencari nama santri tersebut, lalu menekan tombol ACC secara individual.</li>
+    </ul>
+
+    <div class="callout callout-info">
+        <strong>📱 Efek Langsung di HP Wali Santri:</strong><br>
+        Begitu santri di-ACC pulang oleh pondok, detik itu juga status di HP Wali Santri berubah menjadi <strong>"Sudah Di-ACC Pulang oleh Pondok"</strong> disertai jam tepat kepulangan. Orang tua di rumah menjadi tenang dan tahu bahwa anak mereka sudah dalam perjalanan pulang.
+    </div>
+
+    <h2>🏠 Tahap 5: Hari H Kembali ke Pondok (Kedatangan Santri)</h2>
+    <p>Masa liburan telah usai, dan tiba waktunya seluruh santri wajib kembali ke pondok pesantren. Mulai dari pagi, siang, hingga malam hari, santri berdatangan ke gerbang pondok.</p>
+    <ol>
+        <li>Pengurus atau satpam yang bertugas menyambut di gerbang membuka halaman <strong>"Kedatangan Santri"</strong> di komputer atau tablet.</li>
+        <li>Setiap kali ada santri yang datang melapor dan bersalaman, pengurus cukup mengetikkan nama atau memilih nama santri tersebut di layar, lalu menekan tombol <strong>Check-in</strong>.</li>
+        <li>Sistem langsung mencatat jam kedatangan santri tersebut secara presisi (<em>Actual Return Date</em>).</li>
+        <li><strong>Pantauan Real-Time:</strong> Pengurus bisa melihat langsung angka statistik di layar: <strong>Berapa santri yang sudah kembali</strong>, dan <strong>berapa santri yang belum kembali (masih di rumah / terlambat)</strong>. Data ini juga bisa dipantau langsung oleh wali santri dari HP mereka untuk memastikan anak mereka sudah sampai di pondok dengan selamat.</li>
+    </ol>
+
+    <h2>🏁 Tahap 6: Penutupan Liburan (Menjadi "Selesai")</h2>
+    <p>Setelah seluruh rangkaian liburan berakhir, event liburan di dalam sistem harus ditutup agar arsip pesantren rapi dan sistem siap digunakan untuk agenda liburan berikutnya. Sistem menyediakan 2 cara penutupan:</p>
+
+    <h3>Opsi A: Penutupan Otomatis oleh Sistem (Tanpa Repot)</h3>
+    <p>Pengurus tidak perlu khawatir lupa menutup event liburan! Begitu kalender berganti hari memasuki <strong>H+1 (Satu Hari Setelah Tanggal Wajib Kembali)</strong>, sistem secara otomatis akan mematikan sakelar dan mengubah status liburan menjadi <span class="badge badge-gray">Selesai</span>.</p>
+
+    <h3>Opsi B: Penutupan Manual di Hari H Malam Hari</h3>
+    <p>Jika pada <strong>Hari H (Tanggal Wajib Kembali) mulai pukul 18:00 WIB (malam hari)</strong> pengurus merasa seluruh santri sudah kembali dan gerbang pendaftaran kedatangan sudah ditutup, pengurus tidak perlu menunggu besok hari.</p>
+    <ul>
+        <li>Tepat pukul 18:00 WIB ke atas, sebuah tombol merah bertuliskan <strong>"Akhiri Event"</strong> akan muncul secara otomatis di samping tombol sakelar On/Off.</li>
+        <li>Pengurus cukup menekan tombol tersebut, dan status liburan saat itu juga resmi ditutup menjadi <span class="badge badge-gray">Selesai</span>.</li>
+    </ul>
+
+    <div style="background: #e2e8f0; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <h3 style="margin-top: 0; color: #1a202c;">🎉 Keuntungan Saat Event Sudah "Selesai":</h3>
+        <ul style="margin-bottom: 0;">
+            <li>Kartu liburan ditandai dengan label abu-abu <strong>"Selesai"</strong> dan tersimpan rapi sebagai arsip sejarah pesantren.</li>
+            <li>Data kepulangan dan kedatangan santri pada event tersebut dikunci permanen sehingga tidak akan hilang atau berubah.</li>
+            <li>Pengurus kini bebas mengaktifkan (On-kan) sakelar untuk jadwal liburan berikutnya di masa depan!</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function copyForWord() {
+    // Sembunyikan action bar sementara agar tidak ikut tercopy
+    const actionBar = document.getElementById('action-bar');
+    actionBar.style.display = 'none';
+    
+    const content = document.getElementById('content-area');
+    
+    // Pilih seluruh konten
+    const range = document.createRange();
+    range.selectNode(content);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    try {
+        document.execCommand('copy');
+        const copyBtn = document.getElementById('copyBtn');
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '✅ Berhasil Disalin! Silakan Paste (Ctrl+V) di Word';
+        copyBtn.style.background = '#38a169';
+        
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.style.background = '#3182ce';
+        }, 3000);
+    } catch (err) {
+        alert('Gagal menyalin otomatis. Silakan tekan Ctrl+A lalu Ctrl+C secara manual.');
+    }
+    
+    // Tampilkan kembali action bar dan hapus seleksi
+    actionBar.style.display = 'flex';
+    selection.removeAllRanges();
+}
+</script>
+</body>
+</html>

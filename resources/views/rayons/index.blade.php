@@ -66,10 +66,10 @@
                                     <span class="text-sm font-bold text-[#0d141b] dark:text-white">{{ $rayon->name }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         <button onclick="openEditModal('{{ $rayon->id }}', '{{ $rayon->name }}')"
-                                            class="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-[#4c739a] hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                            class="w-9 h-9 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-[#4c739a] hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </button>
 
                                         <div x-data>
@@ -80,8 +80,8 @@
                                                 <button
                                                     @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus rayon {{ $rayon->name }}?')"
                                                     type="button"
-                                                    class="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-[#4c739a] hover:text-red-600 transition-colors">
-                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                    class="w-9 h-9 flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[#4c739a] hover:text-red-600 transition-colors">
+                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
                                                 </button>
                                             </form>
                                         </div>
@@ -125,9 +125,9 @@
                 <div
                     class="px-6 py-4 border-t border-[#e7edf3] dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-700/50">
                     <button type="button" onclick="closeModal('addModal')"
-                        class="px-4 py-2 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600">Batal</button>
+                        class="min-h-[44px] px-5 py-2 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 font-medium">Batal</button>
                     <button type="submit"
-                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-600">Simpan</button>
+                        class="min-h-[44px] px-5 py-2 rounded-lg bg-primary text-white hover:bg-blue-600 font-medium">Simpan</button>
                 </div>
             </form>
         </div>
@@ -156,9 +156,9 @@
                 <div
                     class="px-6 py-4 border-t border-[#e7edf3] dark:border-slate-700 flex justify-end gap-3 bg-slate-50 dark:bg-slate-700/50">
                     <button type="button" onclick="closeModal('editModal')"
-                        class="px-4 py-2 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600">Batal</button>
+                        class="min-h-[44px] px-5 py-2 rounded-lg border border-[#e7edf3] dark:border-slate-600 text-[#0d141b] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-600 font-medium">Batal</button>
                     <button type="submit"
-                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-600">Perbarui</button>
+                        class="min-h-[44px] px-5 py-2 rounded-lg bg-primary text-white hover:bg-blue-600 font-medium">Perbarui</button>
                 </div>
             </form>
         </div>
@@ -176,7 +176,7 @@
         }
 
         function openEditModal(id, name) {
-            document.getElementById('editForm').action = '/rayons/' + id;
+            document.getElementById('editForm').action = '/admin/rayons/' + id;
             document.getElementById('edit_name').value = name;
             openModal('editModal');
         }

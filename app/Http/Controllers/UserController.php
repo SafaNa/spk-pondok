@@ -53,7 +53,7 @@ class UserController extends Controller
             'username'      => 'required|string|max:50|unique:users|alpha_dash',
             'email'         => 'nullable|string|email|max:255|unique:users',
             'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'password'      => 'required|string|min:8|confirmed',
+            'password'      => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'department_id' => 'required|exists:departments,id',
         ]);
 
@@ -74,6 +74,13 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
 
+    public function show(User $user)
+    {
+        $this->authorizeAdmin();
+        $user->load('department');
+        return view('users.show', compact('user'));
+    }
+
     public function edit(User $user)
     {
         $this->authorizeAdmin();
@@ -90,7 +97,7 @@ class UserController extends Controller
             'username'      => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
             'email'         => ['nullable', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'password'      => 'nullable|string|min:8|confirmed',
+            'password'      => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
             'department_id' => $user->isAdmin() ? 'nullable' : 'required|exists:departments,id',
         ]);
 

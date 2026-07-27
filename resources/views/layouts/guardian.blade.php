@@ -10,10 +10,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <!-- Cropper.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Tailwind CDN (Guardian Portal) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { "primary": "#137fec" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined.fill-1 { font-variation-settings: 'FILL' 1; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 <body class="bg-[#f0f4f8] font-[Inter] overflow-hidden">
 
@@ -21,57 +45,59 @@
 
         {{-- Mobile Overlay --}}
         <div id="guardianOverlay" onclick="toggleGuardianSidebar()"
-            class="fixed inset-0 bg-black/50 z-40 hidden opacity-0 pointer-events-none md:hidden backdrop-blur-sm transition-opacity">
+            class="fixed inset-0 bg-black/50 z-40 hidden opacity-0 pointer-events-none md:hidden backdrop-blur-sm transition-all duration-300">
         </div>
 
         {{-- Sidebar --}}
         <aside id="guardianSidebar"
-            class="fixed inset-y-0 left-0 z-50 w-60 flex flex-col h-full bg-white border-r border-[#e7edf3] shadow-2xl transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:shadow-none md:shrink-0">
+            class="fixed inset-y-0 left-0 z-50 w-60 max-w-[85vw] flex flex-col h-full bg-white border-r border-[#e7edf3] shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none md:shadow-none md:shrink-0">
 
-            <div class="p-5 border-b border-[#e7edf3] shrink-0 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <div class="p-4 sm:p-5 border-b border-[#e7edf3] shrink-0 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                         <span class="material-symbols-outlined text-[20px]">family_restroom</span>
                     </div>
-                    <div>
-                        <p class="text-sm font-bold text-[#0d141b] leading-tight">Portal Wali</p>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-[#0d141b] leading-tight truncate">Portal Wali</p>
                         <p class="text-[11px] text-[#4c739a]">Perizinan Santri</p>
                     </div>
                 </div>
-                <button onclick="toggleGuardianSidebar()" class="md:hidden text-[#4c739a] hover:text-[#0d141b]">
+                <button onclick="toggleGuardianSidebar()"
+                    class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-[#4c739a] hover:text-[#0d141b] hover:bg-[#e7edf3] transition-colors shrink-0"
+                    aria-label="Tutup Menu">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
 
-            <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
+            <nav class="flex-1 overflow-y-auto p-3 space-y-0.5 no-scrollbar">
                 <a href="{{ route('guardian.dashboard') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     {{ request()->routeIs('guardian.dashboard') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
-                    <span class="material-symbols-outlined text-[22px]">dashboard</span>
-                    Dashboard
+                    <span class="material-symbols-outlined text-[22px] shrink-0">dashboard</span>
+                    <span>Dashboard</span>
                 </a>
                 <a href="{{ route('guardian.licenses.create') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     {{ request()->routeIs('guardian.licenses.create') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
-                    <span class="material-symbols-outlined text-[22px]">edit_note</span>
-                    Pengajuan Izin
+                    <span class="material-symbols-outlined text-[22px] shrink-0">edit_note</span>
+                    <span>Pengajuan Izin</span>
                 </a>
                 <a href="{{ route('guardian.licenses.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     {{ request()->routeIs('guardian.licenses.index') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
-                    <span class="material-symbols-outlined text-[22px]">history</span>
-                    Riwayat Izin
+                    <span class="material-symbols-outlined text-[22px] shrink-0">history</span>
+                    <span>Riwayat Izin</span>
                 </a>
                 <a href="{{ route('guardian.profile') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     {{ request()->routeIs('guardian.profile') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
-                    <span class="material-symbols-outlined text-[22px]">manage_accounts</span>
-                    Profil Saya
+                    <span class="material-symbols-outlined text-[22px] shrink-0">manage_accounts</span>
+                    <span>Profil Saya</span>
                 </a>
             </nav>
 
             <div class="p-3 border-t border-[#e7edf3] shrink-0">
-                <div class="flex items-center gap-3 px-2 py-2 mb-2">
+                <div class="flex items-center gap-3 px-2 py-2 mb-2 min-w-0">
                     <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
                         @if(Auth::guard('guardian')->user()->avatar)
                             <img src="{{ asset('storage/' . Auth::guard('guardian')->user()->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
@@ -79,7 +105,7 @@
                             {{ substr(Auth::guard('guardian')->user()->name, 0, 1) }}
                         @endif
                     </div>
-                    <div class="overflow-hidden">
+                    <div class="min-w-0 overflow-hidden">
                         <p class="text-sm font-semibold text-[#0d141b] truncate">{{ Auth::guard('guardian')->user()->name }}</p>
                         <p class="text-xs text-[#4c739a] truncate">{{ Auth::guard('guardian')->user()->username }}</p>
                     </div>
@@ -87,29 +113,35 @@
                 <form method="POST" action="{{ route('guardian.logout') }}">
                     @csrf
                     <button type="submit"
-                        class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">logout</span>
-                        Keluar
+                        class="w-full min-h-[44px] flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+                        <span class="material-symbols-outlined text-[18px] shrink-0">logout</span>
+                        <span>Keluar</span>
                     </button>
                 </form>
             </div>
         </aside>
 
         {{-- Main --}}
-        <main class="flex-1 flex flex-col h-full overflow-hidden">
+        <main class="flex-1 flex flex-col h-full overflow-hidden min-w-0">
 
             {{-- Mobile Header --}}
-            <header class="flex items-center justify-between border-b border-[#e7edf3] bg-white px-4 py-3 shrink-0 md:hidden">
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleGuardianSidebar()" class="text-[#0d141b]">
+            <header class="flex items-center justify-between border-b border-[#e7edf3] bg-white px-4 py-3 shrink-0 md:hidden gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button onclick="toggleGuardianSidebar()"
+                        class="flex items-center justify-center w-10 h-10 rounded-lg text-[#0d141b] hover:bg-[#e7edf3] transition-colors shrink-0"
+                        aria-label="Buka Menu">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
-                    <h2 class="text-[#0d141b] text-base font-bold leading-tight">
+                    <h2 class="text-[#0d141b] text-base font-bold leading-tight truncate">
                         @yield('mobile_title', 'Portal Wali')
                     </h2>
                 </div>
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
-                    {{ substr(Auth::guard('guardian')->user()->name, 0, 1) }}
+                <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
+                    @if(Auth::guard('guardian')->user()->avatar)
+                        <img src="{{ asset('storage/' . Auth::guard('guardian')->user()->avatar) }}" alt="Avatar" class="h-full w-full object-cover">
+                    @else
+                        {{ substr(Auth::guard('guardian')->user()->name, 0, 1) }}
+                    @endif
                 </div>
             </header>
 
@@ -135,8 +167,67 @@
             }
         }
     </script>
-    
+
     @stack('scripts')
     <x-cropper-modal />
+
+    {{-- Global Flash Messages --}}
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: '{{ session('success') }}',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            });
+        </script>
+    @endif
+
+    @if(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: '{{ session('error') }}',
+                    timer: 5000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            });
+        </script>
+    @endif
+
+    <!-- Global Form Submit Loading State -->
+    <script>
+        document.addEventListener('submit', function (e) {
+            if (e.target.tagName === 'FORM') {
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    if(submitBtn.classList.contains('no-loading')) return;
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-80', 'cursor-not-allowed', 'pointer-events-none');
+                    if (!submitBtn.hasAttribute('data-original-html')) {
+                        submitBtn.setAttribute('data-original-html', submitBtn.innerHTML);
+                    }
+                    submitBtn.innerHTML = `
+                        <div class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Memproses...</span>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -53,8 +53,6 @@ Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
-
 // Guardian Routes
 Route::prefix('guardian')->name('guardian.')->group(function () {
     Route::middleware('guest:guardian')->group(function () {
@@ -82,6 +80,8 @@ Route::prefix('guardian')->name('guardian.')->group(function () {
 
 // Protected Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::get('/password/change', [AuthController::class, 'showChangePasswordForm'])->name('password.change');
     Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.update');
 
@@ -89,16 +89,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/regions/cities', [RegionController::class, 'cities'])->name('regions.cities');
     Route::get('/regions/districts', [RegionController::class, 'districts'])->name('regions.districts');
     Route::get('/regions/villages', [RegionController::class, 'villages'])->name('regions.villages');
-});
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Settings
@@ -152,6 +151,18 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Licensing Routes
     Route::get('/licenses/reports', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'index'])->name('licenses.reports');
+    
+    // Mass Leaves
+    Route::get('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkout'])->name('mass-leaves.checkout');
+    Route::post('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'processCheckout'])->name('mass-leaves.processCheckout');
+    Route::post('/mass-leaves/{mass_leaf}/force-checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'forceCheckoutWithSanction'])->name('mass-leaves.forceCheckoutWithSanction');
+    Route::post('/mass-leaves/{mass_leaf}/bulk-checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'bulkCheckout'])->name('mass-leaves.bulkCheckout');
+    Route::get('/mass-leaves/{mass_leaf}/checkin', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkin'])->name('mass-leaves.checkin');
+    Route::post('/mass-leaves/{mass_leaf}/checkin', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'processCheckin'])->name('mass-leaves.processCheckin');
+    Route::post('/mass-leaves/{mass_leaf}/toggle-status', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'toggleStatus'])->name('mass-leaves.toggle-status');
+    Route::post('/mass-leaves/{mass_leaf}/finish', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'finishEvent'])->name('mass-leaves.finish');
+    Route::resource('mass-leaves', \App\Http\Controllers\Licensing\MassLeaveController::class)->parameters(['mass-leaves' => 'mass_leaf']);
+
     Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
     Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');
@@ -182,5 +193,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Memorization Department Routes
     Route::resource('memorization', MemorizationController::class);
     Route::post('memorization-items/{item}/toggle', [MemorizationController::class, 'toggleItem'])->name('memorization-items.toggle');
+
+    // WhatsApp Notification Async
+    Route::post('/whatsapp/send-async', [\App\Http\Controllers\WhatsAppController::class, 'sendAsync'])->name('whatsapp.send-async');
 
 });

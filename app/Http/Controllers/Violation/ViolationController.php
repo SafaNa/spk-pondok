@@ -35,6 +35,12 @@ class ViolationController extends Controller
             });
         }
 
+        // Filter by active academic year
+        $activeYear = AcademicYear::where('status', 'active')->first();
+        if ($activeYear) {
+            $query->where('academic_year_id', $activeYear->id);
+        }
+
         $violations = $query->paginate(20);
 
         // Prepare stats query with same filter
@@ -43,6 +49,9 @@ class ViolationController extends Controller
             $statsQuery->whereHas('violationType', function ($q) use ($user) {
                 $q->where('department_id', $user->department_id);
             });
+        }
+        if ($activeYear) {
+            $statsQuery->where('academic_year_id', $activeYear->id);
         }
 
         // Get summary stats
@@ -132,8 +141,8 @@ class ViolationController extends Controller
             'created_by' => Auth::id()
         ]);
 
-        // WhatsApp Notification Link
-        $waRedirectUrl = null;
+        // WhatsApp Notification
+        $waNotification = null;
         try {
             $student = Student::with('guardians')->find($validated['student_id']);
             if ($student) {
@@ -142,21 +151,28 @@ class ViolationController extends Controller
                       ?? null;
                 if ($phone) {
                     $tanggal = \Carbon\Carbon::parse($validated['date'])->format('d-m-Y');
+                    
+                    $isKewajiban = str_contains($violationType->code, '-KW-');
+                    $actionText = $isKewajiban ? "tidak mematuhi tata tertib (Kewajiban)" : "melakukan pelanggaran (Larangan)";
+
                     $message = "PEMBERITAHUAN PELANGGARAN\n" .
-                        "Ananda {$student->name} tercatat melakukan pelanggaran: {$violationType->name}.\n" .
+                        "Ananda {$student->name} tercatat {$actionText}: {$violationType->name}.\n" .
                         "Sanksi: {$violationType->default_sanction}.\n" .
                         "Tanggal: {$tanggal}.\n" .
                         "Mohon kerjasamanya. Terima kasih.";
-                    $waRedirectUrl = (new \App\Services\WhatsAppService())->getRedirectUrl($phone, $message);
+                    $waNotification = [
+                        'phone' => $phone,
+                        'message' => $message
+                    ];
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to generate WA Link Violation: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("WhatsApp prepare failed (violation): " . $e->getMessage());
         }
 
         return redirect()->route('admin.violations.index')
             ->with('success', 'Pelanggaran berhasil dicatat')
-            ->with('wa_url', $waRedirectUrl);
+            ->with('wa_notification', $waNotification);
     }
 
     /**

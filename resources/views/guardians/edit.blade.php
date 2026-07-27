@@ -109,10 +109,14 @@
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                     <span class="material-symbols-outlined">key</span>
                                 </div>
-                                <input type="password" name="password"
-                                    class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                <input type="password" name="password" id="password"
+                                    class="w-full pl-12 pr-12 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                                     placeholder="Kosongkan jika tidak diubah">
+                                <button type="button" onclick="let inp=this.previousElementSibling; if(inp.type==='password'){inp.type='text'; this.firstElementChild.innerText='visibility_off';}else{inp.type='password'; this.firstElementChild.innerText='visibility';}" class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                </button>
                             </div>
+                            <x-password-strength input-id="password" />
                             @error('password')<p class="text-sm text-red-500 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px]">error</span>{{ $message }}</p>@enderror
                         </div>
                     </div>

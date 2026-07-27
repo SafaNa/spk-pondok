@@ -11,7 +11,7 @@
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div class="flex items-start gap-4">
                 <a href="{{ route('perhitungan.hasil') }}"
-                    class="group flex items-center justify-center w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-[#e7edf3] dark:border-slate-700 text-[#4c739a] hover:text-primary hover:border-primary/50 hover:shadow-md transition-all">
+                    class="group flex items-center justify-center min-h-[44px] min-w-[44px] w-11 h-11 rounded-xl bg-white dark:bg-slate-800 border border-[#e7edf3] dark:border-slate-700 text-[#4c739a] hover:text-primary hover:border-primary/50 hover:shadow-md transition-all">
                     <span
                         class="material-symbols-outlined group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
                 </a>

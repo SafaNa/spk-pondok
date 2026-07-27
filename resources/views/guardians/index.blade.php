@@ -14,7 +14,7 @@
                 <p class="text-sm text-[#4c739a]">Kelola akun wali dan hubungan mereka dengan santri.</p>
             </div>
             <a href="{{ route('admin.guardians.create') }}"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all shrink-0">
+                class="inline-flex items-center gap-2 min-h-[44px] px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-md transition-all shrink-0">
                 <span class="material-symbols-outlined text-[18px]">person_add</span>
                 Tambah Wali
             </a>
@@ -111,11 +111,11 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, username, atau no HP wali..." 
                         class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 </div>
-                <button type="submit" class="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-colors shrink-0 shadow-sm">
+                <button type="submit" class="min-h-[44px] px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-colors shrink-0 shadow-sm">
                     Cari Wali
                 </button>
                 @if(request()->filled('search'))
-                    <a href="{{ route('admin.guardians.index') }}" class="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl transition-colors shrink-0 text-center">
+                    <a href="{{ route('admin.guardians.index') }}" class="min-h-[44px] px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl transition-colors shrink-0 text-center flex items-center justify-center">
                         Reset
                     </a>
                 @endif
@@ -187,26 +187,31 @@
                                 </span>
                             </td>
                             <td class="px-5 py-3">
-                                <div class="flex items-center justify-center gap-2">
-                                    <a href="{{ route('admin.guardians.edit', $guardian) }}"
-                                        class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
-                                        <span class="material-symbols-outlined text-[15px]">edit</span>
-                                        Edit
-                                    </a>
+                                <div class="flex items-center justify-center gap-1.5 flex-wrap">
                                     {{-- Tombol Reset Password --}}
                                     <button type="button"
                                         onclick="openResetModal('{{ $guardian->id }}', '{{ addslashes($guardian->name) }}', '{{ addslashes($guardian->username) }}')"
-                                        class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-600 border border-amber-200 hover:bg-amber-50 transition-colors">
+                                        class="flex items-center gap-1 min-h-[36px] px-2.5 py-1 rounded-lg text-xs font-semibold text-amber-600 border border-amber-200 hover:bg-amber-50 transition-colors">
                                         <span class="material-symbols-outlined text-[15px]">lock_reset</span>
-                                        Reset PW
+                                        Reset
                                     </button>
+                                    <a href="{{ route('admin.guardians.show', $guardian) }}"
+                                        title="Detail"
+                                        class="flex items-center justify-center w-9 h-9 rounded-lg text-blue-600 border border-blue-200 hover:bg-blue-50 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </a>
+                                    <a href="{{ route('admin.guardians.edit', $guardian) }}"
+                                        title="Edit"
+                                        class="flex items-center justify-center w-9 h-9 rounded-lg text-primary border border-primary/20 hover:bg-primary/5 transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </a>
                                     <form action="{{ route('admin.guardians.destroy', $guardian) }}" method="POST">
                                         @csrf @method('DELETE')
                                         <button type="submit"
+                                            title="Hapus"
                                             onclick="return confirm('Hapus data wali {{ addslashes($guardian->name) }}? Semua hubungan dengan santri akan ikut dihapus.')"
-                                            class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
-                                            <span class="material-symbols-outlined text-[15px]">delete</span>
-                                            Hapus
+                                            class="flex items-center justify-center w-9 h-9 rounded-lg text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     </form>
                                 </div>

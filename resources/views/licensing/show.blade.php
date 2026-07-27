@@ -160,8 +160,8 @@
                         <span class="material-symbols-outlined text-[18px] text-slate-400">gavel</span>
                         <div>
                             <p class="text-xs text-slate-400 mb-0.5">Pelanggaran Aktif</p>
-                            <p class="font-semibold {{ $license->student->pending_violations_count > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-white' }}">
-                                {{ $license->student->pending_violations_count }}
+                            <p class="font-semibold {{ $license->student->pending_primary_violations_count > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-white' }}">
+                                {{ $license->student->pending_primary_violations_count }}
                             </p>
                         </div>
                     </div>

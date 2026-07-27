@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Department;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
@@ -39,8 +37,6 @@ class DepartmentController extends Controller
             'nama_departemen' => 'required|string|max:255',
             'singkatan' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
-            'user_email' => 'required|email|unique:users,email',
-            'user_password' => 'required|string|min:6',
         ]);
 
         $department = Department::create([
@@ -50,16 +46,8 @@ class DepartmentController extends Controller
             'description' => $request->keterangan,
         ]);
 
-        User::create([
-            'name'          => $request->nama_departemen,
-            'email'         => $request->user_email,
-            'password'      => Hash::make($request->user_password),
-            'type'          => 1,
-            'department_id' => $department->id,
-        ]);
-
         return redirect()->route('admin.departments.index')
-            ->with('success', 'Departemen berhasil ditambahkan beserta akun penggunanya.');
+            ->with('success', 'Departemen berhasil ditambahkan.');
     }
 
     /**
@@ -79,10 +67,7 @@ class DepartmentController extends Controller
     public function edit(Department $department)
     {
         $departemen = $department;
-        $userAkun = User::where('department_id', $department->id)
-            ->where('type', 1)
-            ->first();
-        return view('departemen.edit', compact('departemen', 'userAkun'));
+        return view('departemen.edit', compact('departemen'));
     }
 
     /**
@@ -90,17 +75,11 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, Department $department)
     {
-        $userAkun = User::where('department_id', $department->id)
-            ->where('type', 1)
-            ->first();
-
         $rules = [
             'kode_departemen' => 'required|string|max:255|unique:departments,code,' . $department->id,
             'nama_departemen' => 'required|string|max:255',
             'singkatan' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
-            'user_email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userAkun?->id)],
-            'user_password' => 'nullable|string|min:6',
         ];
 
         $request->validate($rules);
@@ -112,14 +91,6 @@ class DepartmentController extends Controller
             'description' => $request->keterangan,
         ]);
 
-        if ($userAkun) {
-            $userData = ['email' => $request->user_email];
-            if ($request->filled('user_password')) {
-                $userData['password'] = Hash::make($request->user_password);
-            }
-            $userAkun->update($userData);
-        }
-
         return redirect()->route('admin.departments.index')
             ->with('success', 'Departemen berhasil diperbarui');
     }
@@ -129,13 +100,7 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        DB::transaction(function () use ($department) {
-            User::where('department_id', $department->id)
-                ->where('type', 1)
-                ->delete();
-
-            $department->delete();
-        });
+        $department->delete();
 
         return redirect()->route('admin.departments.index')
             ->with('success', 'Departemen berhasil dihapus');

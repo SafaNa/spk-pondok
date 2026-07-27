@@ -117,15 +117,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-[#4c739a] font-medium">{{ $dept->singkatan }}</td>
                                 <td class="px-6 py-4 text-center">
-                                    <div
-                                        class="flex items-center justify-end gap-2 opacit-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('admin.departments.show', $dept->id) }}"
-                                            class="p-2 text-[#4c739a] hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                                            class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
                                             title="Detail">
                                             <span class="material-symbols-outlined text-[20px]">visibility</span>
                                         </a>
                                         <a href="{{ route('admin.departments.edit', $dept->id) }}"
-                                            class="p-2 text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
@@ -136,7 +135,7 @@
                                             <button
                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus departemen {{ $dept->nama_departemen }}?')"
                                                 type="button"
-                                                class="p-2 text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                class="w-9 h-9 flex items-center justify-center text-[#4c739a] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>

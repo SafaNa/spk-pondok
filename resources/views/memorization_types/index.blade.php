@@ -2,8 +2,6 @@
 
 @section('title', 'Ketentuan Hafalan')
 @section('breadcrumb', 'Ketentuan Hafalan')
-@section('breadcrumb_parent', 'Data Master')
-@section('breadcrumb_parent_route', 'admin.dashboard')
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
@@ -25,7 +23,7 @@
                     </div>
                 </div>
                 <a href="{{ route('admin.memorization-types.create') }}"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-all hover:shadow-lg shadow-primary/25">
+                    class="inline-flex items-center gap-2 min-h-[44px] px-5 py-2.5 bg-primary text-white rounded-xl font-medium hover:bg-primary-600 transition-all hover:shadow-lg shadow-primary/25">
                     <span class="material-symbols-outlined text-[20px]">add</span>
                     <span>Tambah</span>
                 </a>
@@ -135,12 +133,11 @@
                                                 </p>
 
                                                 {{-- Actions --}}
-                                                <div
-                                                    class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                                                <div class="flex items-center gap-1.5 ml-2">
                                                     <a href="{{ route('admin.memorization-types.edit', $item->id) }}"
-                                                        class="h-7 w-7 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                                                        class="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                                                         title="Edit">
-                                                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                                                        <span class="material-symbols-outlined text-[18px]">edit</span>
                                                     </a>
                                                     <div x-data>
                                                         <form action="{{ route('admin.memorization-types.destroy', $item->id) }}"
@@ -149,9 +146,9 @@
                                                             @method('DELETE')
                                                             <button type="button"
                                                                 @click.prevent="$store.deleteModal.open($el.closest('form'), 'Yakin ingin menghapus ketentuan ini?')"
-                                                                class="h-7 w-7 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                                                                class="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                                                                 title="Hapus">
-                                                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                                                                <span class="material-symbols-outlined text-[18px]">delete</span>
                                                             </button>
                                                         </form>
                                                     </div>

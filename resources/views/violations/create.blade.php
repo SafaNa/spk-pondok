@@ -62,7 +62,7 @@
                                         class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                         <span class="material-symbols-outlined">person</span>
                                     </div>
-                                    <select name="student_id" required id="student_id" style="background-image: none;"
+                                    <select name="student_id" id="student_id" style="background-image: none;"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
                                         <option value="">-- Pilih Santri --</option>
                                         @foreach ($students as $student)
@@ -117,7 +117,7 @@
                                         class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                                         <span class="material-symbols-outlined">category</span>
                                     </div>
-                                    <select name="violation_type_id" required id="violation_type_id" style="background-image: none;"
+                                    <select name="violation_type_id" id="violation_type_id" style="background-image: none;"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
                                         <option value="">-- Pilih Jenis Pelanggaran --</option>
                                         @foreach ($violationTypes as $type)

@@ -32,7 +32,7 @@ class DepartmentSeeder extends Seeder
             [
                 'code' => 'DEPT_004',
                 'name' => 'Departemen Pengajian Kitab dan SKIA',
-                'acronym' => 'TAZKIA',
+                'acronym' => 'TASKIA',
                 'description' => 'Mengatur ibadah dan kegiatan SKIA',
             ],
             [
@@ -52,6 +52,31 @@ class DepartmentSeeder extends Seeder
                 'name' => 'Perizinan',
                 'acronym' => 'PERIZINAN',
                 'description' => 'Mengatur validasi dan perizinan kepulangan santri',
+                'type' => 'unit',
+            ],
+            [
+                'code' => 'DEPT_008',
+                'name' => 'Departemen Pekerjaan umum dan pemeliharaan Aset',
+                'acronym' => 'PUPA',
+                'description' => 'Mengurus perbaikan dan perawatan fasilitas pondok',
+            ],
+            [
+                'code' => 'DEPT_009',
+                'name' => 'Departemen Kebersihan dan lingkungan hidup',
+                'acronym' => 'DKLH',
+                'description' => 'Mengurus kebersihan dan kelestarian lingkungan pondok',
+            ],
+            [
+                'code' => 'DEPT_010',
+                'name' => 'Departemen Perpustakaan',
+                'acronym' => 'PERPUS',
+                'description' => 'Mengelola perpustakaan dan literasi santri',
+            ],
+            [
+                'code' => 'DEPT_011',
+                'name' => 'Bendahara',
+                'acronym' => 'BDHR',
+                'description' => 'Mengelola keuangan dan administrasi pembayaran',
                 'type' => 'unit',
             ],
         ];

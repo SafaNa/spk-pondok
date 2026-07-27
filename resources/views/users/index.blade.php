@@ -5,13 +5,13 @@
 @section('breadcrumb', 'Manajemen User')
 
 @section('content')
-    <div class="flex items-center justify-between mb-4">
-        <div class="flex gap-2">
-            <a href="{{ route('admin.users.index') }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ !request('role') ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Semua User</a>
-            <a href="{{ route('admin.users.index', ['role' => 'perizinan']) }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'perizinan' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Pengurus Perizinan</a>
-            <a href="{{ route('admin.users.index', ['role' => 'departemen']) }}" class="px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'departemen' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Departemen</a>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.users.index') }}" class="min-h-[44px] flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors {{ !request('role') ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Semua User</a>
+            <a href="{{ route('admin.users.index', ['role' => 'perizinan']) }}" class="min-h-[44px] flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'perizinan' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Pengurus Perizinan</a>
+            <a href="{{ route('admin.users.index', ['role' => 'departemen']) }}" class="min-h-[44px] flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors {{ request('role') == 'departemen' ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50' }}">Departemen</a>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="flex items-center gap-2 px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white text-sm font-medium shadow-sm transition-colors">
+        <a href="{{ route('admin.users.create') }}" class="min-h-[44px] flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 text-white text-sm font-medium shadow-sm transition-colors w-full sm:w-auto">
             <span class="material-symbols-outlined text-[18px]">add</span> Tambah User
         </a>
     </div>
@@ -108,23 +108,23 @@
                             </td>
                             <td class="border border-gray-200 p-3 text-center">
                                 <div class="flex items-center justify-center gap-1.5">
-                                    <a href="#" class="w-8 h-8 rounded flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors" title="Lihat">
-                                        <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                    <a href="{{ route('admin.users.show', $user) }}" class="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white transition-colors" title="Lihat">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
                                     </a>
-                                    <a href="{{ route('admin.users.edit', $user) }}" class="w-8 h-8 rounded flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors" title="Edit">
-                                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="w-9 h-9 rounded-lg flex items-center justify-center bg-yellow-400 hover:bg-yellow-500 text-white transition-colors" title="Edit">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </a>
                                     @if(!$user->isAdmin())
                                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus akun {{ $user->name }}?');" class="inline-block">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors" title="Hapus">
-                                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                                            <button type="submit" class="w-9 h-9 rounded-lg flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors" title="Hapus">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </form>
                                     @else
-                                        <button type="button" disabled class="w-8 h-8 rounded flex items-center justify-center bg-red-300 text-white cursor-not-allowed" title="Admin tidak dapat dihapus">
-                                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                                        <button type="button" disabled class="w-9 h-9 rounded-lg flex items-center justify-center bg-red-300 text-white cursor-not-allowed" title="Admin tidak dapat dihapus">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
                                         </button>
                                     @endif
                                 </div>

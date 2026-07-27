@@ -6,6 +6,8 @@ use App\Models\Master\Student;
 use App\Models\Finance\SppPayment;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Violation\ViolationRecord;
+use App\Models\Licensing\MassLeave;
+use App\Models\Licensing\MassLeaveStudent;
 
 use App\Models\Master\AcademicYear;
 use Illuminate\Support\Facades\DB;
@@ -209,12 +211,36 @@ class DashboardController extends Controller
             ],
         ];
 
+        // Active Mass Leave Event
+        MassLeave::closeExpiredEvents();
+        $activeMassLeave = MassLeave::where('status', 'active')->first();
+        $massLeaveStats = null;
+        if ($activeMassLeave) {
+            $totalActive = Student::where('status', 'active')->count();
+            $blockedCount = Student::where('status', 'active')->whereHas('pendingViolations')->count();
+            $eligibleCount = max(0, $totalActive - $blockedCount);
+            
+            $checkedOutCount = MassLeaveStudent::where('mass_leave_id', $activeMassLeave->id)->count();
+            $returnedCount = MassLeaveStudent::where('mass_leave_id', $activeMassLeave->id)->whereNotNull('actual_return_date')->count();
+            $notReturnedCount = MassLeaveStudent::where('mass_leave_id', $activeMassLeave->id)->whereNull('actual_return_date')->count();
+            
+            $massLeaveStats = (object) [
+                'totalActive' => $totalActive,
+                'blockedCount' => $blockedCount,
+                'eligibleCount' => $eligibleCount,
+                'checkedOutCount' => $checkedOutCount,
+                'returnedCount' => $returnedCount,
+                'notReturnedCount' => $notReturnedCount,
+            ];
+        }
+
         return view('licensing.dashboard', compact(
             'totalStudents', 'kepulangan', 'izinDisetujui', 
             'izinPending', 'izinDitolak', 'kasusDarurat',
             'recentLicenses', 'quotaWarnings', 'violationNotifs',
             'chartData', 'activeYear', 'allAcademicYears', 
-            'extTotal', 'extApproved', 'extPending', 'extRejected'
+            'extTotal', 'extApproved', 'extPending', 'extRejected',
+            'activeMassLeave', 'massLeaveStats'
         ));
     }
 }

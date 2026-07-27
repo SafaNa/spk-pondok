@@ -90,6 +90,18 @@ class Student extends Model
         return $this->violationRecords()->where('sanction_status', 'pending');
     }
 
+    public function pendingPrimaryViolations()
+    {
+        return $this->violationRecords()
+            ->where('sanction_status', 'pending')
+            ->whereHas('violationType.department', function ($q) {
+                $q->whereIn('code', [
+                    'DEPT_001', 'DEPT_002', 'DEPT_003',
+                    'DEPT_004', 'DEPT_005', 'DEPT_006'
+                ]);
+            });
+    }
+
     public function guardians()
     {
         return $this->belongsToMany(\App\Models\Guardian::class, 'student_guardian');

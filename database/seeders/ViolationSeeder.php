@@ -26,7 +26,7 @@ class ViolationSeeder extends Seeder
      * Pemetaan departemen:
      *   KAMTIB   → KAMTIB
      *   DPA      → DPA
-     *   TAZKIA   → TAZKIA
+     *   TASKIA   → TASKIA
      *   DPF      → DPF
      *   MADAL    → MADAL
      *   PERPUS   → (Dihapus)
@@ -58,7 +58,7 @@ class ViolationSeeder extends Seeder
         $deptAkhlak      = Department::where('acronym', 'DPA')->firstOrFail();
         $deptFormal      = Department::where('acronym', 'DPF')->firstOrFail();
         $deptKeamanan    = Department::where('acronym', 'KAMTIB')->firstOrFail();
-        $deptPeribadatan = Department::where('acronym', 'TAZKIA')->firstOrFail();
+        $deptPeribadatan = Department::where('acronym', 'TASKIA')->firstOrFail();
         $deptDepak       = Department::where('acronym', 'DEPAK')->firstOrFail();
         $deptPerizinan   = Department::where('acronym', 'PERIZINAN')->firstOrFail();
         $deptMadal       = Department::where('acronym', 'MADAL')->firstOrFail();
