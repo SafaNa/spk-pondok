@@ -277,7 +277,7 @@
 
         <!-- Side Navigation -->
         <aside id="sidebar"
-            class="fixed inset-y-0 left-0 z-50 w-66 max-w-[85vw] flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none shadow-2xl md:shadow-none">
+            class="fixed inset-y-0 left-0 z-50 w-[16.5rem] max-w-[85vw] flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none shadow-2xl md:shadow-none">
 
             <!-- Logo / Brand (Fixed at top) -->
             <div class="p-6 flex items-center justify-between shrink-0">
