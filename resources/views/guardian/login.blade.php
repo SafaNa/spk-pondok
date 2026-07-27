@@ -13,7 +13,7 @@
 
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
-                        url("{{ asset('docs/images/pondok.png') }}") no-repeat center center fixed;
+                        url("{{ asset('assets/images/pondok.png') }}") no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;

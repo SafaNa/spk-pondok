@@ -24,8 +24,8 @@
             "dest": "/public/robots.txt"
         },
         {
-            "src": "/images/(.*)",
-            "dest": "/public/images/$1"
+            "src": "/assets/(.*)",
+            "dest": "/public/assets/$1"
         },
         {
             "src": "/(.*)",
