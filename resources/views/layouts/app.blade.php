@@ -319,16 +319,17 @@
             <!-- Logo / Brand (Fixed at top) -->
             <div class="p-6 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary overflow-hidden">
+                    <!-- Logo tanpa kotak latar belakang -->
+                    <div class="flex h-10 w-10 items-center justify-center overflow-hidden">
                         @if(isset($appSetting) && $appSetting->logo)
                             <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain">
                         @else
-                            <span class="material-symbols-outlined">school</span>
+                            <span class="material-symbols-outlined text-primary text-2xl">school</span>
                         @endif
                     </div>
                     <div class="flex flex-col">
-                        <h1 class="text-[#0d141b] dark:text-white text-base font-bold leading-normal">Santri Admin</h1>
-                        <p class="text-[#4c739a] text-xs font-normal leading-normal">Management System</p>
+                        <h1 class="text-[#0d141b] dark:text-white text-base font-bold leading-normal">SIMVI-KS</h1>
+                        <p class="text-[#4c739a] text-xs font-normal leading-normal">PP. Annuqoyah Latee II</p>
                     </div>
                 </div>
                 <!-- Mobile Close Button -->
@@ -337,7 +338,6 @@
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-
             <!-- Nav Items (Scrollable area) -->
             <div class="flex-1 overflow-y-auto px-3 py-2 scroll-smooth no-scrollbar">
                 <nav class="flex flex-col gap-2">
