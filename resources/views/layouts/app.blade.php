@@ -277,7 +277,7 @@
 
         <!-- Side Navigation -->
         <aside id="sidebar"
-            class="fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none shadow-2xl md:shadow-none">
+            class="fixed inset-y-0 left-0 z-50 w-[272px] max-w-[85vw] flex flex-col h-full border-r border-[#e7edf3] dark:border-slate-800 bg-white dark:bg-slate-900 transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none shadow-2xl md:shadow-none">
 
             <!-- Logo / Brand (Fixed at top) -->
             <div class="p-6 flex items-center justify-between shrink-0">
@@ -358,37 +358,37 @@
                             </button>
 
                             <div x-show="open" x-collapse style="display: none;"
-                                class="flex flex-col gap-1 mt-1 pl-3 border-l-2 border-slate-100 dark:border-slate-800 ml-5">
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.academic-years.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                class="flex flex-col gap-1 mt-1 pl-2.5 border-l-2 border-slate-100 dark:border-slate-800 ml-3.5">
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.academic-years.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.academic-years.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">event_note</span>
-                                    <span class="text-sm font-medium">Tahun Ajaran</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Tahun Ajaran</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">school</span>
-                                    <span class="text-sm font-medium">Jenjang</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Jenjang</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.departments.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">apartment</span>
-                                    <span class="text-sm font-medium">Departemen</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Departemen</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rayons.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rayons.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.rayons.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">domain</span>
-                                    <span class="text-sm font-medium">Rayon</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Rayon</span>
                                 </a>
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rooms.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.rooms.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.rooms.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">meeting_room</span>
-                                    <span class="text-sm font-medium">Kamar</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Kamar</span>
                                 </a>
 
-                                <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.leave-categories.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
+                                <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.leave-categories.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.leave-categories.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">category</span>
-                                    <span class="text-sm font-medium">Kategori Kepulangan</span>
+                                    <span class="text-sm font-medium whitespace-nowrap">Kategori Kepulangan</span>
                                 </a>
                             </div>
                         </div>
