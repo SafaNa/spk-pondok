@@ -135,24 +135,25 @@
             {{-- Upload Bukti --}}
             <div class="space-y-1.5">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Foto / Dokumen Pendukung <span class="text-red-500">*</span> <span class="text-slate-400 text-xs font-normal">(wajib)</span>
+                    Foto / Dokumen Pendukung <span class="text-red-500">*</span>
+                    <span class="text-slate-400 text-xs font-normal ml-1">(wajib, maks. 5 file @ 5MB)</span>
                 </label>
                 <div class="relative">
-                    <input type="file" name="attachment" id="attachment" required
+                    <input type="file" name="attachments[]" id="attachment" required multiple
                         accept=".jpg,.jpeg,.png,.pdf"
                         class="hidden"
-                        onchange="previewAttachment(this)">
-                    <label for="attachment"
-                        class="flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/5 transition-all">
-                        <span class="material-symbols-outlined text-[22px]">upload_file</span>
-                        <span id="attachmentLabel">Pilih foto atau PDF (maks. 5MB)</span>
+                        onchange="previewAttachments(this)">
+                    <label for="attachment" id="uploadZone"
+                        class="flex flex-col items-center justify-center gap-2 w-full px-4 py-5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[32px]">upload_file</span>
+                        <span id="attachmentLabel" class="font-medium">Pilih atau Seret File ke Sini</span>
+                        <span class="text-xs text-slate-400">JPG, PNG, PDF &bull; Maks. 5 file &bull; 5MB per file</span>
                     </label>
                 </div>
-                <div id="attachmentPreview" class="hidden mt-2">
-                    <img id="previewImg" src="" alt="Preview"
-                        class="max-h-40 rounded-xl border border-slate-200 dark:border-slate-700 object-contain">
-                </div>
-                @error('attachment')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                {{-- Preview Grid --}}
+                <div id="previewGrid" class="hidden grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2"></div>
+                @error('attachments')   <p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                @error('attachments.*') <p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             {{-- Kasus Darurat --}}
@@ -312,24 +313,79 @@ function calcDuration() {
     }
 }
 
-function previewAttachment(input) {
-    var label   = document.getElementById('attachmentLabel');
-    var preview = document.getElementById('attachmentPreview');
-    var img     = document.getElementById('previewImg');
-    if (input.files && input.files[0]) {
-        var file = input.files[0];
-        label.textContent = file.name;
-        if (file.type.startsWith('image/')) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                img.src = e.target.result;
-                preview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.classList.add('hidden');
-        }
+// --- Stateful file manager ---
+var selectedFiles = [];
+
+function previewAttachments(input) {
+    // Merge newly picked files into selectedFiles (avoid duplicates by name+size)
+    Array.from(input.files).forEach(function(file) {
+        var isDupe = selectedFiles.some(function(f) {
+            return f.name === file.name && f.size === file.size;
+        });
+        if (!isDupe) selectedFiles.push(file);
+    });
+    // Reset the actual input so change event fires again if same file re-added
+    input.value = '';
+    renderPreviews();
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderPreviews();
+}
+
+function renderPreviews() {
+    var grid  = document.getElementById('previewGrid');
+    var label = document.getElementById('attachmentLabel');
+    var input = document.getElementById('attachment');
+    grid.innerHTML = '';
+
+    // Sync selectedFiles back to the file input via DataTransfer
+    var dt = new DataTransfer();
+    selectedFiles.forEach(function(f) { dt.items.add(f); });
+    input.files = dt.files;
+
+    if (!selectedFiles.length) {
+        grid.classList.add('hidden');
+        label.textContent = 'Pilih atau Seret File ke Sini';
+        return;
     }
+
+    label.textContent = selectedFiles.length + ' file dipilih';
+    grid.classList.remove('hidden');
+
+    selectedFiles.forEach(function(file, idx) {
+        var card = document.createElement('div');
+        card.className = 'relative rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 aspect-square flex items-center justify-center group';
+
+        if (file.type.startsWith('image/')) {
+            var img = document.createElement('img');
+            img.className = 'w-full h-full object-cover';
+            var reader = new FileReader();
+            reader.onload = function(e) { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+            card.appendChild(img);
+        } else {
+            var badge = document.createElement('div');
+            badge.className = 'flex flex-col items-center gap-1 p-2 text-center';
+            badge.innerHTML = '<span class="material-symbols-outlined text-red-500 text-[28px]">picture_as_pdf</span>'
+                            + '<span class="text-[10px] text-slate-500 truncate w-full px-1">' + file.name + '</span>';
+            card.appendChild(badge);
+        }
+
+        // ✕ Remove button
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow z-10 hover:bg-red-700';
+        btn.innerHTML = '&times;';
+        btn.title = 'Hapus file ini';
+        btn.onclick = (function(i) {
+            return function(e) { e.preventDefault(); removeFile(i); };
+        })(idx);
+        card.appendChild(btn);
+
+        grid.appendChild(card);
+    });
 }
 
 calcDuration();
