@@ -394,42 +394,69 @@
                         </div>
                     @endif
 
+             {{-- MENU PEMBAYARAN SPP --}}
+      
 
+            {{--  @if(Auth::user()->isAdmin() || strtolower(Auth::user()->role) === 'bendahara')
+                <div class="mb-2">
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran</p>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('admin.spp-payments.index') }}">
+                        <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                        <span class="text-sm font-medium">Pembayaran SPP</span>
+                    </a>
+                </div>
+            @endif   --}}
+                    
+           {{--  @if(Auth::user()->isAdmin() || Auth::user()->role === 'bendahara')
+                <div class="mb-2">
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
+                    </p>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('admin.spp-payments.index') }}">
+                        <span
+                            class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                        <span class="text-sm font-medium">Pembayaran SPP</span>
+                    </a>
+                </div>
+            @endif  --}}
+                    
+{{-- MENU KEUNGAN / PEMBAYARAN SPP --}}
+@if(auth()->user()->isAdmin() || (auth()->user()->department && in_array(strtoupper(auth::user()->department->acronym ?? auth::user()->department->name), ['KEUANGAN', 'BENDAHARA'])) || strtolower(auth()->user()->username) === 'bendahara' || strtolower(auth()->user()->role) === 'bendahara')
+    <div class="mb-4">
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Keuangan
+        </p>
+        <div class="space-y-1">
+            <a href="{{ route('admin.spp-payments.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
+                <span class="text-sm font-medium">Pembayaran SPP</span>
+            </a>
+        </div>
+    </div>
+@endif
 
-                    {{-- [HIDDEN] Menu Pembayaran — hidden, not deleted
-                    @if(Auth::user()->isAdmin() || Auth::user()->isFinanceOfficer())
-                        <div class="mb-2">
-                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
-                            </p>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.spp-payments.index') }}">
-                                <span
-                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
-                                <span class="text-sm font-medium">Pembayaran SPP</span>
-                            </a>
-                        </div>
-                    @endif
-                    --}}
+{{-- MENU PELANGGARAN --}}
+@if(auth()->user()->canManageViolations())
+    <div class="mb-4">
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
+        </p>
+        <div class="space-y-1">
+            <a href="{{ route('admin.violations.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">gavel</span>
+                <span class="text-sm font-medium">Catat Pelanggaran</span>
+            </a>
 
-                    @if(auth()->user()->canManageViolations())
-                        <div class="mb-4">
-                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
-                            </p>
-                            <div class="space-y-1">
-                                <a href="{{ route('admin.violations.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-                                    <span class="material-symbols-outlined text-[20px]">gavel</span>
-                                    <span class="text-sm font-medium">Catat Pelanggaran</span>
-                                </a>
-
-                                <a href="{{ route('admin.violation-types.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-                                    <span class="material-symbols-outlined text-[20px]">list_alt</span>
-                                    <span class="text-sm font-medium">Jenis Pelanggaran</span>
-                                </a>
-                            </div>
-                        </div>
-                    @endif
+            <a href="{{ route('admin.violation-types.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">list_alt</span>
+                <span class="text-sm font-medium">Jenis Pelanggaran</span>
+            </a>
+        </div>
+    </div>
+@endif
+              
 
                     @if(Auth::user()->isAdmin() || Auth::user()->isMemorizationOfficer())
                         <div class="mb-2">
