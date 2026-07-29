@@ -361,13 +361,27 @@
                         </div>
                     @endif
 
-                    @if($license->attachment)
+                    @php $attachFiles = is_array($license->attachment) ? $license->attachment : array_filter([$license->attachment]); @endphp
+                    @if(count($attachFiles) > 0)
                         <div class="pt-2">
-                            <p class="text-xs text-slate-500 mb-2">Lampiran / Bukti</p>
-                            <a href="{{ Storage::url($license->attachment) }}" data-fslightbox="bukti_{{ $license->id }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-sm font-semibold text-slate-700 transition-colors">
-                                <span class="material-symbols-outlined text-[20px] text-primary">image</span>
-                                Lihat Bukti
-                            </a>
+                            <p class="text-xs text-slate-500 mb-2">Lampiran / Bukti ({{ count($attachFiles) }} file)</p>
+                            <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                @foreach($attachFiles as $i => $filePath)
+                                    @php $isImage = in_array(strtolower(pathinfo($filePath, PATHINFO_EXTENSION)), ['jpg','jpeg','png','webp']); @endphp
+                                    <a href="{{ Storage::url($filePath) }}"
+                                        @if($isImage) data-fslightbox="bukti_{{ $license->id }}" @else target="_blank" @endif
+                                        class="relative rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 aspect-square flex items-center justify-center hover:opacity-80 transition-opacity">
+                                        @if($isImage)
+                                            <img src="{{ Storage::url($filePath) }}" class="w-full h-full object-cover" alt="Lampiran {{ $i + 1 }}">
+                                        @else
+                                            <div class="flex flex-col items-center gap-1 p-2 text-center">
+                                                <span class="material-symbols-outlined text-red-500 text-[28px]">picture_as_pdf</span>
+                                                <span class="text-[10px] text-slate-500">PDF {{ $i + 1 }}</span>
+                                            </div>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
