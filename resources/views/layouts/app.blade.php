@@ -367,7 +367,7 @@
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">school</span>
-                                    <span class="text-sm font-medium">Jenjang</span>
+                                    <span class="text-sm font-medium">Jenjang Pendidikan</span>
                                 </a>
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.departments.index') }}">

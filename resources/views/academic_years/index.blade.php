@@ -7,19 +7,28 @@
 @section('content')
     <div class="space-y-6">
         {{-- Header --}}
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Data Tahun Ajaran</h1>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Kelola data tahun ajaran akademik.</p>
+   
+    <div class="rounded-2xl p-4 sm:p-6 border border-blue-100 mb-6"
+        style="background: linear-gradient(135deg, #eff6ff 20%, #eef2ffb3 50%, #faf5ff99 80%);">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h2 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">
+                    Data Tahun Ajaran
+                </h2>
+                <p class="text-[#4c739a] text-sm sm:text-base font-normal">
+                    Kelola data tahun ajaran akademik yang digunakan dalam sistem.
+                </p>
             </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <a href="{{ route('admin.academic-years.create') }}"
-                    class="min-h-[44px] w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-primary/25">
-                    <span class="material-symbols-outlined text-[20px]">add</span>
-                    Tambah Tahun Ajaran
-                </a>
-            </div>
+
+            <a href="{{ route('admin.academic-years.create') }}"
+                class="group flex items-center justify-center gap-2 rounded-xl px-5 h-11 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
+                <span class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-300">
+                    add
+                </span>
+                <span>Tambah Tahun Ajaran</span>
+            </a>
         </div>
+    </div>
 
         {{-- Content --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
