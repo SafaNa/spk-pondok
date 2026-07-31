@@ -13,7 +13,7 @@
                 <h1 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">
                     Data Kamar</h1>
                 <p class="text-[#4c739a] text-sm sm:text-base font-normal">
-                    Kelola data kamar asrama santri beserta kapasitasnya.
+                    Kelola data kamar asrama santri pondok Pesantren Annuqoyah Latee II
                 </p>
             </div>
             <button onclick="openModal('addModal')"

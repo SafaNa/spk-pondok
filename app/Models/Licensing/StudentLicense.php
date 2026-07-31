@@ -34,6 +34,7 @@ class StudentLicense extends Model
         'submitted_at'       => 'datetime',
         'approved_at'        => 'datetime',
         'rejected_at'        => 'datetime',
+        'attachment'         => 'array',
     ];
 
     public function getIsLateAttribute()
