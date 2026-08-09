@@ -107,7 +107,7 @@
                     <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-extrabold leading-tight uppercase">
                         LOGIN</h2>
                     <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal max-w-sm px-2 sm:px-0">
-                        Selamat datang kembali! Silakan masukkan kredensial Anda untuk mengakses dasbor.
+                        Selamat datang kembali. Silakan masuk menggunakan akun Anda untuk mengakses dashboard sistem.
                     </p>
                 </div>
 

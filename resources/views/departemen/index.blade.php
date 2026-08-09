@@ -12,8 +12,7 @@
             <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                 <div class="flex flex-col gap-1">
                     <h2 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">Kelola Departemen</h2>
-                    <p class="text-[#4c739a] text-sm sm:text-base font-normal">Manajemen departemen dan jenis pelanggaran di
-                        pondok pesantren</p>
+                    <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data departemen untuk mendukung proses validasi dan pengelolaan perizinan santri.</p>
                 </div>
                 <a href="{{ route('admin.departments.create') }}"
                     class="group flex items-center justify-center gap-2 rounded-xl px-5 h-11 bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-lg hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
