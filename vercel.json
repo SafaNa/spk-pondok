@@ -28,6 +28,10 @@
             "dest": "/public/assets/$1"
         },
         {
+            "src": "/libs/(.*)",
+            "dest": "/public/libs/$1"
+        },
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
