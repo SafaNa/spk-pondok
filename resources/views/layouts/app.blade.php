@@ -342,7 +342,7 @@
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">school</span>
-                                    <span class="text-sm font-medium">Jenjang</span>
+                                    <span class="text-sm font-medium">Jenjang Pendidikan</span>
                                 </a>
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.departments.index') }}">
@@ -493,7 +493,7 @@
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.settings.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.settings.index') }}">
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.settings.*') ? 'fill-1' : '' }}">settings</span>
-                                <span class="text-sm font-medium">Pengaturan Aplikasi</span>
+                                <span class="text-sm font-medium">Setting</span>
                             </a>
                         </div>
                     @endif
