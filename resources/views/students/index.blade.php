@@ -463,7 +463,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const chartData = @json($chartData ?? []);

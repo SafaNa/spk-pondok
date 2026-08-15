@@ -11,33 +11,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <title>@yield('title', 'Santri Admin')</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
-        rel="stylesheet" />
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <!-- Tailwind CSS (CDN for V2 Styles) -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet" />
+    <!-- Material Symbols (Local) -->
+    <link href="{{ asset('libs/fonts/material-symbols/material-symbols.css') }}" rel="stylesheet" />
 
-    <!-- Choices.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <!-- Choices.js (Local) -->
+    <link rel="stylesheet" href="{{ asset('libs/choices/choices.min.css') }}" />
+    <script src="{{ asset('libs/choices/choices.min.js') }}"></script>
 
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 (Local) -->
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/sweetalert2.min.css') }}">
+    <script src="{{ asset('libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
-    <!-- Cropper.js -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <!-- Cropper.js (Local) -->
+    <link href="{{ asset('libs/cropperjs/cropper.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('libs/cropperjs/cropper.min.js') }}"></script>
 
-    <!-- Select2 for searchable dropdowns -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- jQuery + Select2 (Local) -->
+    <link href="{{ asset('libs/select2/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('libs/select2/select2.min.js') }}"></script>
     <style>
         /* Custom Choices.js Styles for Tailwind */
         .choices__inner {
@@ -245,25 +239,6 @@
                 }
             });
         });
-    </script>
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
     </script>
 </head>
 
@@ -963,8 +938,8 @@
             </script>
         @endif
 
-        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="{{ asset('libs/alpinejs/collapse.min.js') }}"></script>
+        <script src="{{ asset('libs/alpinejs/alpine.min.js') }}"></script>
 
         <!-- Cropper Modal: HARUS setelah Alpine.js agar listener tidak ditimpa -->
         <x-cropper-modal />
