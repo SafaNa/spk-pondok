@@ -64,7 +64,7 @@
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Selamat Datang</h1>
                 <p class="mt-2 text-sm text-gray-500">
-                    Sistem Pendukung Keputusan Kepulangan Santri
+                    Sistem Informasi Manajemen Izin dan Kepulangan Santri
                     <br class="hidden sm:block">
                     Pondok Pesantren Annuqayah Latee II
                 </p>
