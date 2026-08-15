@@ -53,7 +53,7 @@
                             class="bg-slate-50 dark:bg-slate-700/50 border-b border-[#e7edf3] dark:border-slate-700 text-xs uppercase tracking-wider text-[#4c739a] font-semibold">
                             <th class="px-6 py-4 whitespace-nowrap w-20">No</th>
                             <th class="px-6 py-4 whitespace-nowrap">Nama Jenjang</th>
-                            <th class="px-6 py-4 whitespace-nowrap">Tipe</th>
+                            <th class="px-6 py-4 whitespace-nowrap">Kategori</th>
                             <th class="px-6 py-4 text-right whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>

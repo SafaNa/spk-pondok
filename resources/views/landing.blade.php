@@ -88,29 +88,17 @@
 <div style="position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;gap:0;font-family:'Inter',system-ui,sans-serif;">
 
     <!-- Header -->
-    <div style="text-align:center;margin-bottom:2.5rem;">
-        <div style="display:inline-flex;
-            height:120px;
-            width:120px;
-            align-items:center;
-            justify-content:center;
-            border-radius:28px;
-            background:rgba(255,255,255,0.2);
-            border:1.5px solid rgba(255,255,255,0.4);
-            backdrop-filter:blur(10px);
-            -webkit-backdrop-filter:blur(10px);
-            box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.3);
-            margin-bottom:1.25rem;
-            overflow:hidden;
-            padding:4px;">
-            
-            <img src="{{ asset('favicon.png') }}"
-                 alt="Logo Annuqayah Latee II"
-                 style="width:100%;
-                        height:100%;
-                        object-fit:contain;
-                        filter:drop-shadow(0 2px 8px rgba(0,0,0,0.4));">
-        </div>
+    <div style="text-align:center;margin-bottom:2.5rem;width:100%;">
+        
+        <!-- Logo Langsung & Presisi di Tengah -->
+        <img src="{{ asset('favicon.png') }}"
+             alt="Logo Annuqayah Latee II"
+             style="display:block;
+                    margin:0 auto 1.25rem auto;
+                    height:110px;
+                    width:auto;
+                    object-fit:contain;
+                    filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));">
 
         <h1 style="font-size:clamp(1.6rem,4vw,2.2rem);font-weight:900;color:#ffffff;letter-spacing:-0.02em;text-shadow:0 2px 16px rgba(0,0,0,0.7);">
             Pondok Pesantren Annuqayah Latee II
