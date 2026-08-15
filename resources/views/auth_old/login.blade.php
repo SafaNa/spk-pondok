@@ -7,12 +7,10 @@
     <title>Login - SPK Santri P2AL II</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet">
+    <!-- Alpine.js (Local) -->
+    <script defer src="{{ asset('libs/alpinejs/alpine.min.js') }}"></script>
 
     <style>
         body {

@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Wali Santri — {{ $appSetting->app_name ?? 'Pondok Pesantren Annuqayah Latee II' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet">
+    <!-- Material Symbols (Local) -->
+    <link href="{{ asset('libs/fonts/material-symbols/material-symbols.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

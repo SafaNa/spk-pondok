@@ -37,13 +37,15 @@ class ProfileController extends Controller
         $data = $request->only('name', 'phone', 'email', 'nik', 'address', 'job', 'relationship');
 
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama jika ada
-            if ($guardian->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($guardian->avatar)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($guardian->avatar);
-            }
             // Upload yang baru menggunakan ImageService (crop 1:1, resize 500x500, webp)
             $path = \App\Services\ImageService::processAndSaveAvatar($request->file('avatar'), 'guardian-avatars');
-            $data['avatar'] = $path;
+            if ($path !== null) {
+                // Hapus avatar lama jika ada
+                if ($guardian->avatar && \Illuminate\Support\Facades\Storage::disk('public')->exists($guardian->avatar)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($guardian->avatar);
+                }
+                $data['avatar'] = $path;
+            }
         }
 
         $guardian->update($data);

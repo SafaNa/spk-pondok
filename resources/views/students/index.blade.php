@@ -11,7 +11,8 @@
         <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div class="flex flex-col gap-1">
                 <h1 class="text-[#0d141b] dark:text-white text-2xl font-black tracking-tight">Data Santri</h1>
-                <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data santri untuk rekomendasi pemulangan
+                <p class="text-[#4c739a] text-sm sm:text-base font-normal">Kelola data santri sebagai data master yang digunakan dalam proses perizinan dan kepulangan.
+
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -463,7 +464,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{{ asset('libs/apexcharts/apexcharts.min.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const chartData = @json($chartData ?? []);

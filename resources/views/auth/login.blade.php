@@ -7,16 +7,13 @@
     <title>Admin Login - {{ $appSetting->app_name ?? 'SIM Kepulangan Santri' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet" />
+    <!-- Material Symbols (Local) -->
+    <link href="{{ asset('libs/fonts/material-symbols/material-symbols.css') }}" rel="stylesheet" />
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Play CDN (Local) -->
+    <script src="{{ asset('libs/tailwind-play/tailwind.js') }}"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -107,7 +104,7 @@
                     <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-extrabold leading-tight uppercase">
                         LOGIN</h2>
                     <p class="text-[#4c739a] dark:text-slate-400 text-sm font-normal leading-normal max-w-sm px-2 sm:px-0">
-                        Selamat datang kembali! Silakan masukkan kredensial Anda untuk mengakses dasbor.
+                        Selamat datang kembali. Silakan masuk menggunakan akun Anda untuk mengakses dashboard sistem.
                     </p>
                 </div>
 

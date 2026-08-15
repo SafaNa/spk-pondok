@@ -58,13 +58,14 @@ class LicenseController extends Controller
         }
 
         $request->validate([
-            'student_id'      => 'required|string',
-            'leave_reason_id' => 'required|exists:leave_reasons,id',
-            'description'     => 'nullable|string|max:500',
-            'start_date'      => 'required|date',
-            'end_date'        => 'required|date|after_or_equal:start_date',
-            'is_emergency'    => 'boolean',
-            'attachment'      => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'student_id'        => 'required|string',
+            'leave_reason_id'   => 'required|exists:leave_reasons,id',
+            'description'       => 'nullable|string|max:500',
+            'start_date'        => 'required|date',
+            'end_date'          => 'required|date|after_or_equal:start_date',
+            'is_emergency'      => 'boolean',
+            'attachments'       => 'required|array|min:1|max:5',
+            'attachments.*'     => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $studentIds = $guardian->students()->pluck('students.id');
@@ -75,9 +76,11 @@ class LicenseController extends Controller
         $reason          = LeaveReason::find($request->leave_reason_id);
         $leaveCategoryId = $reason?->leave_category_id;
 
-        $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('license-attachments', 'public');
+        $attachmentPaths = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $attachmentPaths[] = $file->store('license-attachments', 'public');
+            }
         }
 
         StudentLicense::create([
@@ -89,7 +92,7 @@ class LicenseController extends Controller
             'start_date'        => $request->start_date,
             'end_date'          => $request->end_date,
             'description'       => $request->description,
-            'attachment'        => $attachmentPath,
+            'attachment'        => $attachmentPaths ?: null,
             'status'            => 'pending',
             'is_emergency'      => $request->has('is_emergency'),
             'submitted_at'      => now(),
@@ -156,7 +159,8 @@ class LicenseController extends Controller
             'start_date'      => 'required|date',
             'end_date'        => 'required|date|after_or_equal:start_date',
             'is_emergency'    => 'boolean',
-            'attachment'      => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'attachments'     => 'nullable|array|max:5',
+            'attachments.*'   => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $reason = LeaveReason::find($request->leave_reason_id);
@@ -170,12 +174,31 @@ class LicenseController extends Controller
             'is_emergency'      => $request->has('is_emergency'),
         ];
 
-        if ($request->hasFile('attachment')) {
-            if ($license->attachment && Storage::disk('public')->exists($license->attachment)) {
-                Storage::disk('public')->delete($license->attachment);
+        $existingAttachments = is_array($license->attachment) ? $license->attachment : array_filter([$license->attachment]);
+        $attachmentsToDelete = $request->input('delete_attachments', []);
+
+        if (!empty($attachmentsToDelete)) {
+            foreach ($attachmentsToDelete as $deletePath) {
+                if (($key = array_search($deletePath, $existingAttachments)) !== false) {
+                    if (Storage::disk('public')->exists($deletePath)) {
+                        Storage::disk('public')->delete($deletePath);
+                    }
+                    unset($existingAttachments[$key]);
+                }
             }
-            $data['attachment'] = $request->file('attachment')->store('license-attachments', 'public');
         }
+        
+        $existingAttachments = array_values($existingAttachments); // reindex
+
+        $newPaths = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $newPaths[] = $file->store('license-attachments', 'public');
+            }
+        }
+
+        $finalAttachments = array_merge($existingAttachments, $newPaths);
+        $data['attachment'] = !empty($finalAttachments) ? $finalAttachments : null;
 
         $license->update($data);
 
@@ -196,8 +219,12 @@ class LicenseController extends Controller
             return redirect()->route('guardian.licenses.index')->with('error', 'Izin yang sudah diproses tidak dapat dibatalkan.');
         }
 
-        if ($license->attachment && Storage::disk('public')->exists($license->attachment)) {
-            Storage::disk('public')->delete($license->attachment);
+        if ($license->attachment) {
+            foreach ((array) $license->attachment as $path) {
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
         }
 
         $license->delete();

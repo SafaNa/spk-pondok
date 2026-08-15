@@ -1065,7 +1065,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/fslightbox/index.min.js"></script>
+<script src="{{ asset('libs/fslightbox/fslightbox.min.js') }}"></script>
 <script>
     (function() {
         let initialized = false;

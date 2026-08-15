@@ -6,21 +6,22 @@
     <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
     <title>@yield('title', 'Portal Wali Santri') — Annuqayah Latee II</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet">
+    <!-- Material Symbols (Local) -->
+    <link href="{{ asset('libs/fonts/material-symbols/material-symbols.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <!-- Cropper.js -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <!-- Cropper.js (Local) -->
+    <link href="{{ asset('libs/cropperjs/cropper.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('libs/cropperjs/cropper.min.js') }}"></script>
 
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 (Local) -->
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/sweetalert2.min.css') }}">
+    <script src="{{ asset('libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
-    <!-- Tailwind CDN (Guardian Portal) -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Play CDN (Local) -->
+    <script src="{{ asset('libs/tailwind-play/tailwind.js') }}"></script>
     <script>
         tailwind.config = {
             theme: {

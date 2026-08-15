@@ -289,8 +289,13 @@ class StudentController extends Controller
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in store request');
-            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
-            \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
+            $photo = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
+            if ($photo !== null) {
+                $validated['photo'] = $photo;
+                \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $photo);
+            } else {
+                \Illuminate\Support\Facades\Log::info('Photo upload skipped (filesystem not writable).');
+            }
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in store request');
             if ($request->allFiles()) {
@@ -388,11 +393,16 @@ class StudentController extends Controller
 
         if ($request->hasFile('photo')) {
             \Illuminate\Support\Facades\Log::info('Photo detected in update request');
-            if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($student->photo);
+            $newPhoto = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
+            if ($newPhoto !== null) {
+                if ($student->photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->photo)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($student->photo);
+                }
+                $validated['photo'] = $newPhoto;
+                \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $newPhoto);
+            } else {
+                \Illuminate\Support\Facades\Log::info('Photo upload skipped (filesystem not writable).');
             }
-            $validated['photo'] = \App\Services\ImageService::processAndSaveAvatar($request->file('photo'), 'students');
-            \Illuminate\Support\Facades\Log::info('Photo stored at: ' . $validated['photo']);
         } else {
             \Illuminate\Support\Facades\Log::info('No photo detected in update request');
         }

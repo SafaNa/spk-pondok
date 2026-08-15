@@ -133,24 +133,60 @@
             {{-- Upload Bukti --}}
             <div class="space-y-1.5">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Foto / Dokumen Pendukung <span class="text-slate-400 text-xs font-normal">(opsional)</span>
+                    Foto / Dokumen Pendukung
+                    <span class="text-slate-400 text-xs font-normal ml-1">(maks. 5 file @ 5MB)</span>
                 </label>
-                <div class="relative">
-                    <input type="file" name="attachment" id="attachment"
+
+                {{-- Existing attachments --}}
+                @php $existingFiles = is_array($license->attachment) ? $license->attachment : array_filter([$license->attachment]); @endphp
+                @if(count($existingFiles) > 0)
+                <div class="mb-2" id="existingFilesContainer">
+                    <p class="text-xs text-slate-500 mb-1.5">File saat ini:</p>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        @foreach($existingFiles as $filePath)
+                            @php $isImage = in_array(strtolower(pathinfo($filePath, PATHINFO_EXTENSION)), ['jpg','jpeg','png','webp']); @endphp
+                            <div class="relative rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 aspect-square flex items-center justify-center group existing-file-card" data-path="{{ $filePath }}">
+                                <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="w-full h-full block">
+                                    @if($isImage)
+                                        <img src="{{ asset('storage/' . $filePath) }}" class="w-full h-full object-cover" alt="Lampiran">
+                                    @else
+                                        <div class="flex flex-col items-center gap-1 p-2 text-center h-full justify-center">
+                                            <span class="material-symbols-outlined text-red-500 text-[28px]">picture_as_pdf</span>
+                                            <span class="text-[10px] text-slate-500 break-all line-clamp-2">PDF</span>
+                                        </div>
+                                    @endif
+                                </a>
+                                {{-- Delete Button --}}
+                                <button type="button" onclick="removeExistingFile('{{ $filePath }}', this)"
+                                    class="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow z-10 hover:bg-red-700" title="Hapus file ini">
+                                    <span class="material-symbols-outlined text-[14px]">close</span>
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- New upload --}}
+                <div class="relative mt-2">
+                    <input type="file" name="attachments[]" id="attachment" multiple
                         accept=".jpg,.jpeg,.png,.pdf"
                         class="hidden"
-                        onchange="previewAttachment(this)">
-                    <label for="attachment"
-                        class="flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/5 transition-all">
-                        <span class="material-symbols-outlined text-[22px]">upload_file</span>
-                        <span id="attachmentLabel">Biarkan kosong jika tidak ingin mengubah (maks. 5MB)</span>
+                        onchange="previewAttachments(this)">
+                    <label for="attachment" id="uploadZone"
+                        class="flex flex-col items-center justify-center gap-2 w-full px-4 py-4 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/5 transition-all">
+                        <span class="material-symbols-outlined text-[28px]">upload_file</span>
+                        <span id="attachmentLabel" class="font-medium">Tambahkan file baru (opsional)</span>
+                        <span class="text-xs text-slate-400">JPG, PNG, PDF &bull; Total maks. 5 file bersama file lama</span>
                     </label>
                 </div>
-                <div id="attachmentPreview" class="mt-2 {{ $license->attachment && Storage::disk('public')->exists($license->attachment) ? '' : 'hidden' }}">
-                    <img id="previewImg" src="{{ $license->attachment && Storage::disk('public')->exists($license->attachment) ? asset('storage/' . $license->attachment) : '' }}" alt="Preview"
-                        class="max-h-40 rounded-xl border border-slate-200 dark:border-slate-700 object-contain">
-                </div>
-                @error('attachment')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                {{-- Container for hidden inputs to delete old files --}}
+                <div id="deletedFilesContainer"></div>
+                
+                {{-- New file preview grid --}}
+                <div id="previewGrid" class="hidden grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2"></div>
+                @error('attachments')   <p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                @error('attachments.*') <p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             {{-- Kasus Darurat --}}
@@ -300,24 +336,93 @@ function calcDuration() {
     }
 }
 
-function previewAttachment(input) {
-    var label   = document.getElementById('attachmentLabel');
-    var preview = document.getElementById('attachmentPreview');
-    var img     = document.getElementById('previewImg');
-    if (input.files && input.files[0]) {
-        var file = input.files[0];
-        label.textContent = file.name;
-        if (file.type.startsWith('image/')) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                img.src = e.target.result;
-                preview.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.classList.add('hidden');
-        }
+// --- Stateful file manager ---
+var selectedFiles = [];
+
+function previewAttachments(input) {
+    // Merge newly picked files into selectedFiles (avoid duplicates by name+size)
+    Array.from(input.files).forEach(function(file) {
+        var isDupe = selectedFiles.some(function(f) {
+            return f.name === file.name && f.size === file.size;
+        });
+        if (!isDupe) selectedFiles.push(file);
+    });
+    // Reset the actual input so change event fires again if same file re-added
+    input.value = '';
+    renderPreviews();
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    renderPreviews();
+}
+
+function removeExistingFile(filePath, btnElement) {
+    // Hide the UI card
+    var card = btnElement.closest('.existing-file-card');
+    card.classList.add('hidden');
+    
+    // Add hidden input so backend knows to delete it
+    var container = document.getElementById('deletedFilesContainer');
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'delete_attachments[]';
+    input.value = filePath;
+    container.appendChild(input);
+}
+
+function renderPreviews() {
+    var grid  = document.getElementById('previewGrid');
+    var label = document.getElementById('attachmentLabel');
+    var input = document.getElementById('attachment');
+    grid.innerHTML = '';
+
+    // Sync selectedFiles back to the file input via DataTransfer
+    var dt = new DataTransfer();
+    selectedFiles.forEach(function(f) { dt.items.add(f); });
+    input.files = dt.files;
+
+    if (!selectedFiles.length) {
+        grid.classList.add('hidden');
+        label.textContent = 'Tambahkan file baru (opsional)';
+        return;
     }
+
+    label.textContent = selectedFiles.length + ' file baru ditambahkan';
+    grid.classList.remove('hidden');
+
+    selectedFiles.forEach(function(file, idx) {
+        var card = document.createElement('div');
+        card.className = 'relative rounded-lg overflow-hidden border border-primary/40 bg-slate-100 dark:bg-slate-800 aspect-square flex items-center justify-center group';
+
+        if (file.type.startsWith('image/')) {
+            var img = document.createElement('img');
+            img.className = 'w-full h-full object-cover';
+            var reader = new FileReader();
+            reader.onload = function(e) { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+            card.appendChild(img);
+        } else {
+            var badge = document.createElement('div');
+            badge.className = 'flex flex-col items-center gap-1 p-2 text-center';
+            badge.innerHTML = '<span class="material-symbols-outlined text-red-500 text-[28px]">picture_as_pdf</span>'
+                            + '<span class="text-[10px] text-slate-500 truncate w-full px-1">' + file.name + '</span>';
+            card.appendChild(badge);
+        }
+
+        // ✕ Remove button
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow z-10 hover:bg-red-700';
+        btn.innerHTML = '<span class="material-symbols-outlined text-[14px]">close</span>';
+        btn.title = 'Batal upload file ini';
+        btn.onclick = (function(i) {
+            return function(e) { e.preventDefault(); removeFile(i); };
+        })(idx);
+        card.appendChild(btn);
+
+        grid.appendChild(card);
+    });
 }
 
 calcDuration();

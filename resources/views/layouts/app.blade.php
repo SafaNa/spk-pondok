@@ -11,33 +11,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <title>@yield('title', 'Santri Admin')</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
-        rel="stylesheet" />
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
-    <!-- Tailwind CSS (CDN for V2 Styles) -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts: Inter (Local) -->
+    <link href="{{ asset('libs/fonts/inter/inter.css') }}" rel="stylesheet" />
+    <!-- Material Symbols (Local) -->
+    <link href="{{ asset('libs/fonts/material-symbols/material-symbols.css') }}" rel="stylesheet" />
 
-    <!-- Choices.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <!-- Choices.js (Local) -->
+    <link rel="stylesheet" href="{{ asset('libs/choices/choices.min.css') }}" />
+    <script src="{{ asset('libs/choices/choices.min.js') }}"></script>
 
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 (Local) -->
+    <link rel="stylesheet" href="{{ asset('libs/sweetalert2/sweetalert2.min.css') }}">
+    <script src="{{ asset('libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
-    <!-- Cropper.js -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <!-- Cropper.js (Local) -->
+    <link href="{{ asset('libs/cropperjs/cropper.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('libs/cropperjs/cropper.min.js') }}"></script>
 
-    <!-- Select2 for searchable dropdowns -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- jQuery + Select2 (Local) -->
+    <link href="{{ asset('libs/select2/select2.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('libs/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('libs/select2/select2.min.js') }}"></script>
     <style>
         /* Custom Choices.js Styles for Tailwind */
         .choices__inner {
@@ -246,25 +240,6 @@
             });
         });
     </script>
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
 </head>
 
 <body x-data
@@ -367,7 +342,7 @@
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.education-levels.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.education-levels.index') }}">
                                     <span class="material-symbols-outlined text-[20px]">school</span>
-                                    <span class="text-sm font-medium">Jenjang</span>
+                                    <span class="text-sm font-medium">Jenjang Pendidikan</span>
                                 </a>
                                 <a class="flex items-center gap-2.5 px-3 py-2 rounded-lg {{ request()->routeIs('admin.departments.*') ? 'bg-primary/5 text-primary dark:text-blue-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }} transition-colors"
                                     href="{{ route('admin.departments.index') }}">
@@ -394,42 +369,69 @@
                         </div>
                     @endif
 
+             {{-- MENU PEMBAYARAN SPP --}}
+      
 
+            {{--  @if(Auth::user()->isAdmin() || strtolower(Auth::user()->role) === 'bendahara')
+                <div class="mb-2">
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran</p>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('admin.spp-payments.index') }}">
+                        <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                        <span class="text-sm font-medium">Pembayaran SPP</span>
+                    </a>
+                </div>
+            @endif   --}}
+                    
+           {{--  @if(Auth::user()->isAdmin() || Auth::user()->role === 'bendahara')
+                <div class="mb-2">
+                    <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
+                    </p>
+                    <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
+                        href="{{ route('admin.spp-payments.index') }}">
+                        <span
+                            class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
+                        <span class="text-sm font-medium">Pembayaran SPP</span>
+                    </a>
+                </div>
+            @endif  --}}
+                    
+{{-- MENU KEUNGAN / PEMBAYARAN SPP --}}
+@if(auth()->user()->isAdmin() || (auth()->user()->department && in_array(strtoupper(auth::user()->department->acronym ?? auth::user()->department->name), ['KEUANGAN', 'BENDAHARA'])) || strtolower(auth()->user()->username) === 'bendahara' || strtolower(auth()->user()->role) === 'bendahara')
+    <div class="mb-4">
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Keuangan
+        </p>
+        <div class="space-y-1">
+            <a href="{{ route('admin.spp-payments.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
+                <span class="text-sm font-medium">Pembayaran SPP</span>
+            </a>
+        </div>
+    </div>
+@endif
 
-                    {{-- [HIDDEN] Menu Pembayaran — hidden, not deleted
-                    @if(Auth::user()->isAdmin() || Auth::user()->isFinanceOfficer())
-                        <div class="mb-2">
-                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pembayaran
-                            </p>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.spp-payments.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.spp-payments.index') }}">
-                                <span
-                                    class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.spp-payments.*') ? 'fill-1' : '' }}">payments</span>
-                                <span class="text-sm font-medium">Pembayaran SPP</span>
-                            </a>
-                        </div>
-                    @endif
-                    --}}
+{{-- MENU PELANGGARAN --}}
+@if(auth()->user()->canManageViolations())
+    <div class="mb-4">
+        <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
+        </p>
+        <div class="space-y-1">
+            <a href="{{ route('admin.violations.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">gavel</span>
+                <span class="text-sm font-medium">Catat Pelanggaran</span>
+            </a>
 
-                    @if(auth()->user()->canManageViolations())
-                        <div class="mb-4">
-                            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pelanggaran
-                            </p>
-                            <div class="space-y-1">
-                                <a href="{{ route('admin.violations.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-                                    <span class="material-symbols-outlined text-[20px]">gavel</span>
-                                    <span class="text-sm font-medium">Catat Pelanggaran</span>
-                                </a>
-
-                                <a href="{{ route('admin.violation-types.index') }}"
-                                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-                                    <span class="material-symbols-outlined text-[20px]">list_alt</span>
-                                    <span class="text-sm font-medium">Jenis Pelanggaran</span>
-                                </a>
-                            </div>
-                        </div>
-                    @endif
+            <a href="{{ route('admin.violation-types.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violation-types.*') || request()->routeIs('admin.violation-categories.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
+                <span class="material-symbols-outlined text-[20px]">list_alt</span>
+                <span class="text-sm font-medium">Jenis Pelanggaran</span>
+            </a>
+        </div>
+    </div>
+@endif
+              
 
                     @if(Auth::user()->isAdmin() || Auth::user()->isMemorizationOfficer())
                         <div class="mb-2">
@@ -491,7 +493,7 @@
                             <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.settings.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
                                 href="{{ route('admin.settings.index') }}">
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.settings.*') ? 'fill-1' : '' }}">settings</span>
-                                <span class="text-sm font-medium">Pengaturan Aplikasi</span>
+                                <span class="text-sm font-medium">Setting</span>
                             </a>
                         </div>
                     @endif
@@ -936,8 +938,8 @@
             </script>
         @endif
 
-        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="{{ asset('libs/alpinejs/collapse.min.js') }}"></script>
+        <script src="{{ asset('libs/alpinejs/alpine.min.js') }}"></script>
 
         <!-- Cropper Modal: HARUS setelah Alpine.js agar listener tidak ditimpa -->
         <x-cropper-modal />
