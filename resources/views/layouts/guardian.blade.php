@@ -24,6 +24,7 @@
     <script src="{{ asset('libs/tailwind-play/tailwind.js') }}"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: { "primary": "#137fec" },

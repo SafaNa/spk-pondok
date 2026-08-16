@@ -50,17 +50,36 @@ class SppPaymentController extends Controller
      */
     public function create()
     {
-        // Simple optimization: Get active (or all) students and academic years
-        $students = Student::orderBy('name')->get();
-        // Get the single active academic year for the hidden field
-        $activeYear = AcademicYear::where('status', 'active')->first();
+        $activeYear = AcademicYear::where('status', 'active')->first()
+            ?? AcademicYear::latest()->first();
 
-        // Fallback if no active year (though system should have one)
-        if (!$activeYear) {
-            $activeYear = AcademicYear::latest()->first();
-        }
+        $preselectedStudent = old('student_id')
+            ? Student::with('room', 'rayon')->find(old('student_id'))
+            : null;
 
-        return view('finance.spp.create', compact('students', 'activeYear'));
+        return view('finance.spp.create', compact('activeYear', 'preselectedStudent'));
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $q = $request->input('q', '');
+
+        $students = Student::with('room', 'rayon')
+            ->where('status', 'active')
+            ->where(function ($query) use ($q) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($q) . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?',  ['%' . strtolower($q) . '%']);
+            })
+            ->orderBy('name')
+            ->limit(30)
+            ->get()
+            ->map(fn($s) => [
+                'id'   => $s->id,
+                'text' => $s->name,
+                'info' => ($s->nis ?? '-') . ' · ' . ($s->rayon?->name ?? '') . ' - ' . ($s->room?->name ?? 'Belum ada kamar'),
+            ]);
+
+        return response()->json(['results' => $students]);
     }
 
     /**
@@ -145,9 +164,9 @@ class SppPaymentController extends Controller
      */
     public function edit(SppPayment $sppPayment)
     {
-        $students = Student::orderBy('name')->get();
+        $sppPayment->load('student.room', 'student.rayon');
         $academicYears = AcademicYear::all();
-        return view('finance.spp.edit', compact('sppPayment', 'students', 'academicYears'));
+        return view('finance.spp.edit', compact('sppPayment', 'academicYears'));
     }
 
     /**

@@ -130,6 +130,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('users', UserController::class);
 
     // Finance / Keuangan
+    Route::get('/spp-payments/search-students', [SppPaymentController::class, 'searchStudents'])->name('spp-payments.search-students');
     Route::resource('spp-payments', SppPaymentController::class);
 
     // Theme
