@@ -55,12 +55,13 @@
                                     <select name="student_id" required style="background-image: none;"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
                                         <option value="">-- Cari Nama Santri --</option>
-                                        @foreach ($students as $student)
-                                            <option value="{{ $student->id }}" data-info="({{ $student->rayon?->name }} - {{ $student->room?->name }})"
-                                                {{ old('student_id', $license->student_id) == $student->id ? 'selected' : '' }}>
-                                                {{ $student->name }}
+                                        @php $sel = old('student_id', $license->student_id); $selStudent = $sel === $license->student_id ? $license->student : null; @endphp
+                                        @if($selStudent)
+                                            <option value="{{ $selStudent->id }}" selected
+                                                data-info="({{ $selStudent->rayon?->name }} - {{ $selStudent->room?->name }})">
+                                                {{ $selStudent->name }}
                                             </option>
-                                        @endforeach
+                                        @endif
                                     </select>
                                 </div>
                                 @error('student_id')
@@ -257,23 +258,37 @@
             if (initialCategory) {
                 loadReasons(initialCategory);
             }
-            // Initialize Select2
+            // Initialize Select2 with AJAX student search
             $('select[name="student_id"]').select2({
-                placeholder: '-- Cari Nama Santri --',
+                placeholder: '-- Ketik nama atau NIS santri --',
                 allowClear: true,
                 width: '100%',
                 dropdownCssClass: 'select2-premium-dropdown',
                 containerCssClass: 'select2-premium-container',
+                minimumInputLength: 2,
+                ajax: {
+                    url: '{{ route("admin.licenses.search-students") }}',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function(params) { return { q: params.term }; },
+                    processResults: function(data) { return { results: data.results }; },
+                    cache: true
+                },
                 templateResult: formatStudent,
-                templateSelection: formatStudent
+                templateSelection: formatStudentSelection
             });
 
             function formatStudent(student) {
+                if (student.loading) { return student.text; }
                 if (!student.id) { return student.text; }
-                var $student = $(
-                    '<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + ($(student.element).data('info') || '') + '</span></span>'
-                );
-                return $student;
+                var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
+                return $('<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span></span>');
+            }
+
+            function formatStudentSelection(student) {
+                if (!student.id) { return student.text; }
+                var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
+                return $('<span>' + student.text + (info ? ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span>' : '') + '</span>');
             }
 
             // Initial calculation

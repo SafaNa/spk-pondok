@@ -62,9 +62,33 @@ class LicenseController extends Controller
     // Individual License Form
     public function create()
     {
-        $students   = Student::orderBy('name')->limit(50)->get();
-        $categories = LeaveCategory::orderBy('order')->get();
-        return view('licensing.create', compact('students', 'categories'));
+        $categories        = LeaveCategory::orderBy('order')->get();
+        $preselectedStudent = old('student_id')
+            ? Student::with('room', 'rayon')->find(old('student_id'))
+            : null;
+        return view('licensing.create', compact('categories', 'preselectedStudent'));
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $q = $request->input('q', '');
+
+        $students = Student::with('room', 'rayon')
+            ->where('status', 'active')
+            ->where(function ($query) use ($q) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($q) . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?',  ['%' . strtolower($q) . '%']);
+            })
+            ->orderBy('name')
+            ->limit(30)
+            ->get()
+            ->map(fn($s) => [
+                'id'   => $s->id,
+                'text' => $s->name,
+                'info' => ($s->nis ?? '-') . ' · ' . ($s->rayon?->name ?? '') . ' - ' . ($s->room?->name ?? 'Belum ada kamar'),
+            ]);
+
+        return response()->json(['results' => $students]);
     }
 
     // Store Individual License
@@ -211,9 +235,9 @@ class LicenseController extends Controller
     // Edit Form
     public function edit(StudentLicense $license)
     {
-        $students   = Student::orderBy('name')->limit(100)->get();
+        $license->load('student.room', 'student.rayon');
         $categories = \App\Models\Licensing\LeaveCategory::orderBy('order')->get();
-        return view('licensing.edit', compact('license', 'students', 'categories'));
+        return view('licensing.edit', compact('license', 'categories'));
     }
 
     // Update License

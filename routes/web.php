@@ -163,6 +163,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/mass-leaves/{mass_leaf}/finish', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'finishEvent'])->name('mass-leaves.finish');
     Route::resource('mass-leaves', \App\Http\Controllers\Licensing\MassLeaveController::class)->parameters(['mass-leaves' => 'mass_leaf']);
 
+    Route::get('/licenses/search-students', [LicenseController::class, 'searchStudents'])->name('licenses.search-students');
     Route::get('/licenses/active', [LicenseController::class, 'active'])->name('licenses.active');
     Route::get('/licenses/active/{license}', [LicenseController::class, 'activeShow'])->name('licenses.active.show');
     Route::get('/licenses', [LicenseController::class, 'index'])->name('licenses.index');

@@ -280,8 +280,8 @@
                             </div>
                             <input type="text" name="new_password" id="newPasswordInput"
                                 class="w-full pl-12 pr-4 py-3.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 font-mono font-medium focus:outline-none focus:border-amber-400 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-amber-400/10 transition-all duration-200"
-                                placeholder="Masukkan password baru (min. 6 karakter)"
-                                required minlength="6" autocomplete="new-password">
+                                placeholder="Masukkan password baru (min. 8 karakter, huruf besar, kecil, angka)"
+                                required minlength="8" autocomplete="new-password">
                         </div>
                         <p class="text-xs text-slate-400">Gunakan kombinasi huruf dan angka agar lebih aman.</p>
                     </div>
@@ -343,13 +343,25 @@
         if (e.target === this) closeResetModal();
     });
 
-    // Generate simple random password
+    // Generate random password guaranteeing mixed case and numbers
     function generatePassword() {
-        const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+        const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const lowers = 'abcdefghijkmnpqrstuvwxyz';
+        const numbers = '23456789';
+        const all = uppers + lowers + numbers;
+        
         let pass = '';
-        for (let i = 0; i < 8; i++) {
-            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        pass += uppers.charAt(Math.floor(Math.random() * uppers.length));
+        pass += lowers.charAt(Math.floor(Math.random() * lowers.length));
+        pass += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        
+        for (let i = 0; i < 5; i++) {
+            pass += all.charAt(Math.floor(Math.random() * all.length));
         }
+        
+        // Shuffle the characters
+        pass = pass.split('').sort(() => 0.5 - Math.random()).join('');
+        
         document.getElementById('newPasswordInput').value = pass;
         document.getElementById('newPasswordInput').type = 'text';
         document.getElementById('newPasswordInput').select();
