@@ -64,7 +64,12 @@
                                     <select name="student_id" required style="background-image: none;"
                                         class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-normal focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200 appearance-none">
                                         <option value="">-- Pilih Santri --</option>
-                                        @php $selStudent = old('student_id', $sppPayment->student_id) === $sppPayment->student_id ? $sppPayment->student : null; @endphp
+                                        @php
+                                            $selId = old('student_id', $sppPayment->student_id);
+                                            $selStudent = $selId === $sppPayment->student_id
+                                                ? $sppPayment->student
+                                                : ($selId ? \App\Models\Master\Student::with('room','rayon')->find($selId) : null);
+                                        @endphp
                                         @if($selStudent)
                                             <option value="{{ $selStudent->id }}" selected
                                                 data-info="({{ $selStudent->rayon?->name }} - {{ $selStudent->room?->name }})">
@@ -267,7 +272,7 @@
                     url: '{{ route("admin.spp-payments.search-students") }}',
                     dataType: 'json',
                     delay: 300,
-                    data: function(params) { return { q: params.term }; },
+                    data: function(params) { return { q: params.term, include_id: '{{ $sppPayment->student_id }}' }; },
                     processResults: function(data) { return { results: data.results }; },
                     cache: true
                 },
@@ -279,13 +284,17 @@
                 if (student.loading) { return student.text; }
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span></span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             function formatStudentSelection(student) {
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + (info ? ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span>' : '') + '</span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             // Auto-fill amount based on Academic Year

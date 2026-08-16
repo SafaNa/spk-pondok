@@ -343,13 +343,17 @@
                 if (student.loading) { return student.text; }
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span></span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             function formatStudentSelection(student) {
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + (info ? ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span>' : '') + '</span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             // Initial calculation

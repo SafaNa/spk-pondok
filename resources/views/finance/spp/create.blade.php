@@ -275,13 +275,17 @@
                 if (student.loading) { return student.text; }
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span></span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             function formatStudentSelection(student) {
                 if (!student.id) { return student.text; }
                 var info = student.info || (student.element ? $(student.element).data('info') : '') || '';
-                return $('<span>' + student.text + (info ? ' <span class="text-slate-400 text-xs font-normal ml-1">' + info + '</span>' : '') + '</span>');
+                var $wrap = $('<span>').append($('<span>').text(student.text));
+                if (info) $wrap.append($('<span class="text-slate-400 text-xs font-normal ml-1">').text(info));
+                return $wrap;
             }
 
             // Auto-fill amount based on Academic Year
@@ -339,7 +343,7 @@
             const fullAmount = {{ $activeYear?->spp_amount ?? 0 }};
 
             // Handle Stage Change
-            $('select[name="stage"]').on('change', function() {
+            $('select[name="stage"]').on('change', function(e, skipAmount) {
                 const stage = $(this).val();
                 const deadline = deadlines[stage] || '-';
                 $('#deadline_display').val(deadline);
@@ -352,17 +356,17 @@
                     amount = fullAmount / 2; // Half Payment
                 }
 
-                if (amount > 0) {
+                if (amount > 0 && !skipAmount) {
                     amountInput.val(amount);
                     amountDisplay.val(formatRupiah(amount));
                 }
-                
+
                 if (deadline !== '-') {
                     $('#deadline_info').text(`Jika melewati ${deadline}, denda Rp 500 akan otomatis dicatat.`);
                 } else {
                     $('#deadline_info').text('Tidak ada batas waktu untuk tahap ini.');
                 }
-            }).trigger('change');
+            }).trigger('change', [!!amountInput.val()]);
         });
     </script>
 

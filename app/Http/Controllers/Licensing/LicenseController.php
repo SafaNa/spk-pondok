@@ -71,13 +71,24 @@ class LicenseController extends Controller
 
     public function searchStudents(Request $request)
     {
-        $q = $request->input('q', '');
+        $q = trim($request->input('q', ''));
+        if (strlen($q) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $escaped   = addcslashes($q, '%_\\');
+        $includeId = $request->input('include_id');
 
         $students = Student::with('room', 'rayon')
-            ->where('status', 'active')
-            ->where(function ($query) use ($q) {
-                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($q) . '%'])
-                      ->orWhereRaw('LOWER(nis) LIKE ?',  ['%' . strtolower($q) . '%']);
+            ->where(function ($query) use ($includeId) {
+                $query->where('status', 'active');
+                if ($includeId) {
+                    $query->orWhere('id', $includeId);
+                }
+            })
+            ->where(function ($query) use ($escaped) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($escaped) . '%'])
+                      ->orWhereRaw('LOWER(nis) LIKE ?',  ['%' . strtolower($escaped) . '%']);
             })
             ->orderBy('name')
             ->limit(30)
