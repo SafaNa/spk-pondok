@@ -149,11 +149,11 @@ class LicenseController extends Controller
             if ($student) {
                 $startDate = Carbon::parse($validated['start_date'])->format('d-m-Y');
                 $endDate = Carbon::parse($validated['end_date'])->format('d-m-Y');
-                $message = "IZIN PULANG: \n" .
-                    "Ananda {$student->name} telah diberikan izin pulang/keluar. \n" .
-                    "Tanggal: {$startDate} s.d {$endDate}. \n" .
-                    "Keterangan: {$validated['description']}. \n" .
-                    "Mohon pengawasannya. Terima kasih.";
+                $message = "PENGAJUAN IZIN PULANG\n" .
+                    "Ananda {$student->name} telah mengajukan izin pulang/keluar.\n" .
+                    "Tanggal: {$startDate} s.d {$endDate}.\n" .
+                    "Keterangan: {$validated['description']}.\n" .
+                    "Pengajuan sedang dalam proses persetujuan pengurus. Terima kasih.";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
@@ -466,7 +466,7 @@ class LicenseController extends Controller
                 "PERPANJANGAN IZIN DISETUJUI\n" .
                 "Perpanjangan izin Ananda {$license->student->name} telah dicatat dan disetujui.\n" .
                 "Tanggal kembali yang baru: {$newDateStr}.\n" .
-                "Harap jadikan periksa. Terima kasih."
+                "Mohon diperhatikan. Terima kasih."
             );
 
             return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.');
@@ -517,7 +517,7 @@ class LicenseController extends Controller
             "PERPANJANGAN IZIN DISETUJUI\n" .
             "Pengajuan perpanjangan izin Ananda {$license->student->name} telah disetujui.\n" .
             "Tanggal kembali yang baru: {$newDateStr}.\n" .
-            "Harap jadikan periksa. Terima kasih."
+            "Mohon diperhatikan. Terima kasih."
         );
 
         return back()->with('success', 'Perpanjangan disetujui. Tanggal kembali diperbarui ke ' .

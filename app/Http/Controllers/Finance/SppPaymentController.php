@@ -149,7 +149,8 @@ class SppPaymentController extends Controller
             $student = Student::find($request->student_id);
             if ($student) {
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
-                $message = "Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diterima (Status: {$request->status}). Terima kasih.";
+                $statusText = $request->status === 'paid' ? 'telah diterima dan lunas' : 'telah dicatat namun belum lunas (menunggu konfirmasi)';
+                $message = "PEMBAYARAN SPP\nPembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " {$statusText}. Terima kasih.";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
@@ -235,7 +236,8 @@ class SppPaymentController extends Controller
             $student = Student::find($request->student_id);
             if ($student) {
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
-                $message = "Update Pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . ". Status saat ini: {$request->status}.";
+                $statusText = $request->status === 'paid' ? 'Lunas' : 'Belum Lunas';
+                $message = "PEMBARUAN DATA SPP\nData pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diperbarui. Status: {$statusText}. Terima kasih.";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
