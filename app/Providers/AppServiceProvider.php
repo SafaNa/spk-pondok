@@ -17,7 +17,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $customPublic = base_path('../public_html/latee-putri.kkkmilenteng.my.id');
+        if (is_dir($customPublic)) {
+            $this->app->usePublicPath($customPublic);
+        }
     }
 
     /**

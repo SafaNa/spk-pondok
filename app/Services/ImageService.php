@@ -21,44 +21,52 @@ class ImageService
      */
     public static function processAndSaveAvatar(UploadedFile $file, string $directory, int $size = 500, int $quality = 80): ?string
     {
-        // Fallback: jika GD & Imagick tidak tersedia (misal di Vercel), skip upload
+        $dir = trim($directory, '/');
+
+        // Fallback jika GD dan Imagick tidak tersedia: langsung simpan file aslinya tanpa crop
         if (!extension_loaded('gd') && !extension_loaded('imagick')) {
-            return null;
+            try {
+                return $file->store($dir, 'public');
+            } catch (\Throwable $e) {
+                return null;
+            }
         }
 
-        // Fallback: jika storage tidak bisa ditulis (Vercel read-only filesystem)
         try {
-            Storage::disk('public')->makeDirectory(trim($directory, '/'));
+            // Auto-detect available driver: prefer Imagick, fallback to GD
+            if (extension_loaded('imagick')) {
+                $driver = new ImagickDriver();
+            } else {
+                $driver = new GdDriver();
+            }
+
+            // Init Intervention Image Manager
+            $manager = new ImageManager($driver);
+
+            // Read the image
+            $image = $manager->read($file->getRealPath());
+
+            // Resize and crop to fill the given dimensions
+            $image->cover($size, $size);
+
+            // Encode to WebP format
+            $encoded = $image->toWebp($quality);
+
+            // Generate a unique filename
+            $filename = \Illuminate\Support\Str::random(40) . '.webp';
+            $path = $dir . '/' . $filename;
+
+            // Save to public disk
+            Storage::disk('public')->put($path, (string) $encoded);
+
+            return $path;
         } catch (\Throwable $e) {
-            return null;
+            // Jika terjadi kegagalan saat crop/encode, fallback simpan file aslinya langsung
+            try {
+                return $file->store($dir, 'public');
+            } catch (\Throwable $ex) {
+                return null;
+            }
         }
-
-        // Auto-detect available driver: prefer Imagick, fallback to GD
-        if (extension_loaded('imagick')) {
-            $driver = new ImagickDriver();
-        } else {
-            $driver = new GdDriver();
-        }
-
-        // Init Intervention Image Manager
-        $manager = new ImageManager($driver);
-
-        // Read the image
-        $image = $manager->read($file->getRealPath());
-
-        // Resize and crop to fill the given dimensions
-        $image->cover($size, $size);
-
-        // Encode to WebP format
-        $encoded = $image->toWebp($quality);
-
-        // Generate a unique filename
-        $filename = \Illuminate\Support\Str::random(40) . '.webp';
-        $path = trim($directory, '/') . '/' . $filename;
-
-        // Save to public disk
-        Storage::disk('public')->put($path, (string) $encoded);
-
-        return $path;
     }
 }
