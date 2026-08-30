@@ -155,11 +155,21 @@ class ViolationController extends Controller
                     $isKewajiban = str_contains($violationType->code, '-KW-');
                     $actionText = $isKewajiban ? "tidak mematuhi tata tertib (Kewajiban)" : "melakukan pelanggaran (Larangan)";
 
-                    $message = "PEMBERITAHUAN PELANGGARAN\n" .
-                        "Ananda {$student->name} tercatat {$actionText}: {$violationType->name}.\n" .
-                        "Sanksi: {$violationType->default_sanction}.\n" .
-                        "Tanggal: {$tanggal}.\n" .
-                        "Mohon kerjasamanya. Terima kasih.";
+                    $message = "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+                        "Informasi dari *Pengurus Pesantren (Bagian Kedisiplinan)*:\n\n" .
+                        "*PEMBERITAHUAN PELANGGARAN*\n" .
+                        "Telah tercatat informasi pelanggaran atas santri:\n" .
+                        "👤 Nama: *{$student->name}*\n" .
+                        "🔖 {$student->identifier_label}: {$student->nis}\n" .
+                        "🏠 Kamar: " . ($student->room?->name ?? '-') . " (" . ($student->rayon?->name ?? '-') . ")\n\n" .
+                        "Tercatat {$actionText}:\n" .
+                        "📌 Jenis: {$violationType->name}\n" .
+                        "⚖️ Sanksi: {$violationType->default_sanction}\n" .
+                        "🗓 Tanggal: {$tanggal}\n\n" .
+                        "Mohon kerja sama Bapak/Ibu untuk menasihati ananda. Terima kasih.\n\n" .
+                        "---\n" .
+                        "🤖 _Pesan otomatis sistem Pesantren._\n" .
+                        "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._";
                     $waNotification = [
                         'phone' => $phone,
                         'message' => $message

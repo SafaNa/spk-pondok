@@ -149,11 +149,19 @@ class LicenseController extends Controller
             if ($student) {
                 $startDate = Carbon::parse($validated['start_date'])->format('d-m-Y');
                 $endDate = Carbon::parse($validated['end_date'])->format('d-m-Y');
-                $message = "PENGAJUAN IZIN PULANG\n" .
-                    "Ananda {$student->name} telah mengajukan izin pulang/keluar.\n" .
-                    "Tanggal: {$startDate} s.d {$endDate}.\n" .
-                    "Keterangan: {$validated['description']}.\n" .
-                    "Pengajuan sedang dalam proses persetujuan pengurus. Terima kasih.";
+                $message = "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+                    "Informasi dari *Pengurus Pesantren*:\n\n" .
+                    "*PENGAJUAN IZIN PULANG*\n" .
+                    "Telah tercatat pengajuan izin untuk santri:\n" .
+                    "👤 Nama: *{$student->name}*\n" .
+                    "🔖 {$student->identifier_label}: {$student->nis}\n" .
+                    "🏠 Kamar: " . ($student->room?->name ?? '-') . " (" . ($student->rayon?->name ?? '-') . ")\n\n" .
+                    "🗓 Tanggal: {$startDate} s.d {$endDate}\n" .
+                    "📝 Keterangan: {$validated['description']}\n\n" .
+                    "Pengajuan sedang dalam proses persetujuan pengurus.\n\n" .
+                    "---\n" .
+                    "🤖 _Pesan otomatis sistem Pesantren._\n" .
+                    "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
@@ -304,10 +312,17 @@ class LicenseController extends Controller
         $start = $license->start_date->format('d-m-Y');
         $end   = $license->end_date->format('d-m-Y');
         $this->sendWaNotification($license,
-            "IZIN PULANG DISETUJUI\n" .
-            "Ananda {$license->student->name} telah mendapat izin pulang.\n" .
-            "Tanggal: {$start} s.d {$end}.\n" .
-            "Harap jaga dan awasi kepulangan ananda. Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*IZIN PULANG DISETUJUI*\n" .
+            "Ananda *{$license->student->name}* telah mendapat izin pulang.\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "🗓 Tanggal: {$start} s.d {$end}\n\n" .
+            "Harap jaga dan awasi kepulangan ananda. Terima kasih.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Izin berhasil disetujui.');
@@ -321,10 +336,17 @@ class LicenseController extends Controller
         $start = $license->start_date->format('d-m-Y');
         $end   = $license->end_date->format('d-m-Y');
         $this->sendWaNotification($license,
-            "IZIN PULANG DISETUJUI (DARURAT)\n" .
-            "Ananda {$license->student->name} mendapat izin pulang atas pertimbangan darurat.\n" .
-            "Tanggal: {$start} s.d {$end}.\n" .
-            "Harap jaga dan awasi kepulangan ananda. Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*IZIN PULANG DISETUJUI (DARURAT)*\n" .
+            "Ananda *{$license->student->name}* mendapat izin pulang atas pertimbangan darurat.\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "🗓 Tanggal: {$start} s.d {$end}\n\n" .
+            "Harap jaga dan awasi kepulangan ananda. Terima kasih.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Izin disetujui sebagai kasus darurat.');
@@ -344,9 +366,16 @@ class LicenseController extends Controller
 
         $reasonText = $request->filled('rejection_reason') ? "\nAlasan: " . $request->rejection_reason : "";
         $this->sendWaNotification($license,
-            "IZIN PULANG DITOLAK\n" .
-            "Pengajuan izin pulang Ananda {$license->student->name} tidak dapat disetujui saat ini.{$reasonText}\n" .
-            "Silakan hubungi pihak pesantren untuk informasi lebih lanjut. Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*IZIN PULANG DITOLAK*\n" .
+            "Pengajuan izin pulang Ananda *{$license->student->name}* tidak dapat disetujui saat ini.{$reasonText}\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "Silakan hubungi pihak pesantren untuk informasi lebih lanjut.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Izin berhasil ditolak.');
@@ -377,10 +406,18 @@ class LicenseController extends Controller
         $license->load('student.guardians');
         $returnDate = \Carbon\Carbon::parse($request->actual_return_date)->format('d-m-Y');
         $this->sendWaNotification($license,
-            "SANTRI KEMBALI KE PESANTREN\n" .
-            "Ananda {$license->student->name} telah kembali ke pesantren.\n" .
-            "Tanggal kembali: {$returnDate}. Status: {$status}.\n" .
-            "Terima kasih atas kerjasamanya."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*SANTRI KEMBALI KE PESANTREN*\n" .
+            "Ananda *{$license->student->name}* telah kembali ke pesantren.\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "🗓 Tanggal kembali: {$returnDate}\n" .
+            "📋 Status: {$status}\n\n" .
+            "Terima kasih atas kerja sama Bapak/Ibu.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', "Kepulangan santri berhasil dicatat. Status: {$status}.");
@@ -463,10 +500,17 @@ class LicenseController extends Controller
             $license->load('student.guardians');
             $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
             $this->sendWaNotification($license,
-                "PERPANJANGAN IZIN DISETUJUI\n" .
-                "Perpanjangan izin Ananda {$license->student->name} telah dicatat dan disetujui.\n" .
-                "Tanggal kembali yang baru: {$newDateStr}.\n" .
-                "Mohon diperhatikan. Terima kasih."
+                "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+                "Informasi dari *Pengurus Pesantren*:\n\n" .
+                "*PERPANJANGAN IZIN DISETUJUI*\n" .
+                "Perpanjangan izin Ananda *{$license->student->name}* telah dicatat dan disetujui.\n" .
+                "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+                "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+                "🗓 Tanggal kembali yang baru: {$newDateStr}\n\n" .
+                "Mohon diperhatikan. Terima kasih.\n\n" .
+                "---\n" .
+                "🤖 _Pesan otomatis sistem Pesantren._\n" .
+                "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
             );
 
             return back()->with('success', 'Perpanjangan via telepon berhasil dicatat dan langsung disetujui.');
@@ -475,9 +519,15 @@ class LicenseController extends Controller
         $license->load('student.guardians');
         $newDateStr = \Carbon\Carbon::parse($request->requested_new_end_date)->format('d-m-Y');
         $this->sendWaNotification($license,
-            "PENGAJUAN PERPANJANGAN IZIN\n" .
-            "Pengajuan perpanjangan izin Ananda {$license->student->name} hingga {$newDateStr} telah dicatat dan sedang menunggu persetujuan.\n" .
-            "Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*PENGAJUAN PERPANJANGAN IZIN*\n" .
+            "Pengajuan perpanjangan izin Ananda *{$license->student->name}* hingga {$newDateStr} telah dicatat dan sedang menunggu persetujuan pengurus.\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Perpanjangan via telepon berhasil dicatat. Menunggu persetujuan.');
@@ -514,10 +564,17 @@ class LicenseController extends Controller
         $license->load('student.guardians');
         $newDateStr = $newDate->format('d-m-Y');
         $this->sendWaNotification($license,
-            "PERPANJANGAN IZIN DISETUJUI\n" .
-            "Pengajuan perpanjangan izin Ananda {$license->student->name} telah disetujui.\n" .
-            "Tanggal kembali yang baru: {$newDateStr}.\n" .
-            "Mohon diperhatikan. Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*PERPANJANGAN IZIN DISETUJUI*\n" .
+            "Pengajuan perpanjangan izin Ananda *{$license->student->name}* telah disetujui.\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "🗓 Tanggal kembali yang baru: {$newDateStr}\n\n" .
+            "Mohon diperhatikan. Terima kasih.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Perpanjangan disetujui. Tanggal kembali diperbarui ke ' .
@@ -548,9 +605,16 @@ class LicenseController extends Controller
 
         $reasonText = $request->filled('admin_notes') ? "\nAlasan: " . $request->admin_notes : "";
         $this->sendWaNotification($license,
-            "PERPANJANGAN IZIN DITOLAK\n" .
-            "Mohon maaf, pengajuan perpanjangan izin Ananda {$license->student->name} tidak dapat disetujui.{$reasonText}\n" .
-            "Harap santri kembali sesuai jadwal semula. Terima kasih."
+            "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+            "Informasi dari *Pengurus Pesantren*:\n\n" .
+            "*PERPANJANGAN IZIN DITOLAK*\n" .
+            "Mohon maaf, pengajuan perpanjangan izin Ananda *{$license->student->name}* tidak dapat disetujui.{$reasonText}\n" .
+            "🔖 {$license->student->identifier_label}: {$license->student->nis}\n" .
+            "🏠 Kamar: " . ($license->student->room?->name ?? '-') . " (" . ($license->student->rayon?->name ?? '-') . ")\n\n" .
+            "Harap santri kembali sesuai jadwal semula. Terima kasih.\n\n" .
+            "---\n" .
+            "🤖 _Pesan otomatis sistem SPK Pesantren._\n" .
+            "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._"
         );
 
         return back()->with('success', 'Perpanjangan berhasil ditolak.');

@@ -150,7 +150,20 @@ class SppPaymentController extends Controller
             if ($student) {
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
                 $statusText = $request->status === 'paid' ? 'telah diterima dan lunas' : 'telah dicatat namun belum lunas (menunggu konfirmasi)';
-                $message = "PEMBAYARAN SPP\nPembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " {$statusText}. Terima kasih.";
+                $amountFormatted = number_format($request->amount, 0, ',', '.');
+                $message = "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+                    "Informasi dari *Pengurus Pesantren (Bagian Keuangan)*:\n\n" .
+                    "*PEMBAYARAN SPP*\n" .
+                    "Telah dilakukan pembayaran SPP {$stageText} untuk santri:\n" .
+                    "👤 Nama: *{$student->name}*\n" .
+                    "🔖 {$student->identifier_label}: {$student->nis}\n" .
+                    "🏠 Kamar: " . ($student->room?->name ?? '-') . " (" . ($student->rayon?->name ?? '-') . ")\n\n" .
+                    "Nominal: *Rp {$amountFormatted}*\n" .
+                    "Status: {$statusText}.\n\n" .
+                    "Terima kasih atas kerja sama Bapak/Ibu.\n\n" .
+                    "---\n" .
+                    "🤖 _Pesan otomatis sistem Pesantren._\n" .
+                    "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
@@ -237,7 +250,20 @@ class SppPaymentController extends Controller
             if ($student) {
                 $stageText = $request->stage == 'full' ? 'LUNAS (Full)' : "Tahap {$request->stage}";
                 $statusText = $request->status === 'paid' ? 'Lunas' : 'Belum Lunas';
-                $message = "PEMBARUAN DATA SPP\nData pembayaran SPP {$stageText} atas nama {$student->name} sebesar Rp " . number_format($request->amount, 0, ',', '.') . " telah diperbarui. Status: {$statusText}. Terima kasih.";
+                $amountFormatted = number_format($request->amount, 0, ',', '.');
+                $message = "Assalamualaikum Wr. Wb. Bapak/Ibu,\n\n" .
+                    "Informasi dari *Pengurus Pesantren (Bagian Keuangan)*:\n\n" .
+                    "*PEMBARUAN DATA SPP*\n" .
+                    "Data pembayaran SPP {$stageText} untuk santri:\n" .
+                    "👤 Nama: *{$student->name}*\n" .
+                    "🔖 {$student->identifier_label}: {$student->nis}\n" .
+                    "🏠 Kamar: " . ($student->room?->name ?? '-') . " (" . ($student->rayon?->name ?? '-') . ")\n\n" .
+                    "Telah diperbarui. Nominal: *Rp {$amountFormatted}*\n" .
+                    "📋 Status saat ini: *{$statusText}*\n\n" .
+                    "Terima kasih atas kerja sama Bapak/Ibu.\n\n" .
+                    "---\n" .
+                    "🤖 _Pesan otomatis sistem Pesantren._\n" .
+                    "_Mohon balas *\"BAIK\"* atau *\"OK\"* sebagai tanda konfirmasi bahwa pesan ini telah diterima._";
                 $phone = $student->guardians()->whereNotNull('phone')->value('phone')
                        ?? $student->notification_phone
                        ?? $student->phone
