@@ -214,28 +214,28 @@
                 <span class="material-symbols-outlined text-[20px]">assignment</span>
             </div>
             <p class="text-2xl font-black text-[#0d141b] dark:text-white">{{ $extTotal }}</p>
-            <p class="text-xs text-[#4c739a]">Total Perpanjangan</p>
+            <p class="text-xs text-[#4c739a]">Total Perpanjangan Izin</p>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-[#e7edf3] dark:border-slate-700 shadow-sm p-4 border-l-4 border-l-green-500">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-green-500 mb-2">
                 <span class="material-symbols-outlined text-[20px]">check_circle</span>
             </div>
             <p class="text-2xl font-black text-[#0d141b] dark:text-white">{{ $extApproved }}</p>
-            <p class="text-xs text-[#4c739a]">Perpanjangan Disetujui</p>
+            <p class="text-xs text-[#4c739a]">Perpanjangan Izin Disetujui</p>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-[#e7edf3] dark:border-slate-700 shadow-sm p-4 border-l-4 border-l-amber-500">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-500 mb-2">
                 <span class="material-symbols-outlined text-[20px]">schedule</span>
             </div>
             <p class="text-2xl font-black text-[#0d141b] dark:text-white">{{ $extPending }}</p>
-            <p class="text-xs text-[#4c739a]">Perpanjangan Pending</p>
+            <p class="text-xs text-[#4c739a]">Perpanjangan Izin Pending</p>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-[#e7edf3] dark:border-slate-700 shadow-sm p-4 border-l-4 border-l-red-500">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-500 mb-2">
                 <span class="material-symbols-outlined text-[20px]">cancel</span>
             </div>
             <p class="text-2xl font-black text-[#0d141b] dark:text-white">{{ $extRejected }}</p>
-            <p class="text-xs text-[#4c739a]">Perpanjangan Ditolak</p>
+            <p class="text-xs text-[#4c739a]">Perpanjangan Izin Ditolak</p>
         </div>
     </div>
 
@@ -296,6 +296,18 @@
                                 {{ $student->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ $student->status === 'active' ? 'Aktif' : ucfirst($student->status ?? '-') }}
                             </span>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-[#e7edf3] dark:border-slate-700 grid grid-cols-2 gap-2">
+                            <a href="{{ route('guardian.students.show', $student) }}"
+                                class="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors">
+                                <span class="material-symbols-outlined text-[15px]">person</span>
+                                Lihat Detail
+                            </a>
+                            <a href="{{ route('guardian.students.edit', $student) }}"
+                                class="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold transition-colors">
+                                <span class="material-symbols-outlined text-[15px]">edit</span>
+                                Lengkapi Data
+                            </a>
                         </div>
                     </div>
                 @endforeach
@@ -397,6 +409,72 @@
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Ajukan Izin Sekarang
             </a>
+        </div>
+        @endif
+    </div>
+
+    {{-- Riwayat Notifikasi WA --}}
+    <div class="mt-6">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-bold text-[#0d141b] dark:text-white flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px] text-primary">notifications</span>
+                Notifikasi Terbaru
+            </h2>
+            <a href="{{ route('guardian.notifications') }}" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
+                Lihat Semua
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            </a>
+        </div>
+
+        @if(isset($notifications) && $notifications->isNotEmpty())
+        <div class="space-y-2.5">
+            @foreach($notifications as $notif)
+                @php
+                    $borderColor = match($notif['color']) {
+                        'green' => 'border-l-green-500',
+                        'red'   => 'border-l-red-500',
+                        'amber' => 'border-l-amber-500',
+                        default => 'border-l-blue-500',
+                    };
+                    $iconBg = match($notif['color']) {
+                        'green' => 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
+                        'red'   => 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+                        'amber' => 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
+                        default => 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+                    };
+                @endphp
+                <div class="bg-white dark:bg-slate-900 border border-[#e7edf3] dark:border-slate-700 border-l-4 {{ $borderColor }} rounded-xl px-4 py-3 flex items-start gap-3 shadow-sm">
+                    <div class="shrink-0 w-8 h-8 rounded-lg {{ $iconBg }} flex items-center justify-center mt-0.5">
+                        <span class="material-symbols-outlined text-[17px]">{{ $notif['icon'] }}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-[#0d141b] dark:text-white leading-snug">{{ $notif['title'] }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{{ $notif['message'] }}</p>
+                    </div>
+                    <div class="shrink-0 flex flex-col items-end gap-1.5 mt-0.5">
+                        <span class="text-[11px] text-slate-400 whitespace-nowrap">
+                            {{ $notif['timestamp'] ? \Carbon\Carbon::parse($notif['timestamp'])->locale('id')->diffForHumans() : '-' }}
+                        </span>
+                        @if(!empty($notif['link']))
+                            <a href="{{ $notif['link'] }}"
+                                class="flex items-center gap-0.5 text-[11px] font-semibold text-primary hover:underline whitespace-nowrap">
+                                Detail
+                                <span class="material-symbols-outlined text-[13px]">chevron_right</span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <a href="{{ route('guardian.notifications') }}"
+            class="mt-3 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold transition-colors">
+            <span class="material-symbols-outlined text-[16px]">notifications</span>
+            Lihat Semua Riwayat Notifikasi
+        </a>
+        @else
+        <div class="bg-white dark:bg-slate-900 border border-[#e7edf3] dark:border-slate-700 rounded-xl px-4 py-8 text-center text-sm text-slate-400 shadow-sm">
+            <span class="material-symbols-outlined text-3xl block mb-1 text-slate-300">notifications_off</span>
+            Belum ada notifikasi.
         </div>
         @endif
     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Licensing;
 use App\Http\Controllers\Controller;
 use App\Models\Licensing\StudentMemorization;
 use App\Models\Licensing\StudentMemorizationItem;
+use App\Models\Licensing\StudentLicense;
 use App\Models\Master\Student;
 use App\Models\Master\MemorizationType;
 use App\Models\Master\AcademicYear;
@@ -18,6 +19,73 @@ class MemorizationController extends Controller
             abort_if(! (auth()->user()->isAdmin() || auth()->user()->isMemorizationOfficer()), 403);
             return $next($request);
         });
+    }
+
+    /** AJAX: ambil jenjang & hari dari data santri + izin terakhir */
+    public function getStudentInfo(Student $student)
+    {
+        // Map formal education level → MTS / MA / PT
+        $formalName     = $student->formalEducation?->name ?? '';
+        $educationLevel = null;
+        if (preg_match('/SD|SMP/i', $formalName))              $educationLevel = 'MTS';
+        elseif (preg_match('/SMA|SMK/i', $formalName))         $educationLevel = 'MA';
+        elseif (preg_match('/Perguruan Tinggi|PT/i', $formalName)) $educationLevel = 'PT';
+
+        // Ambil izin pending (yang sedang menunggu validasi hafalan)
+        $license = StudentLicense::where('student_id', $student->id)
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $days = null;
+        if ($license) {
+            $days = max(1, $license->start_date->diffInDays($license->end_date));
+        }
+
+        $activeYear = AcademicYear::where('status', 'active')->first();
+        $hasPending = $activeYear && StudentMemorization::where('student_id', $student->id)
+            ->where('academic_year_id', $activeYear->id)
+            ->where('is_used', false)
+            ->exists();
+
+        return response()->json([
+            'education_level' => $educationLevel,
+            'days'            => $days,
+            'license_found'   => (bool) $license,
+            'license_dates'   => $license ? $license->start_date->format('d/m/Y') . ' – ' . $license->end_date->format('d/m/Y') : null,
+            'has_pending'     => $hasPending,
+        ]);
+    }
+
+    /** AJAX: preview checklist items berdasarkan jenjang + hari */
+    public function previewItems(Request $request)
+    {
+        $el   = $request->education_level;
+        $days = (int) $request->days;
+
+        $applicableDay = $this->resolveDay($el, $days);
+
+        $items = MemorizationType::where('education_level', $el)
+            ->where('day', $applicableDay)
+            ->orderBy('id')
+            ->get(['id', 'target_description', 'day', 'education_level']);
+
+        return response()->json([
+            'items'          => $items,
+            'applicable_day' => $applicableDay,
+            'requested_day'  => $days,
+        ]);
+    }
+
+    /** Cari day tertinggi yang tersedia ≤ $days; kalau tidak ada, ambil max absolut */
+    private function resolveDay(string $el, int $days): int
+    {
+        $day = MemorizationType::where('education_level', $el)
+            ->where('day', '<=', $days)
+            ->max('day');
+
+        // Jika input < semua day yang tersedia, ambil minimum
+        return $day ?? (int) MemorizationType::where('education_level', $el)->min('day');
     }
 
     public function index(Request $request)
@@ -53,26 +121,36 @@ class MemorizationController extends Controller
 
     public function store(Request $request)
     {
+        $isAjax     = $request->has('ajax');
         $activeYear = AcademicYear::where('status', 'active')->first();
-        abort_if(!$activeYear, 422, 'Tidak ada tahun ajaran aktif. Harap aktifkan tahun ajaran terlebih dahulu.');
 
-        $validated = $request->validate([
-            'student_id'      => 'required|exists:students,id',
-            'education_level' => 'required|in:MTS,MA,PT',
-            'days'            => 'required|integer|min:1|max:365',
-            'notes'           => 'nullable|string',
-        ]);
+        if (!$activeYear) {
+            $msg = 'Tidak ada tahun ajaran aktif. Harap aktifkan tahun ajaran terlebih dahulu.';
+            if ($isAjax) return response()->json(['error' => $msg], 422);
+            abort(422, $msg);
+        }
 
-        // Cek apakah santri masih punya hafalan yang belum dipakai (aktif) pada tahun ajaran ini
+        try {
+            $validated = $request->validate([
+                'student_id'      => 'required|exists:students,id',
+                'education_level' => 'required|in:MTS,MA,PT',
+                'days'            => 'required|integer|min:1|max:365',
+                'notes'           => 'nullable|string',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($isAjax) return response()->json(['error' => implode(' ', $e->validator->errors()->all())], 422);
+            throw $e;
+        }
+
         $existingUnused = StudentMemorization::where('student_id', $validated['student_id'])
             ->where('academic_year_id', $activeYear->id)
             ->where('is_used', false)
             ->first();
 
         if ($existingUnused) {
-            return back()->withInput()->withErrors([
-                'student_id' => 'Santri ini masih memiliki riwayat hafalan yang belum selesai atau belum dipakai untuk perizinan.'
-            ]);
+            $msg = 'Santri ini masih memiliki riwayat hafalan yang belum selesai atau belum dipakai untuk perizinan.';
+            if ($isAjax) return response()->json(['error' => $msg], 422);
+            return back()->withInput()->withErrors(['student_id' => $msg]);
         }
 
         $validated['academic_year_id'] = $activeYear->id;
@@ -80,17 +158,33 @@ class MemorizationController extends Controller
 
         $memorization = StudentMemorization::create($validated);
 
-        // Generate item checklist dari memorization_types sesuai jenjang dan jumlah hari
+        $applicableDay = $this->resolveDay($validated['education_level'], (int) $validated['days']);
+
         $types = MemorizationType::where('education_level', $validated['education_level'])
-            ->where('day', $validated['days'])
-            ->orderBy('day')
+            ->where('day', $applicableDay)
+            ->orderBy('id')
             ->get();
+
+        $preChecked = $request->input('pre_checked', []);
 
         foreach ($types as $type) {
             StudentMemorizationItem::create([
                 'student_memorization_id' => $memorization->id,
                 'memorization_type_id'    => $type->id,
-                'is_checked'              => false,
+                'is_checked'              => in_array($type->id, $preChecked),
+            ]);
+        }
+
+        if ($isAjax) {
+            $memorization->load('items.memorizationType');
+            return response()->json([
+                'memorization_id' => $memorization->id,
+                'items' => $memorization->items->map(fn($item) => [
+                    'id'                 => $item->id,
+                    'target_description' => $item->memorizationType->target_description,
+                    'is_checked'         => $item->is_checked,
+                    'toggle_url'         => route('admin.memorization-items.toggle', $item->id),
+                ]),
             ]);
         }
 

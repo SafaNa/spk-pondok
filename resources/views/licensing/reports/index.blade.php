@@ -8,18 +8,108 @@
 
 @section('content')
     <div class="flex flex-col gap-6 w-full mx-auto pb-10">
-        {{-- Header & Filter --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Laporan Perizinan</h1>
-                <p class="text-slate-500 dark:text-slate-400 mt-1">Ringkasan data perizinan santri bulan ini.</p>
-            </div>
-            <form method="GET" action="{{ route('admin.licenses.reports') }}" class="flex items-center gap-2">
-                <input type="month" name="month" value="{{ $month }}"
-                    class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm"
-                    onchange="this.form.submit()">
-            </form>
+        {{-- Header --}}
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Laporan Perizinan</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Ringkasan data perizinan santri berdasarkan filter yang dipilih.</p>
         </div>
+
+        {{-- Filter --}}
+        <form method="GET" action="{{ route('admin.licenses.reports') }}"
+            class="rounded-xl border border-[#e7edf3] bg-white px-5 py-4 shadow-sm space-y-3">
+
+            {{-- Baris 1: Tahun | Bulan | Rayon | Kamar --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tahun</label>
+                    <select name="tahun"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        @foreach($tahunList as $tahun)
+                            <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Bulan</label>
+                    <select name="bulan"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Bulan</option>
+                        @foreach(['1'=>'Januari','2'=>'Februari','3'=>'Maret','4'=>'April','5'=>'Mei','6'=>'Juni','7'=>'Juli','8'=>'Agustus','9'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $num => $nama)
+                            <option value="{{ $num }}" {{ request('bulan') == $num ? 'selected' : '' }}>{{ $nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Rayon</label>
+                    <select name="rayon_id" id="filter-rayon" onchange="filterKamar()"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Rayon</option>
+                        @foreach($rayonList as $rayon)
+                            <option value="{{ $rayon->id }}" {{ request('rayon_id') == $rayon->id ? 'selected' : '' }}>{{ $rayon->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kamar</label>
+                    <select name="room_id" id="filter-room"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Kamar</option>
+                        @foreach($roomList as $room)
+                            <option value="{{ $room->id }}" data-rayon="{{ $room->rayon_id }}"
+                                {{ request('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Baris 2: Kategori Alasan | Alasan | Buttons --}}
+            <div class="flex flex-wrap items-end gap-3">
+                <div class="min-w-[180px]">
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kategori Alasan</label>
+                    <select name="leave_category_id" id="filter-kategori" onchange="filterAlasan()"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Kategori</option>
+                        @foreach($kategoriList as $kat)
+                            <option value="{{ $kat->id }}" {{ request('leave_category_id') == $kat->id ? 'selected' : '' }}>{{ $kat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[200px]">
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Alasan</label>
+                    <select name="leave_reason_id" id="filter-alasan"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Alasan</option>
+                        @foreach($alasanList as $alasan)
+                            <option value="{{ $alasan->id }}" data-kategori="{{ $alasan->leave_category_id }}"
+                                {{ request('leave_reason_id') == $alasan->id ? 'selected' : '' }}>{{ $alasan->reason }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <button type="submit"
+                        class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[42px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">filter_alt</span> Filter
+                    </button>
+                    <a href="{{ route('admin.licenses.reports') }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[42px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span> Reset
+                    </a>
+                    <div class="w-px bg-slate-200 self-stretch mx-1"></div>
+                    <a href="{{ route('admin.licenses.reports.excel', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">table_view</span> Excel
+                    </a>
+                    <a href="{{ route('admin.licenses.reports.pdf', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                    </a>
+                    <a href="{{ route('admin.licenses.reports.word', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">description</span> Word
+                    </a>
+                </div>
+            </div>
+        </form>
 
         {{-- Statistik Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -68,16 +158,20 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {{-- Tabel Keterlambatan --}}
-            <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+            <div class="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
                 <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
                     <div>
                         <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">list_alt</span>
-                            Daftar Seluruh Izin (Bulan Ini)
+                            Daftar Seluruh Izin
+                            @if(request('bulan'))
+                                — {{ ['1'=>'Januari','2'=>'Februari','3'=>'Maret','4'=>'April','5'=>'Mei','6'=>'Juni','7'=>'Juli','8'=>'Agustus','9'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'][request('bulan')] ?? '' }}
+                            @endif
+                            @if(request('tahun'))— {{ request('tahun') }}@endif
                         </h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Daftar semua santri yang mengajukan izin pada bulan terpilih.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Daftar semua santri yang mengajukan izin sesuai filter terpilih.</p>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -102,7 +196,10 @@
                                         <div class="text-xs text-slate-500">{{ $license->student->rayon->name ?? '-' }} - {{ $license->student->room->name ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm text-slate-700 dark:text-slate-300">{{ $license->leaveCategory->name ?? '-' }}</div>
+                                        <div class="text-sm text-slate-700 dark:text-slate-300">{{ $license->leaveReason->reason ?? ($license->leaveCategory->name ?? '-') }}</div>
+                                        @if($license->leaveReason && $license->leaveCategory)
+                                            <div class="text-xs text-slate-400 mt-0.5">{{ $license->leaveCategory->name }}</div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $license->end_date->locale('id')->translatedFormat('d M Y') }}</div>
@@ -149,6 +246,11 @@
                         </tbody>
                     </table>
                 </div>
+                @if($allLicenses->hasPages())
+                    <div class="border-t border-slate-100 dark:border-slate-800 px-5 py-4">
+                        {{ $allLicenses->withQueryString()->links() }}
+                    </div>
+                @endif
             </div>
 
             {{-- Kategori Chart --}}
@@ -184,3 +286,31 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function filterKamar() {
+    const rayonId = document.getElementById('filter-rayon').value;
+    const roomSel = document.getElementById('filter-room');
+    Array.from(roomSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = rayonId !== '' && opt.dataset.rayon !== rayonId;
+    });
+    if (rayonId && roomSel.value && roomSel.options[roomSel.selectedIndex]?.dataset.rayon !== rayonId) {
+        roomSel.value = '';
+    }
+}
+function filterAlasan() {
+    const kategoriId = document.getElementById('filter-kategori').value;
+    const alasanSel  = document.getElementById('filter-alasan');
+    Array.from(alasanSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = kategoriId !== '' && opt.dataset.kategori !== kategoriId;
+    });
+    if (kategoriId && alasanSel.value && alasanSel.options[alasanSel.selectedIndex]?.dataset.kategori !== kategoriId) {
+        alasanSel.value = '';
+    }
+}
+document.addEventListener('DOMContentLoaded', () => { filterKamar(); filterAlasan(); });
+</script>
+@endpush

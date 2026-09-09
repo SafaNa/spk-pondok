@@ -65,6 +65,143 @@
             </div>
         </div>
 
+        {{-- Filter --}}
+        <form method="GET" action="{{ route('admin.violations.index') }}"
+            class="rounded-xl border border-[#e7edf3] bg-white px-5 py-4 shadow-sm space-y-3">
+
+            {{-- Baris 1: Nama | Tahun | Bulan --}}
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Cari Nama</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">search</span>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Nama santri..."
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tahun</label>
+                    <select name="tahun"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Tahun</option>
+                        @foreach($tahunList as $tahun)
+                            <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Bulan</label>
+                    <select name="bulan"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Bulan</option>
+                        @foreach(['1'=>'Januari','2'=>'Februari','3'=>'Maret','4'=>'April','5'=>'Mei','6'=>'Juni','7'=>'Juli','8'=>'Agustus','9'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $num => $nama)
+                            <option value="{{ $num }}" {{ request('bulan') == $num ? 'selected' : '' }}>{{ $nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Baris 2: Rayon | Kamar | Bidang | Jenis Pelanggaran --}}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Rayon</label>
+                    <select name="rayon_id" id="filter-rayon" onchange="filterKamar()"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Rayon</option>
+                        @foreach($rayonList as $rayon)
+                            <option value="{{ $rayon->id }}" {{ request('rayon_id') == $rayon->id ? 'selected' : '' }}>{{ $rayon->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kamar</label>
+                    <select name="room_id" id="filter-room"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Kamar</option>
+                        @foreach($roomList as $room)
+                            <option value="{{ $room->id }}" data-rayon="{{ $room->rayon_id }}"
+                                {{ request('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Bidang</label>
+                    <select name="department_id" id="filter-dept" onchange="filterJenis()"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Bidang</option>
+                        @foreach($departmentList as $dept)
+                            <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->acronym }} — {{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Jenis Pelanggaran</label>
+                    <select name="violation_type_id" id="filter-jenis"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Jenis</option>
+                        @foreach($typeList as $type)
+                            <option value="{{ $type->id }}"
+                                data-dept="{{ $type->department_id }}"
+                                data-kategori="{{ $type->violation_category_id }}"
+                                {{ request('violation_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Baris 3: Kategori | Status --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kategori</label>
+                    <select name="violation_category_id" id="filter-kategori" onchange="filterJenis()"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Kategori</option>
+                        @foreach($kategoriList as $kat)
+                            <option value="{{ $kat->id }}" {{ request('violation_category_id') == $kat->id ? 'selected' : '' }}>{{ $kat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Status Sanksi</label>
+                    <select name="sanction_status"
+                        class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        <option value="">Semua Status</option>
+                        <option value="pending"   {{ request('sanction_status') === 'pending'   ? 'selected' : '' }}>Belum Selesai</option>
+                        <option value="completed" {{ request('sanction_status') === 'completed' ? 'selected' : '' }}>Sudah Selesai</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- Baris 3: Tombol --}}
+            <div class="flex items-center justify-between gap-3 pt-1 flex-wrap">
+                <div class="flex gap-2">
+                    <button type="submit"
+                        class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[42px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">filter_alt</span> Filter
+                    </button>
+                    <a href="{{ route('admin.violations.index') }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[42px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span> Reset
+                    </a>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ route('admin.violations.export.excel', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">table_view</span> Excel
+                    </a>
+                    <a href="{{ route('admin.violations.export.pdf', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                    </a>
+                    <a href="{{ route('admin.violations.export.word', request()->query()) }}"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">description</span> Word
+                    </a>
+                </div>
+            </div>
+        </form>
+
         {{-- Violations List --}}
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800">
             <div class="px-6 py-4 border-b border-[#e7edf3] dark:border-slate-800">
@@ -255,3 +392,41 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+function filterKamar() {
+    const rayonId = document.getElementById('filter-rayon').value;
+    const roomSel = document.getElementById('filter-room');
+
+    Array.from(roomSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = rayonId ? opt.dataset.rayon !== rayonId : false;
+    });
+
+    const selected = roomSel.options[roomSel.selectedIndex];
+    if (selected && selected.value && selected.hidden) roomSel.value = '';
+}
+
+function filterJenis() {
+    const deptId     = document.getElementById('filter-dept').value;
+    const kategoriId = document.getElementById('filter-kategori').value;
+    const jenisSel   = document.getElementById('filter-jenis');
+
+    Array.from(jenisSel.options).forEach(opt => {
+        if (!opt.value) return;
+        const matchDept     = !deptId     || opt.dataset.dept     === deptId;
+        const matchKategori = !kategoriId || opt.dataset.kategori === kategoriId;
+        opt.hidden = !(matchDept && matchKategori);
+    });
+
+    const selected = jenisSel.options[jenisSel.selectedIndex];
+    if (selected && selected.value && selected.hidden) jenisSel.value = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    filterKamar();
+    filterJenis();
+});
+</script>
+@endpush

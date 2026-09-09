@@ -62,6 +62,15 @@ Route::prefix('guardian')->name('guardian.')->group(function () {
     Route::middleware('auth:guardian')->group(function () {
         Route::post('/logout', [GuardianAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [GuardianDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/notifications', [GuardianDashboardController::class, 'notifications'])->name('notifications');
+        Route::get('/violations', [\App\Http\Controllers\Guardian\ViolationController::class, 'index'])->name('violations.index');
+        Route::get('/violations/{violation}', [\App\Http\Controllers\Guardian\ViolationController::class, 'show'])->name('violations.show');
+        Route::get('/students/{student}', [\App\Http\Controllers\Guardian\StudentController::class, 'show'])->name('students.show');
+        Route::get('/students/{student}/edit', [\App\Http\Controllers\Guardian\StudentController::class, 'edit'])->name('students.edit');
+        Route::put('/students/{student}', [\App\Http\Controllers\Guardian\StudentController::class, 'update'])->name('students.update');
+        Route::get('/regions/cities', [RegionController::class, 'cities'])->name('regions.cities');
+        Route::get('/regions/districts', [RegionController::class, 'districts'])->name('regions.districts');
+        Route::get('/regions/villages', [RegionController::class, 'villages'])->name('regions.villages');
         Route::get('/licenses', [GuardianLicenseController::class, 'index'])->name('licenses.index');
         Route::get('/licenses/create', [GuardianLicenseController::class, 'create'])->name('licenses.create');
         Route::post('/licenses', [GuardianLicenseController::class, 'store'])->name('licenses.store');
@@ -145,6 +154,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/violations/search-students', [ViolationController::class, 'searchStudents'])->name('violations.search-students');
     Route::get('/violations/history/{student}', [ViolationController::class, 'history'])->name('violations.history');
     Route::post('/violations/{id}/verify-sanction', [ViolationController::class, 'verifySanction'])->name('violations.verify-sanction');
+    Route::get('/violations/export/excel', [ViolationController::class, 'exportExcel'])->name('violations.export.excel');
+    Route::get('/violations/export/pdf', [ViolationController::class, 'exportPdf'])->name('violations.export.pdf');
+    Route::get('/violations/export/word', [ViolationController::class, 'exportWord'])->name('violations.export.word');
     Route::resource('violations', ViolationController::class);
 
     Route::resource('violation-types', ViolationTypeController::class);
@@ -152,6 +164,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Licensing Routes
     Route::get('/licenses/reports', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'index'])->name('licenses.reports');
+    Route::get('/licenses/reports/export/excel', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'exportExcel'])->name('licenses.reports.excel');
+    Route::get('/licenses/reports/export/pdf', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'exportPdf'])->name('licenses.reports.pdf');
+    Route::get('/licenses/reports/export/word', [\App\Http\Controllers\Licensing\LicenseReportController::class, 'exportWord'])->name('licenses.reports.word');
     
     // Mass Leaves
     Route::get('/mass-leaves/{mass_leaf}/checkout', [\App\Http\Controllers\Licensing\MassLeaveController::class, 'checkout'])->name('mass-leaves.checkout');
@@ -193,6 +208,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
 
     // Memorization Department Routes
+    Route::get('/memorization/student-info/{student}', [MemorizationController::class, 'getStudentInfo'])->name('memorization.student-info');
+    Route::get('/memorization/checklist-preview', [MemorizationController::class, 'previewItems'])->name('memorization.preview-items');
     Route::resource('memorization', MemorizationController::class);
     Route::post('memorization-items/{item}/toggle', [MemorizationController::class, 'toggleItem'])->name('memorization-items.toggle');
 

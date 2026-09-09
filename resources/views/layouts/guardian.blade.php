@@ -54,14 +54,18 @@
         <aside id="guardianSidebar"
             class="fixed inset-y-0 left-0 z-50 w-60 max-w-[85vw] flex flex-col h-full bg-white border-r border-[#e7edf3] shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:max-w-none md:shadow-none md:shrink-0">
 
-            <div class="p-4 sm:p-5 border-b border-[#e7edf3] shrink-0 flex items-center justify-between gap-2">
+            <div class="p-6 border-b border-[#e7edf3] shrink-0 flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <span class="material-symbols-outlined text-[20px]">family_restroom</span>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden">
+                        @if(isset($appSetting) && $appSetting->logo)
+                            <img src="{{ asset('storage/' . $appSetting->logo) }}" alt="Logo" class="w-full h-full object-contain">
+                        @else
+                            <span class="material-symbols-outlined text-primary text-2xl">school</span>
+                        @endif
                     </div>
                     <div class="min-w-0">
-                        <p class="text-sm font-bold text-[#0d141b] leading-tight truncate">Portal Wali</p>
-                        <p class="text-[11px] text-[#4c739a]">Perizinan Santri</p>
+                        <h1 class="text-[#0d141b] text-base font-bold leading-normal truncate">{{ $appSetting->app_name ?? 'SIMVI-KS' }}</h1>
+                        <p class="text-[#4c739a] text-xs font-normal leading-normal truncate">{{ $appSetting->pesantren_name ?? 'PP. Annuqoyah Latee II' }}</p>
                     </div>
                 </div>
                 <button onclick="toggleGuardianSidebar()"
@@ -89,6 +93,12 @@
                     {{ request()->routeIs('guardian.licenses.index') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
                     <span class="material-symbols-outlined text-[22px] shrink-0">history</span>
                     <span>Riwayat Izin</span>
+                </a>
+                <a href="{{ route('guardian.violations.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                    {{ request()->routeIs('guardian.violations.*') ? 'bg-primary/10 text-primary' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b]' }}">
+                    <span class="material-symbols-outlined text-[22px] shrink-0">gavel</span>
+                    <span>Pelanggaran</span>
                 </a>
                 <a href="{{ route('guardian.profile') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors

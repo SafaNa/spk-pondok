@@ -147,11 +147,11 @@
 
                 <hr class="border-slate-100 dark:border-slate-800">
 
-                {{-- SECTION: Tempat Tinggal --}}
+                {{-- SECTION: Informasi Pondok --}}
                 <div>
                     <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[16px]">home</span>
-                        Tempat Tinggal
+                        <span class="material-symbols-outlined text-[16px]">domain</span>
+                        Informasi Pondok
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                         <div class="space-y-1">
@@ -167,19 +167,28 @@
                             </div>
                             <div class="text-slate-900 dark:text-white font-medium">{{ $student->room?->name ?? '-' }}</div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="space-y-1 md:col-span-2">
-                            <div class="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wide">
-                                <span class="material-symbols-outlined text-[16px]">location_on</span> Alamat
-                            </div>
-                            <div class="text-slate-900 dark:text-white font-medium">
-                                {{ $student->address ?? '-' }}
-                                @if($student->village && $student->district && $student->city && $student->province)
-                                    <br><span class="text-sm text-slate-500">
-                                        {{ $student->village->name }}, {{ $student->district->name }}, {{ $student->city->name }}, {{ $student->province->name }}
-                                    </span>
-                                @endif
-                            </div>
+                <hr class="border-slate-100 dark:border-slate-800">
+
+                {{-- SECTION: Alamat Rumah --}}
+                <div>
+                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">home</span>
+                        Tempat Tinggal
+                    </h2>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-slate-500 text-xs font-semibold uppercase tracking-wide">
+                            <span class="material-symbols-outlined text-[16px]">location_on</span> Alamat
+                        </div>
+                        <div class="text-slate-900 dark:text-white font-medium">
+                            {{ $student->address ?? '-' }}
+                            @if($student->village && $student->district && $student->city && $student->province)
+                                <br><span class="text-sm text-slate-500">
+                                    {{ $student->village->name }}, {{ $student->district->name }}, {{ $student->city->name }}, {{ $student->province->name }}
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -326,6 +335,7 @@
                         <table class="w-full text-sm text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold uppercase text-xs tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                    <th class="px-4 py-3">Tahun Ajaran</th>
                                     <th class="px-4 py-3">Tanggal Izin</th>
                                     <th class="px-4 py-3">Tanggal Harus Kembali</th>
                                     <th class="px-4 py-3">Kategori</th>
@@ -336,6 +346,13 @@
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
                                 @forelse($student->licenses as $license)
                                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                            @if($license->academicYear)
+                                                <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">{{ $license->academicYear->name }}</span>
+                                            @else
+                                                <span class="text-slate-400">-</span>
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ $license->start_date ? $license->start_date->isoFormat('D MMM Y') : '-' }}</td>
                                         <td class="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{{ $license->end_date ? $license->end_date->isoFormat('D MMM Y') : '-' }}</td>
                                         <td class="px-4 py-3 text-slate-600 dark:text-slate-400">{{ $license->leaveCategory?->name ?? '-' }}</td>
@@ -354,7 +371,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-8 text-center text-slate-500 italic">Belum ada riwayat kepulangan</td>
+                                        <td colspan="6" class="px-4 py-8 text-center text-slate-500 italic">Belum ada riwayat kepulangan</td>
                                     </tr>
                                 @endforelse
                             </tbody>

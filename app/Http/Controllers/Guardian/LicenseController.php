@@ -15,18 +15,50 @@ use Illuminate\Support\Facades\Storage;
 
 class LicenseController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
         /** @var Guardian $guardian */
         $guardian   = Auth::guard('guardian')->user();
         $studentIds = $guardian->students()->pluck('students.id');
 
-        $licenses = StudentLicense::with(['student', 'extensions'])
-            ->whereIn('student_id', $studentIds)
-            ->latest()
-            ->paginate(10);
+        $query = StudentLicense::with(['student', 'leaveReason', 'extensions'])
+            ->whereIn('student_id', $studentIds);
 
-        return view('guardian.licenses.index', compact('guardian', 'licenses'));
+        if ($request->filled('tahun')) {
+            $query->whereYear('start_date', $request->tahun);
+        }
+        if ($request->filled('bulan')) {
+            $query->whereMonth('start_date', $request->bulan);
+        }
+        if ($request->filled('status')) {
+            if ($request->status === 'pending') {
+                $query->whereIn('status', ['pending', 'pending_extension']);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+        if ($request->filled('kategori')) {
+            $query->where('leave_category_id', $request->kategori);
+        }
+        if ($request->filled('alasan')) {
+            $query->where('leave_reason_id', $request->alasan);
+        }
+
+        $licenses = $query->latest()->paginate(15)->withQueryString();
+
+        // Data untuk filter dropdown — tampilkan range dari tahun terlama hingga sekarang
+        $earliestYear = StudentLicense::whereIn('student_id', $studentIds)
+            ->whereNotNull('start_date')
+            ->selectRaw('YEAR(MIN(start_date)) as tahun')
+            ->value('tahun');
+        $tahunList = $earliestYear
+            ? collect(range((int) $earliestYear, (int) now()->format('Y')))->sortDesc()->values()
+            : collect();
+
+        $kategoriList = \App\Models\Licensing\LeaveCategory::orderBy('order')->get();
+        $alasanList   = \App\Models\Licensing\LeaveReason::orderBy('reason')->get();
+
+        return view('guardian.licenses.index', compact('guardian', 'licenses', 'tahunList', 'kategoriList', 'alasanList'));
     }
 
     public function create()
@@ -37,7 +69,18 @@ class LicenseController extends Controller
         $activeYear = AcademicYear::where('status', 'active')->first();
         $categories = LeaveCategory::orderBy('order')->get();
 
-        return view('guardian.licenses.create', compact('guardian', 'students', 'activeYear', 'categories'));
+        // Cek santri mana yang sudah punya izin aktif (pending/approved belum kembali)
+        $blockedStudentIds = StudentLicense::whereIn('student_id', $students->pluck('id'))
+            ->where(function ($q) {
+                $q->where('status', 'pending')
+                  ->orWhere(function ($q2) {
+                      $q2->where('status', 'approved')->whereNull('actual_return_date');
+                  });
+            })
+            ->pluck('student_id')
+            ->unique();
+
+        return view('guardian.licenses.create', compact('guardian', 'students', 'activeYear', 'categories', 'blockedStudentIds'));
     }
 
     public function categoryReasons(LeaveCategory $leaveCategory)
@@ -71,6 +114,39 @@ class LicenseController extends Controller
         $studentIds = $guardian->students()->pluck('students.id');
         if (!$studentIds->contains($request->student_id)) {
             abort(403, 'Santri tidak terdaftar untuk akun ini.');
+        }
+
+        // Validasi: santri tidak boleh punya izin aktif (pending atau approved belum kembali)
+        $hasActive = StudentLicense::where('student_id', $request->student_id)
+            ->where(function ($q) {
+                $q->where('status', 'pending')
+                  ->orWhere(function ($q2) {
+                      $q2->where('status', 'approved')->whereNull('actual_return_date');
+                  });
+            })
+            ->exists();
+
+        if ($hasActive) {
+            return back()->withInput()->with('error', 'Santri ini masih memiliki izin yang sedang aktif atau menunggu persetujuan. Pengajuan baru tidak dapat dilakukan sebelum izin sebelumnya selesai.');
+        }
+
+        // Validasi: jeda hari setelah kembali sebelum boleh mengajukan lagi
+        if ($activeYear->max_leave_days) {
+            $lastReturned = StudentLicense::where('student_id', $request->student_id)
+                ->where('status', 'approved')
+                ->whereNotNull('actual_return_date')
+                ->latest('actual_return_date')
+                ->first();
+
+            if ($lastReturned) {
+                $earliestNext = \Carbon\Carbon::parse($lastReturned->actual_return_date)
+                    ->addDays($activeYear->max_leave_days);
+
+                if (now()->lt($earliestNext)) {
+                    $tanggal = $earliestNext->locale('id')->translatedFormat('d F Y');
+                    return back()->withInput()->with('error', "Santri ini baru saja kembali dari izin. Pengajuan izin berikutnya baru bisa dilakukan mulai tanggal {$tanggal} (jeda {$activeYear->max_leave_days} hari setelah kembali).");
+                }
+            }
         }
 
         $reason          = LeaveReason::find($request->leave_reason_id);

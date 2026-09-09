@@ -43,33 +43,98 @@
         </div>
     @endif
 
+    {{-- Info Batasan --}}
+    @if($activeYear && ($activeYear->max_leave_days || $activeYear->max_leaves))
+        <div class="mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-4 py-3 rounded-xl text-sm space-y-1">
+            <p class="font-semibold flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">info</span>Ketentuan Pengajuan Izin (TA {{ $activeYear->name }})</p>
+            <ul class="list-disc list-inside space-y-0.5 text-xs ml-1">
+                @if($activeYear->max_leaves)
+                    <li>Izin yang disetujui maksimal <strong>{{ $activeYear->max_leaves }} kali</strong> per tahun ajaran.</li>
+                @endif
+                @if($activeYear->max_leave_days)
+                    <li>Setelah kembali ke pondok, harus menunggu <strong>{{ $activeYear->max_leave_days }} hari</strong> sebelum bisa mengajukan izin lagi.</li>
+                @endif
+                <li>Tidak dapat mengajukan izin baru jika masih ada izin yang aktif atau menunggu persetujuan.</li>
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 p-6">
         <form action="{{ route('guardian.licenses.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
 
             {{-- Santri --}}
-            <div class="space-y-1.5">
-                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Santri <span class="text-red-500">*</span>
-                </label>
-                <select name="student_id" required
-                    class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
-                    <option value="" disabled {{ old('student_id') ? '' : 'selected' }}>-- Pilih Santri --</option>
-                    @foreach($students as $student)
-                        <option value="{{ $student->id }}" {{ old('student_id') === $student->id ? 'selected' : '' }}>
-                            {{ $student->name }} ({{ $student->nis ?? '-' }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('student_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
+            @if($students->count() === 1)
+                @php $singleStudent = $students->first(); $isBlocked = $blockedStudentIds->contains($singleStudent->id); @endphp
+                <input type="hidden" name="student_id" value="{{ $singleStudent->id }}">
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Santri</label>
+                    <div class="flex items-center gap-3 px-4 py-3 rounded-xl border-2 {{ $isBlocked ? 'border-amber-200 bg-amber-50 dark:bg-amber-900/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800' }}">
+                        @php
+                            $colors = ['blue','pink','amber','rose','indigo','green','purple','cyan','orange','teal'];
+                            $color  = $colors[crc32($singleStudent->id) % count($colors)];
+                            $parts  = explode(' ', trim($singleStudent->name));
+                            $initials = strtoupper(substr($parts[0],0,1).(isset($parts[1])?substr($parts[1],0,1):''));
+                        @endphp
+                        @if($singleStudent->photo)
+                            <img src="{{ asset('storage/'.$singleStudent->photo) }}" class="w-9 h-9 rounded-full object-cover shrink-0">
+                        @else
+                            <div class="flex w-9 h-9 shrink-0 items-center justify-center rounded-full bg-{{ $color }}-100 text-{{ $color }}-600 text-sm font-bold">{{ $initials }}</div>
+                        @endif
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{{ $singleStudent->name }}</p>
+                            <p class="text-xs text-[#4c739a]">{{ $singleStudent->identifier_label }}: {{ $singleStudent->nis ?? '-' }}</p>
+                        </div>
+                        @if($isBlocked)
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-100 px-2 py-1 rounded-full shrink-0">
+                                <span class="material-symbols-outlined text-[13px]">warning</span> Izin Aktif
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full shrink-0">
+                                <span class="material-symbols-outlined text-[13px]">check_circle</span> Siap
+                            </span>
+                        @endif
+                    </div>
+                    @if($isBlocked)
+                        <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1 mt-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span>
+                            Santri ini masih memiliki izin aktif. Pengajuan baru tidak dapat dilakukan.
+                        </p>
+                    @endif
+                </div>
+            @else
+                <div class="space-y-1.5">
+                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        Santri <span class="text-red-500">*</span>
+                    </label>
+                    <select name="student_id" required
+                        class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
+                        <option value="" disabled {{ old('student_id') ? '' : 'selected' }}>-- Pilih Santri --</option>
+                        @foreach($students as $student)
+                            @php $isBlocked = $blockedStudentIds->contains($student->id); @endphp
+                            <option value="{{ $student->id }}"
+                                {{ old('student_id') === $student->id ? 'selected' : '' }}
+                                {{ $isBlocked ? 'disabled' : '' }}>
+                                {{ $student->name }} ({{ $student->nis ?? '-' }}){{ $isBlocked ? ' — izin aktif' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('student_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    @if($blockedStudentIds->isNotEmpty())
+                        <p class="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1 mt-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span>
+                            Santri bertanda <em>"izin aktif"</em> tidak dapat dipilih karena masih memiliki izin yang sedang berjalan.
+                        </p>
+                    @endif
+                </div>
+            @endif
 
             {{-- Filter Kategori --}}
             <div class="space-y-1.5">
-                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Filter Kategori</label>
+                <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Kategori Kepulangan</label>
                 <select id="leaveCategorySelect"
                     class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
-                    <option value="">-- Semua Kategori --</option>
+                    <option value="">-- Semua Kategori Kepulangan --</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ old('leave_category_id') == $cat->id ? 'selected' : '' }}>
                             {{ $cat->name }}
@@ -84,11 +149,11 @@
             {{-- Rincian Alasan --}}
             <div class="space-y-1.5">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Rincian Alasan <span class="text-red-500">*</span>
+                    Alasan Kepulangan <span class="text-red-500">*</span>
                 </label>
                 <select name="leave_reason_id" id="leaveReasonSelect" required
                     class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
-                    <option value="">-- Pilih Kategori terlebih dahulu --</option>
+                    <option value="">-- Pilih Alasan Kepulangan --</option>
                 </select>
                 @error('leave_reason_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
@@ -102,19 +167,19 @@
                     <input type="date" name="start_date" id="start_date"
                         value="{{ old('start_date', date('Y-m-d')) }}" required
                         min="{{ date('Y-m-d') }}"
-                        onchange="calcDuration()"
+                        onchange="applyDateLogic()"
                         class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
                     @error('start_date')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    <label id="end_date_label" class="text-sm font-semibold text-slate-700 dark:text-slate-300">
                         Tanggal Kembali <span class="text-red-500">*</span>
                     </label>
                     <input type="date" name="end_date" id="end_date"
-                        value="{{ old('end_date', date('Y-m-d')) }}" required readonly tabindex="-1"
+                        value="{{ old('end_date', date('Y-m-d')) }}" required
                         min="{{ date('Y-m-d') }}"
                         onchange="calcDuration()"
-                        class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-300 text-sm cursor-not-allowed focus:outline-none">
+                        class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all">
                     @error('end_date')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
@@ -129,7 +194,7 @@
                 </label>
                 <textarea name="description" rows="2"
                     class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none"
-                    placeholder="Informasi tambahan jika diperlukan...">{{ old('description') }}</textarea>
+                    placeholder="Keterangan tambahan jika diperlukan...">{{ old('description') }}</textarea>
             </div>
 
             {{-- Upload Bukti --}}
@@ -146,7 +211,7 @@
                     <label for="attachment" id="uploadZone"
                         class="flex flex-col items-center justify-center gap-2 w-full px-4 py-5 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm cursor-pointer hover:border-primary hover:text-primary hover:bg-primary/5 transition-all">
                         <span class="material-symbols-outlined text-[32px]">upload_file</span>
-                        <span id="attachmentLabel" class="font-medium">Pilih atau Seret File ke Sini</span>
+                        <span id="attachmentLabel" class="font-medium">Upload Foto atau Dokumen</span>
                         <span class="text-xs text-slate-400">JPG, PNG, PDF &bull; Maks. 5 file &bull; 5MB per file</span>
                     </label>
                 </div>
@@ -192,7 +257,7 @@ var oldReasonId = '{{ old('leave_reason_id') }}';
 function loadReasons(categoryId) {
     var select = document.getElementById('leaveReasonSelect');
     if (!categoryId) {
-        select.innerHTML = '<option value="">-- Pilih Kategori terlebih dahulu --</option>';
+        select.innerHTML = '<option value="">-- Pilih Alasan Kepulangan --</option>';
         return;
     }
     fetch('/guardian/leave-categories/' + categoryId + '/reasons')
@@ -202,7 +267,7 @@ function loadReasons(categoryId) {
                 select.innerHTML = '<option value="">-- Tidak ada rincian tersedia --</option>';
                 return;
             }
-            var html = '<option value="">-- Pilih Rincian Alasan --</option>';
+            var html = '<option value="">-- Pilih Alasan Kepulangan --</option>';
             reasons.forEach(function(r) {
                 var sel = (oldReasonId && oldReasonId == r.id) ? ' selected' : '';
                 html += '<option value="' + r.id + '"' + sel + '>' + r.reason + '</option>';
@@ -215,61 +280,63 @@ function loadReasons(categoryId) {
 var categoriesData = @json($categories->keyBy('id')->map(function($c) {
     return [
         'is_fixed_duration' => $c->is_fixed_duration,
-        'duration_days' => $c->duration_days
+        'duration_days'     => $c->duration_days,
     ];
 }));
 
+function formatDate(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+}
+
+function setEndDateLocked(locked) {
+    var el = document.getElementById('end_date');
+    var label = document.getElementById('end_date_label');
+    if (locked) {
+        el.readOnly = true;
+        el.tabIndex = -1;
+        el.classList.add('bg-slate-100', 'cursor-not-allowed');
+        el.classList.remove('bg-slate-50', 'dark:bg-slate-800', 'focus:border-primary', 'focus:ring-4', 'focus:ring-primary/10');
+        label.innerHTML = 'Tanggal Kembali <span class="text-xs font-normal text-slate-400">(otomatis)</span>';
+    } else {
+        el.readOnly = false;
+        el.tabIndex = 0;
+        el.classList.remove('bg-slate-100', 'cursor-not-allowed');
+        el.classList.add('bg-slate-50', 'dark:bg-slate-800', 'focus:border-primary', 'focus:ring-4', 'focus:ring-primary/10');
+        label.innerHTML = 'Tanggal Kembali <span class="text-red-500">*</span>';
+    }
+}
+
 function applyDateLogic() {
     var catId = document.getElementById('leaveCategorySelect').value;
-    var startDateInput = document.getElementById('start_date');
-    var endDateInput = document.getElementById('end_date');
-    
-    // Always allow end date to be editable now, just constrained
-    endDateInput.readOnly = false;
-    endDateInput.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
+    var startVal = document.getElementById('start_date').value;
+    var endInput = document.getElementById('end_date');
+    var cat = catId ? categoriesData[catId] : null;
 
-    if (!catId) {
-        endDateInput.removeAttribute('max');
-        return;
-    }
-    
-    var cat = categoriesData[catId];
-    if (!cat) return;
-    
-    if (startDateInput.value) {
-        var startDate = new Date(startDateInput.value);
-        var minDateStr = startDateInput.value;
-        endDateInput.min = minDateStr;
-        
-        if (cat.is_fixed_duration && cat.duration_days) {
-            // Calculate max date
-            var maxDate = new Date(startDate);
-            maxDate.setDate(maxDate.getDate() + (cat.duration_days - 1));
-            
-            var y = maxDate.getFullYear();
-            var m = String(maxDate.getMonth() + 1).padStart(2, '0');
-            var d = String(maxDate.getDate()).padStart(2, '0');
-            var maxDateStr = y + '-' + m + '-' + d;
-            
-            endDateInput.max = maxDateStr;
-            
-            // Constrain current value if it's out of bounds
-            if (endDateInput.value > maxDateStr) {
-                endDateInput.value = maxDateStr;
-            } else if (endDateInput.value < minDateStr) {
-                endDateInput.value = minDateStr;
-            }
-        } else {
-            endDateInput.removeAttribute('max');
-            if (endDateInput.value < minDateStr) {
-                endDateInput.value = minDateStr;
-            }
+    if (cat && cat.is_fixed_duration && cat.duration_days) {
+        // Auto-hitung end_date, kunci input
+        setEndDateLocked(true);
+        endInput.removeAttribute('max');
+        endInput.removeAttribute('min');
+        if (startVal) {
+            var startDate = new Date(startVal);
+            var endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + (cat.duration_days - 1));
+            endInput.value = formatDate(endDate);
+        }
+    } else {
+        // User bebas pilih end_date
+        setEndDateLocked(false);
+        if (startVal) {
+            endInput.min = startVal;
+            endInput.removeAttribute('max');
+            if (endInput.value < startVal) endInput.value = startVal;
         }
     }
     calcDuration();
 }
-
-document.getElementById('start_date').addEventListener('change', applyDateLogic);
 
 document.getElementById('leaveCategorySelect').addEventListener('change', function() {
     loadReasons(this.value);
@@ -288,28 +355,22 @@ function calcDuration() {
     var end   = document.getElementById('end_date').value;
     var info  = document.getElementById('durasiInfo');
     var catId = document.getElementById('leaveCategorySelect').value;
-    var cat = catId ? categoriesData[catId] : null;
+    var cat   = catId ? categoriesData[catId] : null;
 
-    if (!catId) {
-        info.classList.add('hidden');
+    if (!start || !end) { info.classList.add('hidden'); return; }
+
+    var diff = Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1;
+    if (diff <= 0) {
+        info.classList.remove('hidden');
+        info.innerHTML = '<span class="text-red-600">Tanggal kembali tidak boleh lebih awal dari tanggal mulai.</span>';
         return;
     }
 
-    if (start && end) {
-        var diff = Math.ceil((new Date(end) - new Date(start)) / 86400000) + 1;
-        if (diff > 0) {
-            info.classList.remove('hidden');
-            if (cat && !cat.is_fixed_duration) {
-                info.innerHTML = 'Durasi izin: <strong>' + diff + ' hari</strong>. <span class="text-[12px] italic opacity-80">(Jumlah hari akan disesuaikan berdasarkan kebutuhan dan persetujuan pengurus)</span>';
-            } else {
-                info.innerHTML = 'Durasi izin: Maksimal <strong>' + diff + ' hari</strong>';
-            }
-        } else {
-            info.classList.remove('hidden');
-            info.innerHTML = 'Tanggal kembali tidak boleh lebih awal dari tanggal mulai.';
-        }
+    info.classList.remove('hidden');
+    if (cat && cat.is_fixed_duration) {
+        info.innerHTML = 'Durasi izin: <strong>' + diff + ' hari</strong> (sesuai ketentuan kategori).';
     } else {
-        info.classList.add('hidden');
+        info.innerHTML = 'Durasi izin: <strong>' + diff + ' hari</strong>.';
     }
 }
 
@@ -347,7 +408,7 @@ function renderPreviews() {
 
     if (!selectedFiles.length) {
         grid.classList.add('hidden');
-        label.textContent = 'Pilih atau Seret File ke Sini';
+        label.textContent = 'Upload Foto atau Dokumen';
         return;
     }
 

@@ -127,7 +127,7 @@
                 </label>
                 <textarea name="description" rows="2"
                     class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all resize-none"
-                    placeholder="Informasi tambahan jika diperlukan...">{{ old('description', $license->description) }}</textarea>
+                    placeholder="Keterangan tambahan jika diperlukan...">{{ old('description', $license->description) }}</textarea>
             </div>
 
             {{-- Upload Bukti --}}

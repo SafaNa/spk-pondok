@@ -23,8 +23,9 @@ class AcademicYearController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:20',
-            'max_leaves' => 'nullable|integer|min:1',
+            'name'           => 'required|string|max:20',
+            'max_leaves'     => 'nullable|integer|min:1',
+            'max_leave_days' => 'nullable|integer|min:1',
         ]);
 
         AcademicYear::create($validated);
@@ -39,8 +40,9 @@ class AcademicYearController extends Controller
     public function update(Request $request, AcademicYear $academicYear)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:20',
-            'max_leaves' => 'nullable|integer|min:1',
+            'name'           => 'required|string|max:20',
+            'max_leaves'     => 'nullable|integer|min:1',
+            'max_leave_days' => 'nullable|integer|min:1',
         ]);
 
         $academicYear->update($validated);

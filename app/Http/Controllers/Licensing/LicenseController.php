@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Licensing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Licensing\LeaveCategory;
+use App\Models\Licensing\LeaveReason;
 use App\Models\Licensing\LicenseExtension;
 use App\Models\Licensing\StudentLicense;
 use App\Models\Master\AcademicYear;
+use App\Models\Master\Rayon;
+use App\Models\Master\Room;
 use App\Models\Master\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -49,13 +52,23 @@ class LicenseController extends Controller
             ->when($request->filled('search'), function ($q) use ($request) {
                 $s = $request->search;
                 $q->whereHas('student', fn($sq) => $sq->where('name', 'like', "%$s%")->orWhere('nis', 'like', "%$s%"));
-            });
+            })
+            ->when($request->filled('rayon_id'), fn($q) => $q->whereHas('student', fn($sq) => $sq->where('rayon_id', $request->rayon_id)))
+            ->when($request->filled('room_id'),  fn($q) => $q->whereHas('student', fn($sq) => $sq->where('room_id',  $request->room_id)))
+            ->when($request->filled('leave_category_id'), fn($q) => $q->where('leave_category_id', $request->leave_category_id))
+            ->when($request->filled('leave_reason_id'),   fn($q) => $q->where('leave_reason_id',   $request->leave_reason_id));
 
-        $recentLicenses = $query->latest()->paginate(10)->withQueryString();
+        $recentLicenses = $query->latest()->paginate(20)->withQueryString();
+
+        $rayonList    = Rayon::orderBy('name')->get(['id', 'name']);
+        $roomList     = Room::orderBy('name')->get(['id', 'name', 'rayon_id']);
+        $kategoriList = LeaveCategory::orderBy('order')->get(['id', 'name']);
+        $alasanList   = LeaveReason::orderBy('reason')->get(['id', 'reason', 'leave_category_id']);
 
         return view('licensing.index', compact(
             'recentLicenses', 'academicYears', 'selectedYearId',
-            'totalAll', 'totalPending', 'totalApproved', 'totalRejected', 'totalPendingExt'
+            'totalAll', 'totalPending', 'totalApproved', 'totalRejected', 'totalPendingExt',
+            'rayonList', 'roomList', 'kategoriList', 'alasanList'
         ));
     }
 
@@ -425,22 +438,35 @@ class LicenseController extends Controller
 
     public function active(Request $request)
     {
-        $search = $request->input('search');
-        
-        $query = StudentLicense::with(['student.rayon', 'student.room', 'leaveCategory'])
+        $query = StudentLicense::with(['student.rayon', 'student.room', 'leaveCategory', 'leaveReason'])
             ->where('status', 'approved')
             ->whereNull('actual_return_date');
-            
-        if ($search) {
-            $query->whereHas('student', function($q) use ($search) {
-                $q->whereRaw('LOWER(name) like ?', ['%' . strtolower($search) . '%'])
-                  ->orWhereRaw('LOWER(nis) like ?', ['%' . strtolower($search) . '%']);
-            });
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->whereHas('student', fn($q) => $q->whereRaw('LOWER(name) like ?', ['%'.strtolower($s).'%'])
+                ->orWhereRaw('LOWER(nis) like ?', ['%'.strtolower($s).'%']));
         }
-        
-        $licenses = $query->orderBy('start_date', 'desc')->paginate(15);
-        
-        return view('licensing.active', compact('licenses', 'search'));
+        if ($request->filled('rayon_id')) {
+            $query->whereHas('student', fn($q) => $q->where('rayon_id', $request->rayon_id));
+        }
+        if ($request->filled('room_id')) {
+            $query->whereHas('student', fn($q) => $q->where('room_id', $request->room_id));
+        }
+        if ($request->filled('leave_category_id')) {
+            $query->where('leave_category_id', $request->leave_category_id);
+        }
+        if ($request->filled('leave_reason_id')) {
+            $query->where('leave_reason_id', $request->leave_reason_id);
+        }
+
+        $licenses     = $query->orderBy('start_date', 'desc')->paginate(20)->withQueryString();
+        $rayonList    = Rayon::orderBy('name')->get(['id', 'name']);
+        $roomList     = Room::orderBy('name')->get(['id', 'name', 'rayon_id']);
+        $kategoriList = LeaveCategory::orderBy('order')->get(['id', 'name']);
+        $alasanList   = LeaveReason::orderBy('reason')->get(['id', 'reason', 'leave_category_id']);
+
+        return view('licensing.active', compact('licenses', 'rayonList', 'roomList', 'kategoriList', 'alasanList'));
     }
 
     public function activeShow(StudentLicense $license)

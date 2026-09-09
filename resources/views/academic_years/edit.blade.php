@@ -63,6 +63,22 @@
                             Kosongkan jika tidak ada batasan.</p>
                         @error('max_leaves') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- Max Leave Days --}}
+                    <div class="space-y-2">
+                        <label for="max_leave_days" class="text-sm font-bold text-slate-700 dark:text-slate-300">Jeda Hari Antar Pengajuan Izin</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+                                <span class="material-symbols-outlined">calendar_clock</span>
+                            </div>
+                            <input type="number" name="max_leave_days" id="max_leave_days"
+                                value="{{ old('max_leave_days', $academicYear->max_leave_days) }}" min="1"
+                                class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                placeholder="Kosongkan jika tidak ada batas">
+                        </div>
+                        <p class="text-xs text-slate-400">Jumlah hari yang harus ditunggu santri setelah kembali ke pondok sebelum boleh mengajukan izin lagi. Kosongkan jika tidak ada jeda.</p>
+                        @error('max_leave_days') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 {{-- Actions --}}

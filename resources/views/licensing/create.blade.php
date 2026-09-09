@@ -173,7 +173,7 @@
                                 </div>
                                 <textarea name="description" rows="2"
                                     class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 font-normal resize-none focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                                    placeholder="Informasi tambahan jika diperlukan...">{{ old('description') }}</textarea>
+                                    placeholder="Keterangan tambahan jika diperlukan...">{{ old('description') }}</textarea>
                             </div>
                         </div>
 

@@ -91,10 +91,10 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- NIS / NIM --}}
+                        {{-- NIS --}}
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                NIS / NIM <span class="text-red-500">*</span>
+                                NIS <span class="text-red-500">*</span>
                             </label>
                             <div class="relative group">
                                 <div

@@ -27,6 +27,82 @@
         </div>
     @endif
 
+    {{-- Filter Bar --}}
+    <form method="GET" action="{{ route('guardian.licenses.index') }}"
+        class="bg-white dark:bg-slate-900 rounded-xl border border-[#e7edf3] dark:border-slate-800 px-4 py-3 mb-4 flex flex-wrap items-end gap-3">
+
+        {{-- Tahun --}}
+        <div class="flex flex-col gap-1 min-w-[100px]">
+            <label class="text-[11px] font-semibold text-[#4c739a] uppercase tracking-wide">Tahun</label>
+            <select name="tahun" onchange="this.form.submit()"
+                class="h-9 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white px-3 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Semua</option>
+                @foreach($tahunList as $thn)
+                    <option value="{{ $thn }}" @selected(request('tahun') == $thn)>{{ $thn }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Bulan --}}
+        <div class="flex flex-col gap-1 min-w-[120px]">
+            <label class="text-[11px] font-semibold text-[#4c739a] uppercase tracking-wide">Bulan</label>
+            <select name="bulan" onchange="this.form.submit()"
+                class="h-9 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white px-3 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Semua</option>
+                @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $bln)
+                    <option value="{{ $i + 1 }}" @selected(request('bulan') == $i + 1)>{{ $bln }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Status --}}
+        <div class="flex flex-col gap-1 min-w-[130px]">
+            <label class="text-[11px] font-semibold text-[#4c739a] uppercase tracking-wide">Status</label>
+            <select name="status" onchange="this.form.submit()"
+                class="h-9 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white px-3 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Semua</option>
+                <option value="approved" @selected(request('status') === 'approved')>Disetujui</option>
+                <option value="rejected" @selected(request('status') === 'rejected')>Ditolak</option>
+                <option value="pending" @selected(request('status') === 'pending')>Menunggu</option>
+            </select>
+        </div>
+
+        {{-- Kategori --}}
+        <div class="flex flex-col gap-1 min-w-[150px]">
+            <label class="text-[11px] font-semibold text-[#4c739a] uppercase tracking-wide">Kategori Alasan</label>
+            <select name="kategori" id="filter-kategori" onchange="filterAlasan(); this.form.submit()"
+                class="h-9 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white px-3 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Semua Kategori</option>
+                @foreach($kategoriList as $kat)
+                    <option value="{{ $kat->id }}" @selected(request('kategori') == $kat->id)>{{ $kat->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Alasan --}}
+        <div class="flex flex-col gap-1 min-w-[160px] flex-1">
+            <label class="text-[11px] font-semibold text-[#4c739a] uppercase tracking-wide">Alasan</label>
+            <select name="alasan" id="filter-alasan" onchange="this.form.submit()"
+                class="h-9 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#0d141b] dark:text-white px-3 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Semua Alasan</option>
+                @foreach($alasanList as $alasan)
+                    <option value="{{ $alasan->id }}" data-kategori="{{ $alasan->leave_category_id }}"
+                        @selected(request('alasan') == $alasan->id)>{{ $alasan->reason }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Reset --}}
+        @if(request()->hasAny(['tahun','bulan','status','kategori','alasan']))
+        <div class="flex items-end pb-0">
+            <a href="{{ route('guardian.licenses.index') }}"
+                class="h-9 px-4 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-[#4c739a] hover:text-[#0d141b] font-medium flex items-center transition-colors">
+                Reset
+            </a>
+        </div>
+        @endif
+    </form>
+
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-[#e7edf3] dark:border-slate-800 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
@@ -58,7 +134,7 @@
                             </td>
                             <td class="px-5 py-3 text-sm text-[#4c739a] whitespace-nowrap">{{ $license->created_at->locale('id')->translatedFormat('d M Y') }}</td>
                             <td class="px-5 py-3 text-center">
-                                @if($license->status === 'pending')
+                                @if(in_array($license->status, ['pending', 'pending_extension']))
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Menunggu</span>
                                 @elseif($license->status === 'approved')
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Disetujui</span>
@@ -127,3 +203,20 @@
     </div>
 
 @endsection
+
+@push('scripts')
+<script>
+function filterAlasan() {
+    const kategoriId = document.getElementById('filter-kategori').value;
+    const alasanSel  = document.getElementById('filter-alasan');
+    Array.from(alasanSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = kategoriId !== '' && opt.dataset.kategori !== kategoriId;
+    });
+    if (kategoriId && alasanSel.value && alasanSel.options[alasanSel.selectedIndex]?.dataset.kategori !== kategoriId) {
+        alasanSel.value = '';
+    }
+}
+document.addEventListener('DOMContentLoaded', filterAlasan);
+</script>
+@endpush

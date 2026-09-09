@@ -155,7 +155,7 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Berjalan</p>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Izin Berlangsung</p>
                 <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Hari ini</p>
             </div>
         </div>
@@ -227,7 +227,7 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Total Perpanjangan</p>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Total Perpanjangan Izin</p>
                 <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Semua Pengajuan</p>
             </div>
         </div>
@@ -240,7 +240,7 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Disetujui</p>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Izin Disetujui</p>
                 <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah disetujui</p>
             </div>
         </div>
@@ -253,7 +253,7 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Pending</p>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Izin Pending</p>
                 <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Menunggu Validasi</p>
             </div>
         </div>
@@ -266,7 +266,7 @@
                 </div>
             </div>
             <div>
-                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Ditolak</p>
+                <p class="text-xs font-bold text-[#0d141b] leading-tight truncate">Perpanjangan Izin Ditolak</p>
                 <p class="text-[10px] text-[#4c739a] leading-tight mt-0.5 truncate">Telah ditolak</p>
             </div>
         </div>

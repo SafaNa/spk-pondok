@@ -94,17 +94,19 @@
 
     {{-- Filters --}}
     <form method="GET" action="{{ route('admin.licenses.index') }}"
-        class="rounded-xl border border-[#e7edf3] bg-white px-5 py-4 shadow-sm">
+        class="rounded-xl border border-[#e7edf3] bg-white px-5 py-4 shadow-sm space-y-3">
         <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
-        <div class="flex flex-wrap items-end gap-3">
 
+        {{-- Baris 1: Search + Status + Rayon + Kamar --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {{-- Search --}}
-            <div class="flex-1 min-w-52">
+            <div class="lg:col-span-1">
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Cari Santri</label>
                 <div class="relative">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-slate-400">search</span>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">search</span>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari santri, wali, atau no. hp..."
-                        class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                        placeholder="Nama / NIS..."
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
                 </div>
             </div>
 
@@ -112,39 +114,77 @@
             <div>
                 <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Status</label>
                 <select name="status"
-                    class="rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
                     <option value="">Semua Status</option>
-                    <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Menunggu Izin</option>
+                    <option value="pending"           {{ request('status') === 'pending'           ? 'selected' : '' }}>Menunggu Izin</option>
                     <option value="pending_extension" {{ request('status') === 'pending_extension' ? 'selected' : '' }}>Menunggu Perpanjangan</option>
-                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    <option value="approved"          {{ request('status') === 'approved'          ? 'selected' : '' }}>Disetujui</option>
+                    <option value="rejected"          {{ request('status') === 'rejected'          ? 'selected' : '' }}>Ditolak</option>
                 </select>
             </div>
 
-
-            {{-- Tanggal Mulai --}}
+            {{-- Rayon --}}
             <div>
-                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tanggal Mulai</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Rayon</label>
+                <select name="rayon_id" id="filter-rayon" onchange="filterKamar()"
+                    class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    <option value="">Semua Rayon</option>
+                    @foreach($rayonList as $rayon)
+                        <option value="{{ $rayon->id }}" {{ request('rayon_id') == $rayon->id ? 'selected' : '' }}>{{ $rayon->name }}</option>
+                    @endforeach
+                </select>
             </div>
 
-            {{-- Tanggal Selesai --}}
+            {{-- Kamar --}}
             <div>
-                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Tanggal Selesai</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}"
-                    class="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kamar</label>
+                <select name="room_id" id="filter-room"
+                    class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    <option value="">Semua Kamar</option>
+                    @foreach($roomList as $room)
+                        <option value="{{ $room->id }}" data-rayon="{{ $room->rayon_id }}"
+                            {{ request('room_id') == $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        {{-- Baris 2: Tgl Mulai + Tgl Selesai + Kategori Alasan + Alasan + Buttons --}}
+        <div class="flex flex-wrap items-end gap-3">
+            {{-- Kategori Alasan --}}
+            <div class="min-w-[160px]">
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Kategori Alasan</label>
+                <select name="leave_category_id" id="filter-kategori" onchange="filterAlasan()"
+                    class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    <option value="">Semua Kategori</option>
+                    @foreach($kategoriList as $kat)
+                        <option value="{{ $kat->id }}" {{ request('leave_category_id') == $kat->id ? 'selected' : '' }}>{{ $kat->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Alasan --}}
+            <div class="flex-1 min-w-[180px]">
+                <label class="mb-1 block text-xs font-semibold text-[#4c739a]">Alasan</label>
+                <select name="leave_reason_id" id="filter-alasan"
+                    class="w-full rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                    <option value="">Semua Alasan</option>
+                    @foreach($alasanList as $alasan)
+                        <option value="{{ $alasan->id }}" data-kategori="{{ $alasan->leave_category_id }}"
+                            {{ request('leave_reason_id') == $alasan->id ? 'selected' : '' }}>{{ $alasan->reason }}</option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- Buttons --}}
-            <div class="flex gap-2">
+            <div class="flex gap-2 shrink-0">
                 <button type="submit"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[44px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-primary min-h-[42px] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">filter_alt</span>
                     Filter
                 </button>
                 <a href="{{ route('admin.licenses.index', ['academic_year_id' => $selectedYearId]) }}"
-                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[44px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white min-h-[42px] px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
                     <span class="material-symbols-outlined text-[16px]">refresh</span>
                     Reset
                 </a>
@@ -161,17 +201,35 @@
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">No</th>
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">Nama Santri</th>
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap">Rayon / Kamar</th>
-                        <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide">Tujuan</th>
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide whitespace-nowrap">Tanggal Izin</th>
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide text-center">Status</th>
                         <th class="px-4 py-3.5 text-xs font-bold text-white uppercase tracking-wide text-center">Aksi</th>
                     </tr>
                 </thead>
+                @php
+                    $grouped   = $recentLicenses->getCollection()->groupBy(fn($l) => $l->start_date->format('Y-m'));
+                    $globalNo  = ($recentLicenses->currentPage() - 1) * $recentLicenses->perPage() + 1;
+                @endphp
                 <tbody class="divide-y divide-[#f1f5f9]">
-                    @forelse($recentLicenses as $license)
+                    @if($grouped->isEmpty())
+                        <tr>
+                            <td colspan="6" class="px-6 py-14 text-center">
+                                <span class="material-symbols-outlined text-5xl text-slate-300 block mb-2">inbox</span>
+                                <p class="text-sm font-medium text-[#4c739a]">Belum ada data pengajuan izin.</p>
+                            </td>
+                        </tr>
+                    @else
+                    @foreach($grouped as $monthKey => $monthLicenses)
+                        <tr>
+                            <td colspan="6" class="px-4 py-2 bg-slate-50 border-y border-slate-200">
+                                <span class="text-xs font-bold text-[#4c739a] uppercase tracking-wider">
+                                    {{ \Carbon\Carbon::createFromFormat('Y-m', $monthKey)->locale('id')->translatedFormat('F Y') }}
+                                </span>
+                            </td>
+                        </tr>
+                        @foreach($monthLicenses as $license)
                         @php
-                            $guardian = optional($license->student->guardians->first());
-                            $rowNo    = ($recentLicenses->currentPage() - 1) * $recentLicenses->perPage() + $loop->iteration;
+                            $rowNo    = $globalNo++;
                             $colors   = ['blue', 'pink', 'amber', 'rose', 'indigo', 'green', 'purple', 'cyan', 'orange', 'teal'];
                             $color    = $colors[crc32($license->student->id) % count($colors)];
                             $initials = strtoupper(substr($license->student->name, 0, 1) . (str_contains($license->student->name, ' ') ? substr($license->student->name, strpos($license->student->name, ' ') + 1, 1) : substr($license->student->name, 1, 1)));
@@ -209,13 +267,6 @@
                                 <span class="text-[11px] text-[#4c739a]">{{ $license->student->room->name ?? '-' }}</span>
                             </td>
 
-
-                            {{-- Tujuan --}}
-                            <td class="px-4 py-4 max-w-[130px]">
-                                <span class="block truncate text-sm text-[#4c739a]" title="{{ $license->description }}">
-                                    {{ $license->description ?? '-' }}
-                                </span>
-                            </td>
 
                             {{-- Tanggal Izin --}}
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -276,14 +327,9 @@
                                 </div>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="px-6 py-14 text-center">
-                                <span class="material-symbols-outlined text-5xl text-slate-300 block mb-2">inbox</span>
-                                <p class="text-sm font-medium text-[#4c739a]">Belum ada data pengajuan izin.</p>
-                            </td>
-                        </tr>
-                    @endforelse
+                        @endforeach
+                    @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -304,3 +350,33 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function filterKamar() {
+    const rayonId = document.getElementById('filter-rayon').value;
+    const roomSel = document.getElementById('filter-room');
+    Array.from(roomSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = rayonId !== '' && opt.dataset.rayon !== rayonId;
+    });
+    if (rayonId && roomSel.value && roomSel.options[roomSel.selectedIndex]?.dataset.rayon !== rayonId) {
+        roomSel.value = '';
+    }
+}
+
+function filterAlasan() {
+    const kategoriId = document.getElementById('filter-kategori').value;
+    const alasanSel  = document.getElementById('filter-alasan');
+    Array.from(alasanSel.options).forEach(opt => {
+        if (!opt.value) return;
+        opt.hidden = kategoriId !== '' && opt.dataset.kategori !== kategoriId;
+    });
+    if (kategoriId && alasanSel.value && alasanSel.options[alasanSel.selectedIndex]?.dataset.kategori !== kategoriId) {
+        alasanSel.value = '';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => { filterKamar(); filterAlasan(); });
+</script>
+@endpush

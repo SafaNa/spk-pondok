@@ -182,7 +182,7 @@
                         <span class="material-symbols-outlined text-[#4c739a] text-[20px]">search</span>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari nama atau NIS / NIM santri..."
+                        placeholder="Cari nama atau NIS santri..."
                         class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-[#e7edf3] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-[#0d141b] dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all">
                 </div>
 
@@ -300,7 +300,7 @@
                         <th class="border border-gray-200 p-3 text-center font-bold w-12">No</th>
                         <th class="border border-gray-200 p-3 text-center font-bold">Foto</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Nama Lengkap</th>
-                        <th class="border border-gray-200 p-3 text-center font-bold">NIS / NIM</th>
+                        <th class="border border-gray-200 p-3 text-center font-bold">NIS</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Rayon & Kamar</th>
                         <th class="border border-gray-200 p-3 text-left font-bold">Pendidikan</th>
                         <th class="border border-gray-200 p-3 text-center font-bold">Status</th>

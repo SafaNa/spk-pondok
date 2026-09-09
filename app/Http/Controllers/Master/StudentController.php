@@ -234,7 +234,8 @@ class StudentController extends Controller
             'guardians',
             'violationRecords.violationType.category',
             'licenses.leaveCategory',
-            'licenses.leaveReason'
+            'licenses.leaveReason',
+            'licenses.academicYear'
         ]);
 
         $activeAcademicYear = \App\Models\Master\AcademicYear::where('status', 'active')->first();

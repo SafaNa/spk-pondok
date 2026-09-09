@@ -420,7 +420,7 @@
             <a href="{{ route('admin.violations.index') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors {{ request()->routeIs('admin.violations.*') ? 'bg-primary/10 text-primary' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
                 <span class="material-symbols-outlined text-[20px]">gavel</span>
-                <span class="text-sm font-medium">Catat Pelanggaran</span>
+                <span class="text-sm font-medium">Data Pelanggaran</span>
             </a>
 
             <a href="{{ route('admin.violation-types.index') }}"
@@ -477,11 +477,6 @@
                                 href="{{ route('admin.licenses.reports') }}">
                                 <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.licenses.reports*') ? 'fill-1' : '' }}">summarize</span>
                                 <span class="text-sm font-medium">Laporan</span>
-                            </a>
-                            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.notifikasi.*') ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400' : 'text-[#4c739a] hover:bg-[#e7edf3] hover:text-[#0d141b] dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white' }} transition-colors"
-                                href="{{ route('admin.notifikasi.index') }}">
-                                <span class="material-symbols-outlined text-[24px] {{ request()->routeIs('admin.notifikasi.*') ? 'fill-1' : '' }}">notifications</span>
-                                <span class="text-sm font-medium">Notifikasi</span>
                             </a>
                         </div>
                     @endif
