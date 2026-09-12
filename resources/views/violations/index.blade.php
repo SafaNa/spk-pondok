@@ -188,15 +188,15 @@
                 <div class="flex gap-2">
                     <a href="{{ route('admin.violations.export.excel', request()->query()) }}"
                         class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">table_view</span> Excel
+                        <span class="material-symbols-outlined text-[16px]">table_view</span> Export Excel
                     </a>
                     <a href="{{ route('admin.violations.export.pdf', request()->query()) }}"
                         class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> PDF
+                        <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Export PDF
                     </a>
                     <a href="{{ route('admin.violations.export.word', request()->query()) }}"
                         class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 min-h-[42px] px-4 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">description</span> Word
+                        <span class="material-symbols-outlined text-[16px]">description</span> Export Word
                     </a>
                 </div>
             </div>
