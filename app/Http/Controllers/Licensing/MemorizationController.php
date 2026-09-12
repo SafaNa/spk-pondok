@@ -39,7 +39,7 @@ class MemorizationController extends Controller
 
         $days = null;
         if ($license) {
-            $days = max(1, $license->start_date->diffInDays($license->end_date));
+            $days = max(1, $license->start_date->diffInDays($license->end_date) + 1);
         }
 
         $activeYear = AcademicYear::where('status', 'active')->first();
