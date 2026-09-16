@@ -9,7 +9,7 @@ class LeaveReason extends Model
 {
     use HasUuids;
 
-    protected $fillable = ['leave_category_id', 'reason', 'can_skip_validation', 'order'];
+    protected $fillable = ['leave_category_id', 'reason', 'document_label', 'can_skip_validation', 'order'];
 
     protected $casts = [
         'can_skip_validation' => 'boolean',

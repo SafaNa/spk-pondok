@@ -200,8 +200,10 @@
             {{-- Upload Bukti --}}
             <div class="space-y-1.5">
                 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    Foto / Dokumen Pendukung <span class="text-red-500">*</span>
-                    <span class="text-slate-400 text-xs font-normal ml-1">(wajib, maks. 5 file @ 5MB)</span>
+                    <span id="uploadLabelText">Foto / Dokumen Pendukung</span>
+                    <span id="uploadRequired" class="text-red-500">*</span>
+                    <span id="uploadOptional" class="text-slate-400 text-xs font-normal hidden"> (opsional)</span>
+                    <span class="text-slate-400 text-xs font-normal ml-1">(maks. 5 file @ 5MB)</span>
                 </label>
                 <div class="relative">
                     <input type="file" name="attachments[]" id="attachment" required multiple
@@ -254,8 +256,30 @@
 <script>
 var oldReasonId = '{{ old('leave_reason_id') }}';
 
+function updateUploadLabel(docLabel) {
+    var labelText     = document.getElementById('uploadLabelText');
+    var reqSpan       = document.getElementById('uploadRequired');
+    var optSpan       = document.getElementById('uploadOptional');
+    var fileInput     = document.getElementById('attachment');
+    var attachLabel   = document.getElementById('attachmentLabel');
+    if (docLabel) {
+        labelText.textContent   = 'Upload ' + docLabel;
+        attachLabel.textContent = 'Upload ' + docLabel;
+        reqSpan.classList.remove('hidden');
+        optSpan.classList.add('hidden');
+        fileInput.required = true;
+    } else {
+        labelText.textContent   = 'Foto / Dokumen Pendukung';
+        attachLabel.textContent = 'Upload Foto atau Dokumen';
+        reqSpan.classList.add('hidden');
+        optSpan.classList.remove('hidden');
+        fileInput.required = false;
+    }
+}
+
 function loadReasons(categoryId) {
     var select = document.getElementById('leaveReasonSelect');
+    updateUploadLabel('');
     if (!categoryId) {
         select.innerHTML = '<option value="">-- Pilih Alasan Kepulangan --</option>';
         return;
@@ -270,12 +294,23 @@ function loadReasons(categoryId) {
             var html = '<option value="">-- Pilih Alasan Kepulangan --</option>';
             reasons.forEach(function(r) {
                 var sel = (oldReasonId && oldReasonId == r.id) ? ' selected' : '';
-                html += '<option value="' + r.id + '"' + sel + '>' + r.reason + '</option>';
+                var docLabel = r.document_label ? r.document_label.replace(/"/g, '&quot;') : '';
+                html += '<option value="' + r.id + '" data-document-label="' + docLabel + '"' + sel + '>' + r.reason + '</option>';
             });
             select.innerHTML = html;
-            oldReasonId = '';
+            // Restore label if a reason was pre-selected (validation error)
+            if (oldReasonId) {
+                var opt = select.querySelector('option[value="' + oldReasonId + '"]');
+                if (opt) updateUploadLabel(opt.dataset.documentLabel || '');
+                oldReasonId = '';
+            }
         });
 }
+
+document.getElementById('leaveReasonSelect').addEventListener('change', function() {
+    var opt = this.options[this.selectedIndex];
+    updateUploadLabel((opt && opt.dataset.documentLabel) ? opt.dataset.documentLabel : '');
+});
 
 var categoriesData = @json($categories->keyBy('id')->map(function($c) {
     return [

@@ -114,7 +114,7 @@
 
                 {{-- Rincian Alasan --}}
                 <div class="space-y-6"
-                    x-data='reasonList(@json($leaveCategory->reasons->map(fn($r) => ['reason' => $r->reason, 'can_skip' => $r->can_skip_validation])->toArray()))'>
+                    x-data='reasonList(@json($leaveCategory->reasons->map(fn($r) => ['reason' => $r->reason, 'document_label' => $r->document_label, 'can_skip' => $r->can_skip_validation])->toArray()))'>
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                         <span class="material-symbols-outlined text-primary">list</span>
                         Rincian Alasan Kepulangan
@@ -122,24 +122,34 @@
 
                     <div class="space-y-3">
                         <template x-for="(item, index) in reasons" :key="index">
-                            <div class="flex items-center gap-3">
-                                <div class="relative group flex-[2]">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
-                                        <span class="material-symbols-outlined text-[18px]">arrow_right</span>
+                            <div class="flex flex-col gap-2 p-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <div class="flex items-center gap-3">
+                                    <div class="relative group flex-1">
+                                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                                            <span class="material-symbols-outlined text-[18px]">arrow_right</span>
+                                        </div>
+                                        <input type="text" :name="`reasons[${index}][reason]`" x-model="item.reason"
+                                            class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 text-sm font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                            placeholder="Rincian alasan...">
                                     </div>
-                                    <input type="text" :name="`reasons[${index}][reason]`" x-model="item.reason"
-                                        class="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 text-sm font-medium focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
-                                        placeholder="Rincian alasan...">
+                                    <div class="flex items-center gap-2 px-3 py-3 rounded-xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 h-[50px] flex-shrink-0">
+                                        <input type="checkbox" :name="`reasons[${index}][can_skip]`" value="1" x-model="item.can_skip"
+                                            class="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500/20 cursor-pointer">
+                                        <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Skip Validasi</span>
+                                    </div>
+                                    <button type="button" @click="remove(index)"
+                                        class="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0">
+                                        <span class="material-symbols-outlined text-[20px]">close</span>
+                                    </button>
                                 </div>
-                                <div class="flex-1 flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 h-[50px]">
-                                    <input type="checkbox" :name="`reasons[${index}][can_skip]`" value="1" x-model="item.can_skip"
-                                        class="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500/20 cursor-pointer">
-                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Darurat (Skip Validasi)</span>
+                                <div class="relative group">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                                        <span class="material-symbols-outlined text-[18px]">upload_file</span>
+                                    </div>
+                                    <input type="text" :name="`reasons[${index}][document_label]`" x-model="item.document_label"
+                                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:border-primary focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                                        placeholder="Label dokumen pendukung (kosongkan jika tidak perlu upload)">
                                 </div>
-                                <button type="button" @click="remove(index)"
-                                    class="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex-shrink-0">
-                                    <span class="material-symbols-outlined text-[20px]">close</span>
-                                </button>
                             </div>
                         </template>
                     </div>
@@ -171,10 +181,10 @@
 <script>
 function reasonList(initial) {
     let oldReasons = @json(old('reasons'));
-    let startData = (oldReasons && oldReasons.length > 0) ? oldReasons : (initial.length ? initial : [{reason: '', can_skip: false}]);
+    let startData = (oldReasons && oldReasons.length > 0) ? oldReasons : (initial.length ? initial : [{reason: '', document_label: '', can_skip: false}]);
     return {
         reasons: startData,
-        add() { this.reasons.push({reason: '', can_skip: false}); },
+        add() { this.reasons.push({reason: '', document_label: '', can_skip: false}); },
         remove(i) { if (this.reasons.length > 1) this.reasons.splice(i, 1); }
     }
 }

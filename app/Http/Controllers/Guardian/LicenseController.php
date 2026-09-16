@@ -86,7 +86,7 @@ class LicenseController extends Controller
     public function categoryReasons(LeaveCategory $leaveCategory)
     {
         return response()->json(
-            $leaveCategory->reasons()->orderBy('order')->get(['id', 'reason'])
+            $leaveCategory->reasons()->orderBy('order')->get(['id', 'reason', 'document_label'])
         );
     }
 

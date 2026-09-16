@@ -29,9 +29,10 @@ class LeaveCategoryController extends Controller
             'is_fixed_duration'   => 'boolean',
             'duration_days'       => 'nullable|integer|min:1',
             'order'               => 'nullable|integer|min:0',
-            'reasons'             => 'nullable|array',
-            'reasons.*.reason'    => 'nullable|string|max:255',
-            'reasons.*.can_skip'  => 'nullable|boolean',
+            'reasons'                      => 'nullable|array',
+            'reasons.*.reason'             => 'nullable|string|max:255',
+            'reasons.*.document_label'     => 'nullable|string|max:255',
+            'reasons.*.can_skip'           => 'nullable|boolean',
         ]);
 
         $category = LeaveCategory::create([
@@ -49,6 +50,7 @@ class LeaveCategoryController extends Controller
             LeaveReason::create([
                 'leave_category_id'   => $category->id,
                 'reason'              => $reasonData['reason'],
+                'document_label'      => $reasonData['document_label'] ?? null,
                 'can_skip_validation' => !empty($reasonData['can_skip']),
                 'order'               => $i,
             ]);
@@ -73,9 +75,10 @@ class LeaveCategoryController extends Controller
             'is_fixed_duration'   => 'boolean',
             'duration_days'       => 'nullable|integer|min:1',
             'order'               => 'nullable|integer|min:0',
-            'reasons'             => 'nullable|array',
-            'reasons.*.reason'    => 'nullable|string|max:255',
-            'reasons.*.can_skip'  => 'nullable|boolean',
+            'reasons'                      => 'nullable|array',
+            'reasons.*.reason'             => 'nullable|string|max:255',
+            'reasons.*.document_label'     => 'nullable|string|max:255',
+            'reasons.*.can_skip'           => 'nullable|boolean',
         ]);
 
         $leaveCategory->update([
@@ -94,6 +97,7 @@ class LeaveCategoryController extends Controller
             LeaveReason::create([
                 'leave_category_id'   => $leaveCategory->id,
                 'reason'              => $reasonData['reason'],
+                'document_label'      => $reasonData['document_label'] ?? null,
                 'can_skip_validation' => !empty($reasonData['can_skip']),
                 'order'               => $i,
             ]);
@@ -106,7 +110,7 @@ class LeaveCategoryController extends Controller
     public function reasons(LeaveCategory $leaveCategory)
     {
         return response()->json(
-            $leaveCategory->reasons()->orderBy('order')->get(['id', 'reason'])
+            $leaveCategory->reasons()->orderBy('order')->get(['id', 'reason', 'document_label'])
         );
     }
 
