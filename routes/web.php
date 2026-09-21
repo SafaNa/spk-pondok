@@ -41,17 +41,15 @@ use App\Http\Controllers\Licensing\LeaveCategoryController;
 use App\Models\Licensing\LicenseExtension;
 use App\Models\Licensing\StudentMemorizationItem;
 
-// Landing page — pilih role (admin / wali santri)
-Route::get('/', function () {
-    return view('landing');
-})->name('landing');
+// Unified login
+Route::get('/', fn() => redirect()->route('login'));
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-// Admin Auth Routes
-Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-});
+// Redirect rute lama agar tidak 404
+Route::get('/admin/login', fn() => redirect()->route('login'))->name('admin.login');
+Route::get('/guardian/login', fn() => redirect()->route('login'));
 
 // Guardian Routes
 Route::prefix('guardian')->name('guardian.')->group(function () {

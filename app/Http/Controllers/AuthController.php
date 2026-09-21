@@ -9,6 +9,12 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        if (Auth::guard('guardian')->check()) {
+            return redirect()->route('guardian.dashboard');
+        }
         return view('auth.login');
     }
 
@@ -19,10 +25,16 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
+        // Coba guard admin
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        // Coba guard guardian
+        if (Auth::guard('guardian')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('guardian.dashboard'));
         }
 
         return back()->withErrors([
@@ -33,11 +45,12 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+        Auth::guard('guardian')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 
     public function showChangePasswordForm()

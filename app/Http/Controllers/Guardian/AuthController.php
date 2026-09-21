@@ -41,6 +41,6 @@ class AuthController extends Controller
         Auth::guard('guardian')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('guardian.login');
+        return redirect()->route('login');
     }
 }

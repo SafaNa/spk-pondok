@@ -18,12 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return '/admin/dashboard';
         });
         
-        $middleware->redirectGuestsTo(function ($request) {
-            if ($request->is('guardian/*')) {
-                return route('guardian.login');
-            }
-            return route('admin.login');
-        });
+        $middleware->redirectGuestsTo(fn() => route('login'));
 
         // Register middleware aliases
         $middleware->alias([

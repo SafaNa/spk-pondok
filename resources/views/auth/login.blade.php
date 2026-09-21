@@ -94,11 +94,6 @@
             </div>
 
             <div class="w-full max-w-[480px] flex flex-col gap-5">
-                <!-- Back to landing -->
-                <a href="{{ route('landing') }}" class="flex items-center gap-1.5 text-sm text-[#4c739a] hover:text-primary transition-colors w-fit -mb-2">
-                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                    Kembali
-                </a>
                 <!-- Page Heading (LOGIN & Rata Tengah) -->
                 <div class="flex flex-col gap-2 mb-2 text-center items-center">
                     <h2 class="text-[#0d141b] dark:text-white tracking-tight text-2xl sm:text-[32px] font-extrabold leading-tight uppercase">
@@ -132,7 +127,7 @@
                 @endif
 
                 <!-- Login Form -->
-                <form action="{{ route('admin.login') }}" method="POST" class="flex flex-col gap-5" onsubmit="showLoading()">
+                <form action="{{ route('login.post') }}" method="POST" class="flex flex-col gap-5" onsubmit="showLoading()">
                     @csrf
 
                     <!-- Username Input Field -->
@@ -143,7 +138,7 @@
                             <input
                                 class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('username') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 h-12 sm:h-14 placeholder:text-[#4c739a] px-4 text-sm sm:text-base font-normal leading-normal transition-all"
                                 id="username" name="username" placeholder="masukkan username" required type="text"
-                                value="admin" autocomplete="username" />
+                                value="{{ old('username') }}" autocomplete="username" />
                             @if($errors->has('username'))
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-red-500">
                                     <span class="material-symbols-outlined text-[20px]">warning</span>
@@ -165,7 +160,7 @@
                             <input
                                 class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0d141b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border {{ $errors->has('password') ? 'border-red-300 dark:border-red-800' : 'border-[#cfdbe7] dark:border-slate-700' }} bg-white dark:bg-slate-800 focus:border-primary h-12 sm:h-14 placeholder:text-[#4c739a] px-4 pr-12 text-sm sm:text-base font-normal leading-normal transition-all"
                                 id="password" name="password" placeholder="masukkan password" required type="password"
-                                value="password" />
+                                />
                             <button
                                 class="absolute right-0 top-0 h-full px-4 text-[#4c739a] hover:text-primary dark:text-slate-400 dark:hover:text-white flex items-center justify-center transition-colors"
                                 type="button" onclick="togglePassword()">
