@@ -253,6 +253,12 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        // Cek apakah username wali sudah ada (kasus 1 wali punya lebih dari 1 santri)
+        $existingGuardian = null;
+        if ($request->filled('wali_username')) {
+            $existingGuardian = Guardian::where('username', $request->wali_username)->first();
+        }
+
         $validated = $request->validate([
             'nis' => 'required|unique:students|max:20',
             'name' => 'required|string|max:100',
@@ -281,8 +287,17 @@ class StudentController extends Controller
             'status' => 'required|in:active,inactive,graduated,dropped_out',
             // Wali
             'wali_name'         => 'nullable|string|max:100',
-            'wali_username'     => 'required_with:wali_name|nullable|string|max:50|unique:guardians,username',
-            'wali_password'     => ['required_with:wali_name', 'nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()],
+            'wali_username'     => [
+                'required_with:wali_name', 'nullable', 'string', 'max:50',
+                $existingGuardian
+                    ? Rule::unique('guardians', 'username')->ignore($existingGuardian->id)
+                    : 'unique:guardians,username',
+            ],
+            'wali_password'     => [
+                $existingGuardian ? 'nullable' : 'required_with:wali_name',
+                'nullable', 'string',
+                \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers(),
+            ],
             'wali_phone'        => 'nullable|string|max:20',
             'wali_email'        => 'nullable|email|max:100',
             'wali_relationship' => 'nullable|in:father,mother,guardian,sibling',
@@ -310,20 +325,35 @@ class StudentController extends Controller
 
         $createdGuardian = null;
         if ($request->filled('wali_name')) {
-            $guardian = Guardian::create([
-                'name'         => $request->wali_name,
-                'username'     => $request->wali_username,
-                'password'     => Hash::make($request->wali_password),
-                'phone'        => $request->wali_phone,
-                'email'        => $request->wali_email,
-                'relationship' => $request->wali_relationship ?? 'father',
-            ]);
-            $student->guardians()->attach($guardian->id);
-            $createdGuardian = [
-                'name'     => $guardian->name,
-                'username' => $guardian->username,
-                'password' => $request->wali_password,
-            ];
+            if ($existingGuardian) {
+                // Wali sudah ada — attach ke santri baru, update data jika berubah
+                $updateData = [
+                    'name'         => $request->wali_name,
+                    'phone'        => $request->wali_phone,
+                    'email'        => $request->wali_email,
+                    'relationship' => $request->wali_relationship ?? $existingGuardian->relationship,
+                ];
+                if ($request->filled('wali_password')) {
+                    $updateData['password'] = Hash::make($request->wali_password);
+                }
+                $existingGuardian->update($updateData);
+                $student->guardians()->attach($existingGuardian->id);
+            } else {
+                $guardian = Guardian::create([
+                    'name'         => $request->wali_name,
+                    'username'     => $request->wali_username,
+                    'password'     => Hash::make($request->wali_password),
+                    'phone'        => $request->wali_phone,
+                    'email'        => $request->wali_email,
+                    'relationship' => $request->wali_relationship ?? 'father',
+                ]);
+                $student->guardians()->attach($guardian->id);
+                $createdGuardian = [
+                    'name'     => $guardian->name,
+                    'username' => $guardian->username,
+                    'password' => $request->wali_password,
+                ];
+            }
         }
 
         $redirect = redirect()->route('admin.students.index')
