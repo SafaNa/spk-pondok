@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Login - {{ $appSetting->app_name ?? 'SIM Kepulangan Santri' }}</title>
+    <title>Login - {{ $appSetting->app_name ?? 'SIM Kepulangan Santri' }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}?v=2">
 
     <!-- Google Fonts: Inter (Local) -->
