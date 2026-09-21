@@ -343,6 +343,15 @@ class StudentController extends Controller
     {
         $existingWaliId = $request->input('wali_id');
 
+        // Jika santri belum punya wali tapi username yang diinput sudah ada di DB
+        // (kasus 1 wali punya lebih dari 1 anak) → pakai ID guardian tersebut
+        if (!$existingWaliId && $request->filled('wali_username')) {
+            $guardianByUsername = Guardian::where('username', $request->wali_username)->first();
+            if ($guardianByUsername) {
+                $existingWaliId = $guardianByUsername->id;
+            }
+        }
+
         $validated = $request->validate([
             'nis' => [
                 'required',
@@ -424,6 +433,10 @@ class StudentController extends Controller
 
             if ($existingWaliId) {
                 Guardian::where('id', $existingWaliId)->update($waliData);
+                // Hubungkan ke santri ini jika belum terhubung
+                if (!$student->guardians()->where('guardian_id', $existingWaliId)->exists()) {
+                    $student->guardians()->attach($existingWaliId);
+                }
             } else {
                 if (!$request->filled('wali_password')) {
                     $waliData['password'] = Hash::make('guardian123');
