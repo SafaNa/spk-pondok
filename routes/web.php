@@ -129,6 +129,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
     // Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
     Route::resource('students', StudentController::class);
+    Route::get('guardians/search', [GuardianController::class, 'search'])->name('guardians.search');
     Route::get('guardians/search-students', [GuardianController::class, 'searchStudents'])->name('guardians.search-students');
     Route::post('guardians/{guardian}/reset-password', [GuardianController::class, 'resetPassword'])->name('guardians.reset-password');
     Route::resource('guardians', GuardianController::class);

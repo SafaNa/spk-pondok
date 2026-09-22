@@ -275,13 +275,15 @@
             .then(r => r.json())
             .then(data => {
                 selectEl.innerHTML = `<option value="">${placeholder}</option>`;
-                Object.entries(data).forEach(([code, name]) => {
-                    const opt = document.createElement('option');
-                    opt.value = code;
-                    opt.textContent = name;
-                    if (code === selectedVal) opt.selected = true;
-                    selectEl.appendChild(opt);
-                });
+                Object.entries(data)
+                    .sort(([, a], [, b]) => a.localeCompare(b, 'id'))
+                    .forEach(([code, name]) => {
+                        const opt = document.createElement('option');
+                        opt.value = code;
+                        opt.textContent = name;
+                        if (code === selectedVal) opt.selected = true;
+                        selectEl.appendChild(opt);
+                    });
                 selectEl.disabled = false;
             });
     }

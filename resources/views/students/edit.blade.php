@@ -855,15 +855,17 @@
 
                     targetSelect.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
 
-                    Object.entries(data).forEach(([code, name]) => {
-                        const option = document.createElement('option');
-                        option.value = code;
-                        option.textContent = name;
-                        if (selectedValue && String(code) === String(selectedValue)) {
-                            option.selected = true;
-                        }
-                        targetSelect.appendChild(option);
-                    });
+                    Object.entries(data)
+                        .sort(([, a], [, b]) => a.localeCompare(b, 'id'))
+                        .forEach(([code, name]) => {
+                            const option = document.createElement('option');
+                            option.value = code;
+                            option.textContent = name;
+                            if (selectedValue && String(code) === String(selectedValue)) {
+                                option.selected = true;
+                            }
+                            targetSelect.appendChild(option);
+                        });
 
                     targetSelect.disabled = false;
                 } catch (error) {

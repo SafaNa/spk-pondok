@@ -156,6 +156,20 @@ class GuardianController extends Controller
             ->with('success', 'Data wali berhasil diperbarui.');
     }
 
+    public function search(Request $request)
+    {
+        $q = $request->input('q', '');
+        if (strlen($q) < 2) return response()->json([]);
+
+        $guardians = Guardian::where('name', 'like', "%{$q}%")
+            ->orWhere('username', 'like', "%{$q}%")
+            ->orderBy('name')
+            ->limit(10)
+            ->get(['id', 'name', 'username', 'phone', 'email', 'relationship']);
+
+        return response()->json($guardians);
+    }
+
     public function searchStudents(Request $request)
     {
         $q = $request->input('q', '');

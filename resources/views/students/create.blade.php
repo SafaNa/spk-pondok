@@ -690,7 +690,35 @@
                         Data Wali Santri
                         <span class="ml-1 text-sm font-normal text-slate-400">(opsional — untuk akses portal wali)</span>
                     </h3>
-                    <p class="text-sm text-slate-500 -mt-2">Isi untuk memberikan akses portal wali. Kosongkan semua jika tidak diperlukan.</p>
+
+                    {{-- Cari Wali yang sudah ada --}}
+                    <div class="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-4 space-y-3">
+                        <p class="text-sm font-semibold text-primary flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                            Wali sudah punya akun? Cari dulu sebelum isi form
+                        </p>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <input type="text" id="waliSearchInput"
+                                    class="w-full pl-4 pr-4 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                                    placeholder="Ketik nama atau username wali...">
+                                {{-- Dropdown hasil --}}
+                                <div id="waliSearchResults" class="hidden absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg overflow-hidden max-h-52 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                        {{-- Info wali terpilih --}}
+                        <div id="waliSelectedInfo" class="hidden items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3">
+                            <span class="material-symbols-outlined text-green-600 text-[20px]">check_circle</span>
+                            <div class="flex-1 text-sm">
+                                <span class="font-semibold text-green-800 dark:text-green-300" id="waliSelectedName"></span>
+                                <span class="text-green-600 dark:text-green-400 ml-1" id="waliSelectedUsername"></span>
+                                <p class="text-green-600 dark:text-green-400 text-xs">Wali ini akan dihubungkan ke santri. Data di bawah sudah terisi otomatis.</p>
+                            </div>
+                            <button type="button" onclick="clearSelectedWali()" class="text-green-600 hover:text-red-500 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -847,15 +875,17 @@
                         return;
                     }
 
-                    Object.entries(data).forEach(([code, name]) => {
-                        const option = document.createElement('option');
-                        option.value = code;
-                        option.textContent = name;
-                        if (selectedValue && String(code) === String(selectedValue)) {
-                            option.selected = true;
-                        }
-                        targetSelect.appendChild(option);
-                    });
+                    Object.entries(data)
+                        .sort(([, a], [, b]) => a.localeCompare(b, 'id'))
+                        .forEach(([code, name]) => {
+                            const option = document.createElement('option');
+                            option.value = code;
+                            option.textContent = name;
+                            if (selectedValue && String(code) === String(selectedValue)) {
+                                option.selected = true;
+                            }
+                            targetSelect.appendChild(option);
+                        });
 
                     targetSelect.disabled = false;
 
@@ -971,5 +1001,69 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+    </script>
+
+    <script>
+    // ── Cari Wali ──────────────────────────────────────────────
+    var waliSearchTimeout = null;
+
+    document.getElementById('waliSearchInput').addEventListener('input', function () {
+        clearTimeout(waliSearchTimeout);
+        var q = this.value.trim();
+        var results = document.getElementById('waliSearchResults');
+        if (q.length < 2) { results.classList.add('hidden'); return; }
+        waliSearchTimeout = setTimeout(function () {
+            fetch('{{ route('admin.guardians.search') }}?q=' + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (!data.length) {
+                        results.innerHTML = '<div class="px-4 py-3 text-sm text-slate-400">Tidak ditemukan. Isi form di bawah untuk buat akun baru.</div>';
+                    } else {
+                        results.innerHTML = data.map(function (g) {
+                            return '<button type="button" onclick=\'selectWali(' + JSON.stringify(g) + ')\''
+                                + ' class="w-full text-left px-4 py-3 hover:bg-primary/5 border-b border-slate-100 dark:border-slate-700 last:border-0 transition-colors">'
+                                + '<p class="text-sm font-semibold text-slate-800 dark:text-white">' + g.name + '</p>'
+                                + '<p class="text-xs text-slate-400">@' + g.username + (g.phone ? ' · ' + g.phone : '') + '</p>'
+                                + '</button>';
+                        }).join('');
+                    }
+                    results.classList.remove('hidden');
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('#waliSearchInput') && !e.target.closest('#waliSearchResults')) {
+            document.getElementById('waliSearchResults').classList.add('hidden');
+        }
+    });
+
+    function selectWali(g) {
+        // Isi field form
+        document.querySelector('[name="wali_name"]').value     = g.name || '';
+        document.querySelector('[name="wali_username"]').value = g.username || '';
+        document.querySelector('[name="wali_phone"]').value    = g.phone || '';
+        document.querySelector('[name="wali_email"]').value    = g.email || '';
+        var rel = document.querySelector('[name="wali_relationship"]');
+        if (g.relationship) rel.value = g.relationship;
+
+        // Tampilkan info terpilih
+        document.getElementById('waliSelectedName').textContent     = g.name;
+        document.getElementById('waliSelectedUsername').textContent  = '(@' + g.username + ')';
+        document.getElementById('waliSelectedInfo').classList.remove('hidden');
+        document.getElementById('waliSelectedInfo').classList.add('flex');
+
+        // Sembunyikan dropdown & kosongkan search
+        document.getElementById('waliSearchResults').classList.add('hidden');
+        document.getElementById('waliSearchInput').value = '';
+    }
+
+    function clearSelectedWali() {
+        ['wali_name','wali_username','wali_phone','wali_email'].forEach(function (n) {
+            document.querySelector('[name="' + n + '"]').value = '';
+        });
+        document.getElementById('waliSelectedInfo').classList.add('hidden');
+        document.getElementById('waliSelectedInfo').classList.remove('flex');
+    }
     </script>
 @endpush
